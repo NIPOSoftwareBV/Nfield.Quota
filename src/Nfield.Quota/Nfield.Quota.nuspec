@@ -8,11 +8,11 @@
     <owners>$author$</owners>
     <licenseUrl>https://github.com/NIPOSoftware/Nfield.Quota/blob/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/NIPOSoftware/Nfield.Quota</projectUrl>
-    <iconUrl>https://github.com/NIPOSoftware/Nfield.Quota/src/Nfield.Quota/icon-nfield.png</iconUrl>
+    <iconUrl>https://raw.githubusercontent.com/NIPOSoftware/Nfield.Quota/master/src/Nfield.Quota/icon-nfield.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
     <releaseNotes>-</releaseNotes>
     <copyright>Copyright 2016</copyright>
-    <tags>Nfield</tags>
+    <tags>nfield marketresearch capi cawi online</tags>
   </metadata>
 </package>
