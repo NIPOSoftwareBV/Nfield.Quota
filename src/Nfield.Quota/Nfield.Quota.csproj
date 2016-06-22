@@ -70,7 +70,12 @@
     <Compile Include="QuotaVariableDefinition.cs" />
     <Compile Include="QuotaVariableDefinitionCollection.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Nfield.Quota.nuspec" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icon-nfield.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
