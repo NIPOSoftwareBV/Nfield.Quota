@@ -10,6 +10,9 @@ assembly_info:
   assembly_file_version: '{version}'
   assembly_informational_version: "$(assembly_informational_version)"
 
+before_build:
+  - nuget restore
+
 build:
   publish_nuget: true
   publish_nuget_symbols: true
