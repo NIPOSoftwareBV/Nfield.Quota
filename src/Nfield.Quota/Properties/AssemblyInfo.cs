@@ -6,10 +6,10 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Nfield.Quota")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Package for quota manipulation")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Nfield.Quota")]
+[assembly: AssemblyCompany("NIPO Software")]
+[assembly: AssemblyProduct("Nfield")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
