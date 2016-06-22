@@ -10,6 +10,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CI", "CI", "{1050C460-9431-42AF-A022-176D847ACA25}"
 	ProjectSection(SolutionItems) = preProject
 		appveyor.yml = appveyor.yml
+		Prerelease.bat = Prerelease.bat
 	EndProjectSection
 EndProject
 Global
