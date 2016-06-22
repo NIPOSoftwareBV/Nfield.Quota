@@ -1,6 +1,7 @@
-init:
-  - prerelease.bat
 version: 1.0.{build}
+
+install:
+  - prerelease.bat
 
 assembly_info:
   patch: true
