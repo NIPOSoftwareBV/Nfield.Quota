@@ -8,31 +8,32 @@ namespace Nfield.Quota
     {
         public QuotaFrameValidator()
         {
+            RuleFor(qf => qf.VariableDefinitions)
+                .Must(HaveUniqueIds)
+                .WithMessage("Quota frame definitions contain a duplicate id. Duplicate id: '{DuplicateId}'");
 
-            RuleFor(qf => qf.VariableDefinitions).Must(HaveUniqueIdsAndNames)
-                .WithMessage("Quota frame defintions have duplicate id ({DuplicateId}) or name ({DuplicateName})");
+            RuleFor(qf => qf.VariableDefinitions)
+                .Must(HaveUniqueNames)
+                .WithMessage("Quota frame definitions contain a duplicate name. Duplicate name: '{DuplicateName}'");
         }
 
-        private bool HaveUniqueIdsAndNames(
+        private static bool HaveUniqueIds(
             QuotaFrame frame,
             QuotaVariableDefinitionCollection varDefinitions,
             PropertyValidatorContext context)
         {
             var usedIds = new HashSet<string>();
-            var usedNames = new HashSet<string>();
 
             foreach (var variableDefinition in varDefinitions)
             {
-                if (IsDuplicateId(context, usedIds, variableDefinition.Id) &&
-                    IsDuplicateName(context, usedNames, variableDefinition.Name))
+                if (IsDuplicateId(context, usedIds, variableDefinition.Id))
                 {
                     return false;
                 }
 
                 foreach (var levelDefinition in variableDefinition.Levels)
                 {
-                    if (IsDuplicateId(context, usedIds, levelDefinition.Id) &&
-                        IsDuplicateName(context, usedNames, levelDefinition.Name))
+                    if (IsDuplicateId(context, usedIds, levelDefinition.Id))
                     {
                         return false;
                     }
@@ -40,27 +41,52 @@ namespace Nfield.Quota
             }
 
             return true;
-
         }
 
-        private static bool IsDuplicateId(PropertyValidatorContext context, HashSet<string> collection, string entry)
+        private static bool IsDuplicateId(PropertyValidatorContext context, ISet<string> set, string entry)
         {
-            var couldAdd = collection.Add(entry);
+            var couldAdd = set.Add(entry);
             if (!couldAdd)
             {
-                context.MessageFormatter.AppendArgument("{DuplicateId}", entry);
+                context.MessageFormatter.AppendArgument("DuplicateId", entry);
                 return true;
             }
 
             return false;
         }
 
-        private static bool IsDuplicateName(PropertyValidatorContext context, HashSet<string> collection, string entry)
+        private static bool HaveUniqueNames(
+            QuotaFrame frame,
+            QuotaVariableDefinitionCollection varDefinitions,
+            PropertyValidatorContext context)
         {
-            var couldAdd = collection.Add(entry);
+            var usedNames = new HashSet<string>();
+
+            foreach (var variableDefinition in varDefinitions)
+            {
+                if (IsDuplicateName(context, usedNames, variableDefinition.Name))
+                {
+                    return false;
+                }
+
+                foreach (var levelDefinition in variableDefinition.Levels)
+                {
+                    if (IsDuplicateName(context, usedNames, levelDefinition.Name))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        private static bool IsDuplicateName(PropertyValidatorContext context, ISet<string> set, string entry)
+        {
+            var couldAdd = set.Add(entry);
             if (!couldAdd)
             {
-                context.MessageFormatter.AppendArgument("{DuplicateName}", entry);
+                context.MessageFormatter.AppendArgument("DuplicateName", entry);
                 return true;
             }
 
