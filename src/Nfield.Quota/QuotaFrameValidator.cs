@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using FluentValidation;
 using FluentValidation.Validators;
 
@@ -20,8 +21,45 @@ namespace Nfield.Quota
             RuleFor(qf => qf.FrameVariables)
                 .Must(HaveUniqueIds)
                 .WithMessage("Quota frame contains a duplicate id. Duplicate id: '{DuplicateValue}'");
+
+            RuleFor(qf => qf.FrameVariables)
+                .Must(ReferenceDefinitions)
+                .WithMessage("Quota frame contains a reference to a non-existing definition. Definition id: '{DefinitionId}'");
         }
 
+        private static bool ReferenceDefinitions(
+            QuotaFrame frame,
+            QuotaFrameVariableCollection variables,
+            PropertyValidatorContext context)
+        {
+            var variableIds = new HashSet<string>(
+                frame.VariableDefinitions.Select(vd => vd.Id));
+            var levelIds = new HashSet<string>(
+                frame.VariableDefinitions.SelectMany(vd => vd.Levels).Select(ld => ld.Id));
+
+            var traverser = new PreOrderQuotaFrameTraverser();
+            var hasInvalidReference = false;
+            traverser.Traverse( // always walks whole tree, might want to change this
+                frame,
+                variable =>
+                {
+                    if (!variableIds.Contains(variable.DefinitionId))
+                    {
+                        context.MessageFormatter.AppendArgument("DefinitionId", variable.DefinitionId);
+                        hasInvalidReference = true;
+                    }
+                },
+                level =>
+                {
+                    if (!levelIds.Contains(level.DefinitionId))
+                    {
+                        context.MessageFormatter.AppendArgument("DefinitionId", level.DefinitionId);
+                        hasInvalidReference = true;
+                    }
+                });
+
+            return !hasInvalidReference;
+        }
 
         private static bool HaveUniqueIds(
             QuotaFrame frame,
@@ -30,21 +68,20 @@ namespace Nfield.Quota
         {
             var usedIds = new HashSet<string>();
 
-            var traverser = new PreOrderQuotaFrameTraverser();
-
             var hasDuplicate = false;
+            var traverser = new PreOrderQuotaFrameTraverser();
             traverser.Traverse( // always walks whole tree, might want to change this
                 frame,
                 variable =>
                 {
-                    if (!hasDuplicate && IsDuplicateValue(context, usedIds, variable.Id))
+                    if (IsDuplicateValue(context, usedIds, variable.Id))
                     {
                         hasDuplicate = true;
                     }
                 },
                 level =>
                 {
-                    if (!hasDuplicate && IsDuplicateValue(context, usedIds, level.Id))
+                    if (IsDuplicateValue(context, usedIds, level.Id))
                     {
                         hasDuplicate = true;
                     }
