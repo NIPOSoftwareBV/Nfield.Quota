@@ -11,12 +11,20 @@ namespace Nfield.Quota
         public QuotaFrameValidator()
         {
             RuleFor(qf => qf.VariableDefinitions)
+                .NotNull().NotEmpty()
+                .WithMessage("Quota frame definitions cannot be empty.");
+
+            RuleFor(qf => qf.VariableDefinitions)
                 .Must(HaveUniqueIds)
                 .WithMessage("Quota frame definitions contain a duplicate id. Duplicate id: '{DuplicateValue}'");
 
             RuleFor(qf => qf.VariableDefinitions)
                 .Must(HaveUniqueNames)
                 .WithMessage("Quota frame definitions contain a duplicate name. Duplicate name: '{DuplicateValue}'");
+
+            RuleFor(qf => qf.VariableDefinitions)
+                .Must(HaveVariablesWithAtLeastTwoLevels)
+                .WithMessage("Quota frame definitions has variables with less than two or no levels. Affected variable definition id: '{VariableDefinitionId}'");
 
             RuleFor(qf => qf.FrameVariables)
                 .Must(HaveUniqueIds)
@@ -25,69 +33,6 @@ namespace Nfield.Quota
             RuleFor(qf => qf.FrameVariables)
                 .Must(ReferenceDefinitions)
                 .WithMessage("Quota frame contains a reference to a non-existing definition. Definition id: '{DefinitionId}'");
-        }
-
-        private static bool ReferenceDefinitions(
-            QuotaFrame frame,
-            QuotaFrameVariableCollection variables,
-            PropertyValidatorContext context)
-        {
-            var variableIds = new HashSet<string>(
-                frame.VariableDefinitions.Select(vd => vd.Id));
-            var levelIds = new HashSet<string>(
-                frame.VariableDefinitions.SelectMany(vd => vd.Levels).Select(ld => ld.Id));
-
-            var traverser = new PreOrderQuotaFrameTraverser();
-            var hasInvalidReference = false;
-            traverser.Traverse( // always walks whole tree, might want to change this
-                frame,
-                variable =>
-                {
-                    if (!variableIds.Contains(variable.DefinitionId))
-                    {
-                        context.MessageFormatter.AppendArgument("DefinitionId", variable.DefinitionId);
-                        hasInvalidReference = true;
-                    }
-                },
-                level =>
-                {
-                    if (!levelIds.Contains(level.DefinitionId))
-                    {
-                        context.MessageFormatter.AppendArgument("DefinitionId", level.DefinitionId);
-                        hasInvalidReference = true;
-                    }
-                });
-
-            return !hasInvalidReference;
-        }
-
-        private static bool HaveUniqueIds(
-            QuotaFrame frame,
-            QuotaFrameVariableCollection variables,
-            PropertyValidatorContext context)
-        {
-            var usedIds = new HashSet<string>();
-
-            var hasDuplicate = false;
-            var traverser = new PreOrderQuotaFrameTraverser();
-            traverser.Traverse( // always walks whole tree, might want to change this
-                frame,
-                variable =>
-                {
-                    if (IsDuplicateValue(context, usedIds, variable.Id))
-                    {
-                        hasDuplicate = true;
-                    }
-                },
-                level =>
-                {
-                    if (IsDuplicateValue(context, usedIds, level.Id))
-                    {
-                        hasDuplicate = true;
-                    }
-                });
-
-            return !hasDuplicate;
         }
 
         private static bool HaveUniqueIds(
@@ -140,6 +85,86 @@ namespace Nfield.Quota
             }
 
             return true;
+        }
+
+        private static bool HaveVariablesWithAtLeastTwoLevels(
+            QuotaFrame frame,
+            QuotaVariableDefinitionCollection varDefinitions,
+            PropertyValidatorContext context)
+        {
+            foreach (var varDefinition in varDefinitions)
+            {
+                if (varDefinition.Levels.Count < 2)
+                {
+                    context.MessageFormatter.AppendArgument("VariableDefinitionId", varDefinition.Id);
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private static bool HaveUniqueIds(
+            QuotaFrame frame,
+            QuotaFrameVariableCollection variables,
+            PropertyValidatorContext context)
+        {
+            var usedIds = new HashSet<string>();
+
+            var hasDuplicate = false;
+            var traverser = new PreOrderQuotaFrameTraverser();
+            traverser.Traverse( // always walks whole tree, might want to change this
+                frame,
+                variable =>
+                {
+                    if (IsDuplicateValue(context, usedIds, variable.Id))
+                    {
+                        hasDuplicate = true;
+                    }
+                },
+                level =>
+                {
+                    if (IsDuplicateValue(context, usedIds, level.Id))
+                    {
+                        hasDuplicate = true;
+                    }
+                });
+
+            return !hasDuplicate;
+        }
+
+        private static bool ReferenceDefinitions(
+            QuotaFrame frame,
+            QuotaFrameVariableCollection variables,
+            PropertyValidatorContext context)
+        {
+            var variableIds = new HashSet<string>(
+                frame.VariableDefinitions.Select(vd => vd.Id));
+            var levelIds = new HashSet<string>(
+                frame.VariableDefinitions.SelectMany(vd => vd.Levels).Select(ld => ld.Id));
+
+            var traverser = new PreOrderQuotaFrameTraverser();
+            var hasInvalidReference = false;
+            traverser.Traverse( // always walks whole tree, might want to change this
+                frame,
+                variable =>
+                {
+                    if (!variableIds.Contains(variable.DefinitionId))
+                    {
+                        context.MessageFormatter.AppendArgument("DefinitionId", variable.DefinitionId);
+                        hasInvalidReference = true;
+                    }
+                },
+                level =>
+                {
+                    if (!levelIds.Contains(level.DefinitionId))
+                    {
+                        context.MessageFormatter.AppendArgument("DefinitionId", level.DefinitionId);
+                        hasInvalidReference = true;
+                    }
+                });
+
+            return !hasInvalidReference;
         }
 
         // Assumes set.Add returns false if value already in collection

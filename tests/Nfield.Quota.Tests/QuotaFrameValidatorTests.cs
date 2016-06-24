@@ -26,6 +26,36 @@ namespace Nfield.Quota.Tests
         }
 
         [Test]
+        public void Definitions_CannotBeEmpty()
+        {
+            var quotaFrame = new QuotaFrame();
+
+            var validator = new QuotaFrameValidator();
+            var result = validator.Validate(quotaFrame);
+
+            Assert.That(result.Errors.Single().ErrorMessage,
+                Is.EqualTo("Quota frame definitions cannot be empty."));
+        }
+
+        [Test]
+        public void Definitions_EveryVariableNeedsAtLeastTwoLevels()
+        {
+            var quotaFrame = new QuotaFrameBuilder()
+                .Id("id")
+                .VariableDefinition("varId", "varName", "odinVarName", var =>
+                {
+                    var.Level("level1Id", "level1Name");
+                })
+                .Build();
+
+            var validator = new QuotaFrameValidator();
+            var result = validator.Validate(quotaFrame);
+
+            Assert.That(result.Errors.Single().ErrorMessage,
+                Is.EqualTo("Quota frame definitions has variables with less than two or no levels. Affected variable definition id: 'varId'"));
+        }
+
+        [Test]
         public void Definitions_UniqueIdsAndNames_NonUniqueIdInLevel()
         {
             const string nonUniqueId = "non-unique";
