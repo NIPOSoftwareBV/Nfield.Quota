@@ -8,7 +8,7 @@ namespace Nfield.Quota.Tests
     internal class QuotaFrameValidatorTests
     {
         [Test]
-        public void UniqueIdsAndNames_HappyPath()
+        public void Definitions_UniqueIdsAndNames_HappyPath()
         {
             var quotaFrame = new QuotaFrameBuilder()
                 .Id("id")
@@ -26,7 +26,7 @@ namespace Nfield.Quota.Tests
         }
 
         [Test]
-        public void UniqueIdsAndNames_NonUniqueIdInLevel()
+        public void Definitions_UniqueIdsAndNames_NonUniqueIdInLevel()
         {
             const string nonUniqueId = "non-unique";
 
@@ -47,7 +47,7 @@ namespace Nfield.Quota.Tests
         }
 
         [Test]
-        public void UniqueIdsAndNames_NonUniqueNameInLevel()
+        public void Definitions_UniqueIdsAndNames_NonUniqueNameInLevel()
         {
             const string nonUniqueName = "non-unique";
 
@@ -68,7 +68,7 @@ namespace Nfield.Quota.Tests
         }
 
         [Test]
-        public void UniqueIdsAndNames_NonUniqueIdAccrossLevelAndVariable()
+        public void Definitions_UniqueIdsAndNames_NonUniqueIdAccrossLevelAndVariable()
         {
             const string nonUniqueId = "non-unique";
 
@@ -89,7 +89,7 @@ namespace Nfield.Quota.Tests
         }
 
         [Test]
-        public void UniqueIdsAndNames_NonUniqueNameAccrossLevelAndVariable()
+        public void Definitions_UniqueIdsAndNames_NonUniqueNameAccrossLevelAndVariable()
         {
             const string nonUniqueName = "non-unique";
 
@@ -108,5 +108,81 @@ namespace Nfield.Quota.Tests
             Assert.That(result.Errors.Single().ErrorMessage,
                 Is.EqualTo("Quota frame definitions contain a duplicate name. Duplicate name: 'non-unique'"));
         }
+
+        [Test]
+        public void Frame_UniqueIds_HappyPath()
+        {
+            var quotaFrame = new QuotaFrameBuilder()
+                .Id("id")
+                .VariableDefinition("varId", "varName", "odinVarName", var =>
+                {
+                    var.Level("level1Id", "level1Name");
+                    var.Level("level2Id", "level2Name");
+                })
+                .FrameVariable("varId", "varReferenceId", variableReference =>
+                {
+                    variableReference.Level("level1Id", "level1RefId", 6, 2);
+                    variableReference.Level("level2Id", "level2RefId", 4, 3);
+                })
+                .Build();
+
+            var validator = new QuotaFrameValidator();
+            var result = validator.Validate(quotaFrame);
+
+            Assert.That(result.IsValid, Is.True);
+        }
+
+        [Test]
+        public void Frame_UniqueIds_NonUniqueAcrossVarAndLevels()
+        {
+            const string nonUniqueName = "non-unique";
+
+            var quotaFrame = new QuotaFrameBuilder()
+                .Id("id")
+                .VariableDefinition("varId", "varName", "odinVarName", var =>
+                {
+                    var.Level("level1Id", "level1Name");
+                    var.Level("level2Id", "level2Name");
+                })
+                .FrameVariable("varId", nonUniqueName, variableReference =>
+                {
+                    variableReference.Level("level1Id", nonUniqueName, 6, 2);
+                    variableReference.Level("level2Id", "level2RefId", 4, 3);
+                })
+                .Build();
+
+            var validator = new QuotaFrameValidator();
+            var result = validator.Validate(quotaFrame);
+
+            Assert.That(result.Errors.Single().ErrorMessage,
+                Is.EqualTo("Quota frame contains a duplicate id. Duplicate id: 'non-unique'"));
+        }
+
+        [Test]
+        public void Frame_UniqueIds_NonUniqueWithinLevels()
+        {
+            const string nonUniqueName = "non-unique";
+
+            var quotaFrame = new QuotaFrameBuilder()
+                .Id("id")
+                .VariableDefinition("varId", "varName", "odinVarName", var =>
+                {
+                    var.Level("level1Id", "level1Name");
+                    var.Level("level2Id", "level2Name");
+                })
+                .FrameVariable("varId", "varReferenceId", variableReference =>
+                {
+                    variableReference.Level("level1Id", nonUniqueName, 6, 2);
+                    variableReference.Level("level2Id", nonUniqueName, 4, 3);
+                })
+                .Build();
+
+            var validator = new QuotaFrameValidator();
+            var result = validator.Validate(quotaFrame);
+
+            Assert.That(result.Errors.Single().ErrorMessage,
+                Is.EqualTo("Quota frame contains a duplicate id. Duplicate id: 'non-unique'"));
+        }
+
     }
 }
