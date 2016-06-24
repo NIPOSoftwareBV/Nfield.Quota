@@ -33,6 +33,10 @@ namespace Nfield.Quota
             RuleFor(qf => qf.FrameVariables)
                 .Must(ReferenceDefinitions)
                 .WithMessage("Quota frame contains a reference to a non-existing definition. Definition id: '{DefinitionId}'");
+
+            RuleFor(qf => qf.FrameVariables)
+                .Must(HaveTheSameLevelsUnderAVariableAsTheLinkedVariableDefinition)
+                .WithMessage("Quota frame contains a variable that doesnt have all the defined levels associated. Affected variable id: '{AffectedVariableId}', missing level definition id: '{MissingLevelDefinitionId}'");
         }
 
         private static bool HaveUniqueIds(
@@ -165,6 +169,35 @@ namespace Nfield.Quota
                 });
 
             return !hasInvalidReference;
+        }
+
+        private static bool HaveTheSameLevelsUnderAVariableAsTheLinkedVariableDefinition(
+            QuotaFrame frame,
+            QuotaFrameVariableCollection variables,
+            PropertyValidatorContext context)
+        {
+            bool hasMissingLevel = false;
+            var traverser = new PreOrderQuotaFrameTraverser();
+            traverser.Traverse( // always walks whole tree, might want to change this
+                frame,
+                variable =>
+                {
+                    var levelIds = variable.Levels.Select(l => l.Id);
+                    var levelDefIds = frame.VariableDefinitions
+                        .First(vd => vd.Id == variable.DefinitionId)
+                        .Levels.Select(l => l.Id);
+
+                    var complement = levelDefIds.Except(levelIds).ToList(); // Present in lhs, not in rhs
+                    if (complement.Any())
+                    {
+                        context.MessageFormatter.AppendArgument("AffectedVariableId", variable.Id);
+                        context.MessageFormatter.AppendArgument("MissingLevelDefinitionId", complement.First());
+                        hasMissingLevel = true;
+                    }
+                });
+
+
+            return !hasMissingLevel;
         }
 
         // Assumes set.Add returns false if value already in collection

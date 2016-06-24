@@ -262,5 +262,44 @@ namespace Nfield.Quota.Tests
             Assert.That(result.Errors.Single().ErrorMessage,
                 Is.EqualTo("Quota frame contains a reference to a non-existing definition. Definition id: 'NONEXISTINGDEFINITIONID'"));
         }
+
+        //todo test for HaveTheSameLevelsUnderAVariableAsTheLinkedVariableDefinition
+
+        /*[Test]
+        public void NewBuilderSyntax()
+        {
+            var quotaFrame = new QuotaFrameBuilder()
+                .Id("id")
+                .SetupDefinitions(defBuilder =>
+                {
+                    defBuilder.VariableDefinition("var1Id", "varName", "odinVarName", lvlDefbuilder =>
+                    {
+                        lvlDefbuilder.LevelDefinition("var1lvl1Id", "Level 1");
+                        lvlDefbuilder.LevelDefinition("var1lvl2Id", "Level 2");
+                    });
+                    defBuilder.VariableDefinition("var2Id", "varName", "odinVarName", lvlDefbuilder =>
+                    {
+                        lvlDefbuilder.LevelDefinition("var2lvl1Id", "Level 1");
+                        lvlDefbuilder.LevelDefinition("var2lvl2Id", "Level 2");
+                        lvlDefbuilder.LevelDefinition("var2lvl3Id", "Level 3");
+                    });
+                    defBuilder.VariableDefinition("var3Id", "varName", "odinVarName", lvlDefbuilder =>
+                    {
+                        lvlDefbuilder.LevelDefinition("var3lvl1Id", "Level 1");
+                        lvlDefbuilder.LevelDefinition("var3lvl2Id", "Level 2");
+                    });
+                })
+                .SetupStructure(strucBuilder =>
+                {
+                    strucBuilder.AddVariable("var1Id", sb => sb.AddVariable("var2Id"));
+                    strucBuilder.AddVariable("var3Id");
+                })
+                .Build();
+
+            var validator = new QuotaFrameValidator();
+            var result = validator.Validate(quotaFrame);
+
+            Assert.That(result.IsValid, Is.True);
+        }*/
     }
 }
