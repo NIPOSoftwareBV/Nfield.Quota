@@ -135,7 +135,7 @@ namespace Nfield.Quota.Tests
         [Test]
         public void Frame_UniqueIds_NonUniqueAcrossVarAndLevels()
         {
-            const string nonUniqueName = "non-unique";
+            const string nonUniqueId = "non-unique";
 
             var quotaFrame = new QuotaFrameBuilder()
                 .Id("id")
@@ -144,9 +144,9 @@ namespace Nfield.Quota.Tests
                     var.Level("level1Id", "level1Name");
                     var.Level("level2Id", "level2Name");
                 })
-                .FrameVariable("varId", nonUniqueName, variableReference =>
+                .FrameVariable("varId", nonUniqueId, variableReference =>
                 {
-                    variableReference.Level("level1Id", nonUniqueName, 6, 2);
+                    variableReference.Level("level1Id", nonUniqueId, 6, 2);
                     variableReference.Level("level2Id", "level2RefId", 4, 3);
                 })
                 .Build();
@@ -161,7 +161,7 @@ namespace Nfield.Quota.Tests
         [Test]
         public void Frame_UniqueIds_NonUniqueWithinLevels()
         {
-            const string nonUniqueName = "non-unique";
+            const string nonUniqueId = "non-unique";
 
             var quotaFrame = new QuotaFrameBuilder()
                 .Id("id")
@@ -172,8 +172,8 @@ namespace Nfield.Quota.Tests
                 })
                 .FrameVariable("varId", "varReferenceId", variableReference =>
                 {
-                    variableReference.Level("level1Id", nonUniqueName, 6, 2);
-                    variableReference.Level("level2Id", nonUniqueName, 4, 3);
+                    variableReference.Level("level1Id", nonUniqueId, 6, 2);
+                    variableReference.Level("level2Id", nonUniqueId, 4, 3);
                 })
                 .Build();
 
