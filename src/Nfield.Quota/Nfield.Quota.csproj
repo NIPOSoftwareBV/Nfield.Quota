@@ -68,7 +68,6 @@
     <Compile Include="Persistence\QuotaFrameEncoder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QuotaFrame.cs" />
-    <Compile Include="QuotaFrameExtensions.cs" />
     <Compile Include="QuotaFrameLevel.cs" />
     <Compile Include="QuotaFrameLevelCollection.cs" />
     <Compile Include="QuotaFrameVariable.cs" />
