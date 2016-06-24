@@ -77,7 +77,7 @@ namespace Nfield.Quota.Tests
                 .VariableDefinition(nonUniqueId, "varName", "odinVarName", var =>
                 {
                     var.Level(nonUniqueId, "level1Name");
-                    var.Level("level2Id", "level1Name");
+                    var.Level("level2Id", "level2Name");
                 })
                 .Build();
 
