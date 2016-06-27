@@ -312,6 +312,94 @@ namespace Nfield.Quota.Tests
                 Is.EqualTo("Quota frame contains a reference to a non-existing definition. Definition id: 'level3Id'"));
         }
 
+        [Test]
+        public void ComplexFrame_HappyPath()
+        {
+            var quotaFrame = new QuotaFrameBuilder()
+                .Id("id")
+                .VariableDefinition("var1Id", "var2Name", "odinVar1Name", var =>
+                {
+                    var.Level("var1level1Id", "var1Level1Name");
+                    var.Level("var1level2Id", "var1Level2Name");
+                })
+                .VariableDefinition("var2Id", "var1Name", "odinVar2Name", var =>
+                {
+                    var.Level("var2level1Id", "var2Level1Name");
+                    var.Level("var2level2Id", "var2Level2Name");
+                })
+
+                .FrameVariable("var1Id", "frameVar1Id", rootVarBuilder =>
+                {
+                    rootVarBuilder.Level("var1level1Id", "frameLvl1Id", 6, 2, varBuilder =>
+                    {
+                        varBuilder.Variable("var2Id", "frameVar2Id", lvlBuilder =>
+                        {
+                            lvlBuilder.Level("var2level1Id", "frameLvl2Id");
+                            lvlBuilder.Level("var2level2Id", "frameLvl3Id");
+                        });
+                    });
+                    rootVarBuilder.Level("var1level2Id", "frameLvl4Id", 4, 3, varBuilder =>
+                    {
+                        varBuilder.Variable("var2Id", "frameVar3Id", lvlBuilder =>
+                        {
+                            lvlBuilder.Level("var2level1Id", "frameLvl5Id");
+                            lvlBuilder.Level("var2level2Id", "frameLvl6Id");
+                        });
+                    });
+                })
+                .Build();
+
+            var validator = new QuotaFrameValidator();
+            var result = validator.Validate(quotaFrame);
+
+            Assert.That(result.IsValid, Is.True);
+        }
+
+        [Test, Ignore("todo")]
+        public void ComplexFrame_InvalidLevelsUnderOneOfTheLevels()
+        {
+            var quotaFrame = new QuotaFrameBuilder()
+                .Id("id")
+                .VariableDefinition("var1Id", "var2Name", "odinVar1Name", var =>
+                {
+                    var.Level("var1level1Id", "var1Level1Name");
+                    var.Level("var1level2Id", "var1Level2Name");
+                })
+                .VariableDefinition("var2Id", "var1Name", "odinVar2Name", var =>
+                {
+                    var.Level("var2level1Id", "var2Level1Name");
+                    var.Level("var2level2Id", "var2Level2Name");
+                })
+
+                .FrameVariable("var1Id", "frameVar1Id", rootVarBuilder =>
+                {
+                    rootVarBuilder.Level("var1level1Id", "frameLvl1Id", 6, 2, varBuilder =>
+                    {
+                        varBuilder.Variable("var2Id", "frameVar2Id", lvlBuilder =>
+                        {
+                            lvlBuilder.Level("var2level1Id", "frameLvl2Id");
+                            lvlBuilder.Level("var2level2Id", "frameLvl3Id");
+                        });
+                    });
+                    rootVarBuilder.Level("var1level2Id", "frameLvl4Id", 4, 3, varBuilder =>
+                    {
+                        varBuilder.Variable("var2Id", "frameVar3Id", lvlBuilder =>
+                        {
+                            lvlBuilder.Level("var2level1Id", "frameLvl5Id");
+                            lvlBuilder.Level("var2level2Id", "frameLvl6Id");
+                        });
+                    });
+                })
+                .Build();
+
+            var validator = new QuotaFrameValidator();
+            var result = validator.Validate(quotaFrame);
+
+            Assert.That(result.IsValid, Is.True);
+            Assert.That(result.Errors.Single().ErrorMessage,
+                Is.EqualTo("Quota frame invalid. All levels of a variable should have the same variables underneath. Frame variable id 'AffectedFrameVariableId' has a mismatch for level '{MismatchLevelId}'"));
+        }
+
         /*[Test]
         public void NewBuilderSyntax()
         {
