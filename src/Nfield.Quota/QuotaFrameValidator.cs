@@ -28,7 +28,7 @@ namespace Nfield.Quota
                 .Must(ReferenceDefinitions)
                 .WithMessage("Quota frame contains a reference to a non-existing definition. Definition id: '{DefinitionId}'")
                 .Must(HaveTheSameLevelsUnderAVariableAsTheLinkedVariableDefinition)
-                .WithMessage("Quota frame contains a variable that doesnt have all the defined levels associated. Affected variable id: '{AffectedVariableId}', missing level definition id: '{MissingLevelDefinitionId}'");
+                .WithMessage("Quota frame contains a variable that doesnt have all the defined levels associated. Affected frame variable id: '{AffectedFrameVariableId}', missing level definition id: '{MissingLevelDefinitionId}'");
         }
 
         private static bool HaveUniqueIds(
@@ -182,7 +182,7 @@ namespace Nfield.Quota
                     var complement = varDefLevelIds.Except(frameVarLevelIds).ToList(); // Present in lhs, not in rhs
                     if (complement.Any())
                     {
-                        context.MessageFormatter.AppendArgument("AffectedVariableId", variable.Id);
+                        context.MessageFormatter.AppendArgument("AffectedFrameVariableId", variable.Id);
                         context.MessageFormatter.AppendArgument("MissingLevelDefinitionId", complement.First());
                         hasMissingLevel = true;
                     }

@@ -140,7 +140,7 @@ namespace Nfield.Quota.Tests
         }
 
         [Test]
-        public void Frame_UniqueIds_HappyPath()
+        public void Frame_HappyPath()
         {
             var quotaFrame = new QuotaFrameBuilder()
                 .Id("id")
@@ -215,7 +215,7 @@ namespace Nfield.Quota.Tests
         }
 
         [Test]
-        public void Frame_UniqueIds_VariableWithInvalidReferenceToDefinition()
+        public void Frame_VariableWithInvalidReferenceToDefinition()
         {
             var quotaFrame = new QuotaFrameBuilder()
                 .Id("id")
@@ -240,7 +240,7 @@ namespace Nfield.Quota.Tests
 
 
         [Test]
-        public void Frame_UniqueIds_LevelWithInvalidReferenceToDefinition()
+        public void Frame_LevelWithInvalidReferenceToDefinition()
         {
             var quotaFrame = new QuotaFrameBuilder()
                 .Id("id")
@@ -263,7 +263,54 @@ namespace Nfield.Quota.Tests
                 Is.EqualTo("Quota frame contains a reference to a non-existing definition. Definition id: 'NONEXISTINGDEFINITIONID'"));
         }
 
-        //todo test for HaveTheSameLevelsUnderAVariableAsTheLinkedVariableDefinition
+        [Test]
+        public void Frame_WrongLevelsUnderVariable_OneMissing()
+        {
+            var quotaFrame = new QuotaFrameBuilder()
+                .Id("id")
+                .VariableDefinition("varId", "varName", "odinVarName", var =>
+                {
+                    var.Level("level1Id", "level1Name");
+                    var.Level("level2Id", "level2Name");
+                })
+                .FrameVariable("varId", "varReferenceId", variableReference =>
+                {
+                    variableReference.Level("level1Id", "level1RefId", 6, 2);
+                    // Level 2 omitted
+                })
+                .Build();
+
+            var validator = new QuotaFrameValidator();
+            var result = validator.Validate(quotaFrame);
+
+            Assert.That(result.Errors.Single().ErrorMessage,
+                Is.EqualTo("Quota frame contains a variable that doesnt have all the defined levels associated. Affected frame variable id: 'varReferenceId', missing level definition id: 'level2Id'"));
+        }
+
+        [Test]
+        public void Frame_WrongLevelsUnderVariable_OneExtra()
+        {
+            var quotaFrame = new QuotaFrameBuilder()
+                .Id("id")
+                .VariableDefinition("varId", "varName", "odinVarName", var =>
+                {
+                    var.Level("level1Id", "level1Name");
+                    var.Level("level2Id", "level2Name");
+                })
+                .FrameVariable("varId", "varReferenceId", variableReference =>
+                {
+                    variableReference.Level("level1Id", "level1RefId", 6, 2);
+                    variableReference.Level("level2Id", "level2RefId", 4, 3);
+                    variableReference.Level("level3Id", "level3RefId", 4, 3); // too many
+                })
+                .Build();
+
+            var validator = new QuotaFrameValidator();
+            var result = validator.Validate(quotaFrame);
+
+            Assert.That(result.Errors.Single().ErrorMessage,
+                Is.EqualTo("Quota frame contains a reference to a non-existing definition. Definition id: 'level3Id'"));
+        }
 
         /*[Test]
         public void NewBuilderSyntax()
