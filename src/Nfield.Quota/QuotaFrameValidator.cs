@@ -14,29 +14,19 @@ namespace Nfield.Quota
 
             RuleFor(qf => qf.VariableDefinitions)
                 .NotNull().NotEmpty()
-                .WithMessage("Quota frame definitions cannot be empty.");
-
-            RuleFor(qf => qf.VariableDefinitions)
+                .WithMessage("Quota frame definitions cannot be empty.")
                 .Must(HaveUniqueIds)
-                .WithMessage("Quota frame definitions contain a duplicate id. Duplicate id: '{DuplicateValue}'");
-
-            RuleFor(qf => qf.VariableDefinitions)
+                .WithMessage("Quota frame definitions contain a duplicate id. Duplicate id: '{DuplicateValue}'")
                 .Must(HaveUniqueNames)
-                .WithMessage("Quota frame definitions contain a duplicate name. Duplicate name: '{DuplicateValue}'");
-
-            RuleFor(qf => qf.VariableDefinitions)
+                .WithMessage("Quota frame definitions contain a duplicate name. Duplicate name: '{DuplicateValue}'")
                 .Must(HaveVariablesWithAtLeastTwoLevels)
                 .WithMessage("Quota frame definitions has variables with less than two or no levels. Affected variable definition id: '{VariableDefinitionId}'");
 
             RuleFor(qf => qf.FrameVariables)
                 .Must(HaveUniqueIds)
-                .WithMessage("Quota frame contains a duplicate id. Duplicate id: '{DuplicateValue}'");
-
-            RuleFor(qf => qf.FrameVariables)
+                .WithMessage("Quota frame contains a duplicate id. Duplicate id: '{DuplicateValue}'")
                 .Must(ReferenceDefinitions)
-                .WithMessage("Quota frame contains a reference to a non-existing definition. Definition id: '{DefinitionId}'");
-
-            RuleFor(qf => qf.FrameVariables)
+                .WithMessage("Quota frame contains a reference to a non-existing definition. Definition id: '{DefinitionId}'")
                 .Must(HaveTheSameLevelsUnderAVariableAsTheLinkedVariableDefinition)
                 .WithMessage("Quota frame contains a variable that doesnt have all the defined levels associated. Affected variable id: '{AffectedVariableId}', missing level definition id: '{MissingLevelDefinitionId}'");
         }
