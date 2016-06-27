@@ -30,7 +30,6 @@ namespace Nfield.Quota
                 .Must(HaveTheSameLevelsUnderAVariableAsTheLinkedVariableDefinition)
                 .WithMessage("Quota frame contains a variable that doesnt have all the defined levels associated. Affected frame variable id: '{AffectedFrameVariableId}', missing level definition id: '{MissingLevelDefinitionId}'")
                 .Must(HaveVariablesWithTheSameVariablesUnderEveryLevel)
-                //todo
                 .WithMessage("Quota frame invalid. All levels of a variable should have the same variables underneath. Frame variable id '{AffectedFrameVariableId}' has a mismatch for level '{MismatchLevelId}'");
         }
 
