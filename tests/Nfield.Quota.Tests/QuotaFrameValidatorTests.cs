@@ -355,8 +355,8 @@ namespace Nfield.Quota.Tests
             Assert.That(result.IsValid, Is.True);
         }
 
-        [Test, Ignore("todo")]
-        public void ComplexFrame_InvalidLevelsUnderOneOfTheLevels()
+        [Test]
+        public void ComplexFrame_InvalidVariableUnderOneOfTheLevels()
         {
             var quotaFrame = new QuotaFrameBuilder()
                 .Id("id")
@@ -383,11 +383,7 @@ namespace Nfield.Quota.Tests
                     });
                     rootVarBuilder.Level("var1level2Id", "frameLvl4Id", 4, 3, varBuilder =>
                     {
-                        varBuilder.Variable("var2Id", "frameVar3Id", lvlBuilder =>
-                        {
-                            lvlBuilder.Level("var2level1Id", "frameLvl5Id");
-                            lvlBuilder.Level("var2level2Id", "frameLvl6Id");
-                        });
+                        // Missing variable
                     });
                 })
                 .Build();
@@ -395,9 +391,8 @@ namespace Nfield.Quota.Tests
             var validator = new QuotaFrameValidator();
             var result = validator.Validate(quotaFrame);
 
-            Assert.That(result.IsValid, Is.True);
             Assert.That(result.Errors.Single().ErrorMessage,
-                Is.EqualTo("Quota frame invalid. All levels of a variable should have the same variables underneath. Frame variable id 'AffectedFrameVariableId' has a mismatch for level '{MismatchLevelId}'"));
+                Is.EqualTo("Quota frame invalid. All levels of a variable should have the same variables underneath. Frame variable id 'frameVar1Id' has a mismatch for level 'frameLvl4Id'"));
         }
 
         /*[Test]
