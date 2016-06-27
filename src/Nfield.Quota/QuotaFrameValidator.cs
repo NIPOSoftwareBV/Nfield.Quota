@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using FluentValidation;
 using FluentValidation.Validators;
@@ -10,6 +9,7 @@ namespace Nfield.Quota
     {
         public QuotaFrameValidator()
         {
+            // Note: This only holds for rules defined after the SAME RuleFor() call
             CascadeMode = CascadeMode.StopOnFirstFailure;
 
             RuleFor(qf => qf.VariableDefinitions)
@@ -28,6 +28,9 @@ namespace Nfield.Quota
                 .Must(ReferenceDefinitions)
                 .WithMessage("Quota frame contains a reference to a non-existing definition. Definition id: '{DefinitionId}'")
                 .Must(HaveTheSameLevelsUnderAVariableAsTheLinkedVariableDefinition)
+                .WithMessage("Quota frame contains a variable that doesnt have all the defined levels associated. Affected frame variable id: '{AffectedFrameVariableId}', missing level definition id: '{MissingLevelDefinitionId}'")
+                .Must(HaveOnlyVariablesReferencingTheSameParent)
+                //todo
                 .WithMessage("Quota frame contains a variable that doesnt have all the defined levels associated. Affected frame variable id: '{AffectedFrameVariableId}', missing level definition id: '{MissingLevelDefinitionId}'");
         }
 
@@ -190,6 +193,36 @@ namespace Nfield.Quota
 
 
             return !hasMissingLevel;
+        }
+
+        private static bool HaveOnlyVariablesReferencingTheSameParent(
+            QuotaFrame frame,
+            QuotaFrameVariableCollection variables,
+            PropertyValidatorContext context)
+        {
+            var hasInvalidChilds = false;
+            var traverser = new PreOrderQuotaFrameTraverser();
+            traverser.Traverse( // always walks whole tree, might want to change this
+                frame,
+                variable =>
+                {
+                    var requiredDirectVarDefIds = variable.Levels
+                        .First().Variables.Select(v => v.DefinitionId);
+
+                    foreach (var level in variable.Levels)
+                    {
+                        var levelDirectVarDefIds = level.Variables.Select(v => v.DefinitionId);
+
+                        if (!requiredDirectVarDefIds.SequenceEqual(levelDirectVarDefIds))
+                        {
+                            context.MessageFormatter.AppendArgument("DuplicateValue", "test");
+                            hasInvalidChilds = true;
+                        }
+                    }
+                });
+
+
+            return !hasInvalidChilds;
         }
 
         // Assumes set.Add returns false if value already in collection
