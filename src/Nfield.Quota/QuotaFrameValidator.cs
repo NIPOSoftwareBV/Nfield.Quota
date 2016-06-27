@@ -29,9 +29,9 @@ namespace Nfield.Quota
                 .WithMessage("Quota frame contains a reference to a non-existing definition. Definition id: '{DefinitionId}'")
                 .Must(HaveTheSameLevelsUnderAVariableAsTheLinkedVariableDefinition)
                 .WithMessage("Quota frame contains a variable that doesnt have all the defined levels associated. Affected frame variable id: '{AffectedFrameVariableId}', missing level definition id: '{MissingLevelDefinitionId}'")
-                .Must(HaveOnlyVariablesReferencingTheSameParent)
+                .Must(HaveVariablesWithTheSameVariablesUnderEveryLevel)
                 //todo
-                .WithMessage("Quota frame contains a variable that doesnt have all the defined levels associated. Affected frame variable id: '{AffectedFrameVariableId}', missing level definition id: '{MissingLevelDefinitionId}'");
+                .WithMessage("Quota frame invalid. All levels of a variable should have the same variables underneath. Frame variable id 'AffectedFrameVariableId' has a mismatch for level '{MismatchLevelId}'");
         }
 
         private static bool HaveUniqueIds(
@@ -195,7 +195,7 @@ namespace Nfield.Quota
             return !hasMissingLevel;
         }
 
-        private static bool HaveOnlyVariablesReferencingTheSameParent(
+        private static bool HaveVariablesWithTheSameVariablesUnderEveryLevel(
             QuotaFrame frame,
             QuotaFrameVariableCollection variables,
             PropertyValidatorContext context)
@@ -207,15 +207,17 @@ namespace Nfield.Quota
                 variable =>
                 {
                     var requiredDirectVarDefIds = variable.Levels
-                        .First().Variables.Select(v => v.DefinitionId);
+                        .First().Variables.Select(v => v.DefinitionId) // assume first is leading
+                        .ToList();
 
-                    foreach (var level in variable.Levels)
+                    foreach (var level in variable.Levels.Skip(1)) // Skip first
                     {
                         var levelDirectVarDefIds = level.Variables.Select(v => v.DefinitionId);
-
+                        
                         if (!requiredDirectVarDefIds.SequenceEqual(levelDirectVarDefIds))
                         {
-                            context.MessageFormatter.AppendArgument("DuplicateValue", "test");
+                            context.MessageFormatter.AppendArgument("AffectedFrameVariableId", variable.Id);
+                            context.MessageFormatter.AppendArgument("MismatchLevelId", level.Id);
                             hasInvalidChilds = true;
                         }
                     }
