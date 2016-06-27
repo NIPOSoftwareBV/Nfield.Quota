@@ -10,6 +10,8 @@ namespace Nfield.Quota
     {
         public QuotaFrameValidator()
         {
+            CascadeMode = CascadeMode.StopOnFirstFailure;
+
             RuleFor(qf => qf.VariableDefinitions)
                 .NotNull().NotEmpty()
                 .WithMessage("Quota frame definitions cannot be empty.");
@@ -176,18 +178,18 @@ namespace Nfield.Quota
             QuotaFrameVariableCollection variables,
             PropertyValidatorContext context)
         {
-            bool hasMissingLevel = false;
+            var hasMissingLevel = false;
             var traverser = new PreOrderQuotaFrameTraverser();
             traverser.Traverse( // always walks whole tree, might want to change this
                 frame,
                 variable =>
                 {
-                    var levelIds = variable.Levels.Select(l => l.Id);
-                    var levelDefIds = frame.VariableDefinitions
+                    var varDefLevelIds = frame.VariableDefinitions
                         .First(vd => vd.Id == variable.DefinitionId)
                         .Levels.Select(l => l.Id);
+                    var frameVarLevelIds = variable.Levels.Select(l => l.DefinitionId);
 
-                    var complement = levelDefIds.Except(levelIds).ToList(); // Present in lhs, not in rhs
+                    var complement = varDefLevelIds.Except(frameVarLevelIds).ToList(); // Present in lhs, not in rhs
                     if (complement.Any())
                     {
                         context.MessageFormatter.AppendArgument("AffectedVariableId", variable.Id);
