@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using FluentValidation;
 using FluentValidation.Validators;
 
 namespace Nfield.Quota
 {
-    internal class QuotaFrameValidator : AbstractValidator<QuotaFrame>
+    public class QuotaFrameValidator : AbstractValidator<QuotaFrame>
     {
         public QuotaFrameValidator()
         {
@@ -29,6 +30,10 @@ namespace Nfield.Quota
                 .WithMessage("Quota frame contains a variable that doesnt have all the defined levels associated. Affected frame variable id: '{AffectedFrameVariableId}', missing level definition id: '{MissingLevelDefinitionId}'")
                 .Must(HaveVariablesWithTheSameVariablesUnderEveryLevel)
                 .WithMessage("Quota frame invalid. All levels of a variable should have the same variables underneath. Frame variable id '{AffectedFrameVariableId}' has a mismatch for level '{MismatchLevelId}'");
+
+            RuleFor(qf => HaveGuidIds(qf))
+                .Equal(true)
+                .WithMessage("Quota frame invalid. All Id's should be GUID's");
         }
 
         private static bool HaveUniqueIds(
@@ -127,6 +132,40 @@ namespace Nfield.Quota
                 });
 
             return !hasDuplicate;
+        }
+
+        private static bool HaveGuidIds(QuotaFrame frame)
+        {
+            if (!IsValidGuid(frame.Id))
+                return false;
+
+            var traverser = new PreOrderQuotaFrameTraverser();
+            try
+            {
+                traverser.Traverse(frame,
+                    variable =>
+                    {
+                        if (!IsValidGuid(variable.DefinitionId) || !IsValidGuid(variable.Id))
+                            throw new Exception();
+                    },
+                    level =>
+                    {
+                        if (!IsValidGuid(level.DefinitionId) || !IsValidGuid(level.Id))
+                            throw new Exception();
+
+                    });
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
+        }
+
+        private static bool IsValidGuid(string guid)
+        {
+            Guid dummy;
+            return Guid.TryParse(guid, out dummy);
         }
 
         private static bool ReferenceDefinitions(
