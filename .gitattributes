@@ -1,0 +1,22 @@
+# Fix line endings, see https://help.github.com/articles/dealing-with-line-endings/
+
+# Set the default behavior, in case people don't have core.autocrlf set.
+* text=auto
+
+# We are a Microsoft/Windows company, enforce CRLF on all text files we use often.
+*.sln text eol=crlf
+*.csproj text eol=crlf
+*.config text eol=crlf
+*.cs text eol=crlf
+*.html text eol=crlf
+*.cshtml text eol=crlf
+*.js text eol=crlf
+*.css text eol=crlf
+*.xml text eol=crlf
+*.json text eol=crlf
+*.txt text eol=crlf
+*.md text eol=crlf
+*.yml text eol=crlf
+*.ps1 text eol=crlf
+*.scss text eol=crlf
+*.hbs text eol=crlf

@@ -35,6 +35,10 @@
       <HintPath>..\..\packages\Newtonsoft.Json.7.0.1\lib\net40\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="FluentValidation, Version=6.2.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\FluentValidation.6.2.1.0\lib\portable-net40+sl50+wp80+win8+wpa81\FluentValidation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -50,6 +54,7 @@
     <Compile Include="Builders\QuotaFrameVariableBuilder.cs" />
     <Compile Include="Builders\QuotaLevelDefinitionBuilder.cs" />
     <Compile Include="Builders\QuotaVariableDefinitionBuilder.cs" />
+    <Compile Include="PreOrderQuotaFrameTraverser.cs" />
     <Compile Include="Helpers\Ensure.cs" />
     <Compile Include="Editing\QuotaFrameToEditingConverter.cs" />
     <Compile Include="Editing\QuotaFrameFromEditingConverter.cs" />
@@ -70,6 +75,7 @@
     <Compile Include="QuotaFrame.cs" />
     <Compile Include="QuotaFrameLevel.cs" />
     <Compile Include="QuotaFrameLevelCollection.cs" />
+    <Compile Include="QuotaFrameValidator.cs" />
     <Compile Include="QuotaFrameVariable.cs" />
     <Compile Include="QuotaFrameVariableCollection.cs" />
     <Compile Include="QuotaLevelDefinition.cs" />
