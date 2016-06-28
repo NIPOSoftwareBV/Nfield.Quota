@@ -13,14 +13,12 @@ namespace Nfield.Quota
             CascadeMode = CascadeMode.StopOnFirstFailure;
 
             RuleFor(qf => qf.VariableDefinitions)
-                .NotNull().NotEmpty()
-                .WithMessage("Quota frame definitions cannot be empty.")
                 .Must(HaveUniqueIds)
                 .WithMessage("Quota frame definitions contain a duplicate id. Duplicate id: '{DuplicateValue}'")
                 .Must(HaveUniqueNames)
                 .WithMessage("Quota frame definitions contain a duplicate name. Duplicate name: '{DuplicateValue}'")
-                .Must(HaveVariablesWithAtLeastTwoLevels)
-                .WithMessage("Quota frame definitions has variables with less than two or no levels. Affected variable definition id: '{VariableDefinitionId}'");
+                .Must(HaveVariablesWithAtLeastOneLevel)
+                .WithMessage("Quota frame definitions has variables with no levels. Affected variable definition id: '{VariableDefinitionId}'");
 
             RuleFor(qf => qf.FrameVariables)
                 .Must(HaveUniqueIds)
@@ -85,14 +83,14 @@ namespace Nfield.Quota
             return true;
         }
 
-        private static bool HaveVariablesWithAtLeastTwoLevels(
+        private static bool HaveVariablesWithAtLeastOneLevel(
             QuotaFrame frame,
             QuotaVariableDefinitionCollection varDefinitions,
             PropertyValidatorContext context)
         {
             foreach (var varDefinition in varDefinitions)
             {
-                if (varDefinition.Levels.Count < 2)
+                if (varDefinition.Levels.Count < 1)
                 {
                     context.MessageFormatter.AppendArgument("VariableDefinitionId", varDefinition.Id);
                     return false;

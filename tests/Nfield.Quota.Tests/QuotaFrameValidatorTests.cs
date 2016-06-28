@@ -8,7 +8,7 @@ namespace Nfield.Quota.Tests
     internal class QuotaFrameValidatorTests
     {
         [Test]
-        public void Definitions_UniqueIdsAndNames_HappyPath()
+        public void Definitions_HappyPath()
         {
             var quotaFrame = new QuotaFrameBuilder()
                 .Id("id")
@@ -26,19 +26,7 @@ namespace Nfield.Quota.Tests
         }
 
         [Test]
-        public void Definitions_CannotBeEmpty()
-        {
-            var quotaFrame = new QuotaFrame();
-
-            var validator = new QuotaFrameValidator();
-            var result = validator.Validate(quotaFrame);
-
-            Assert.That(result.Errors.Single().ErrorMessage,
-                Is.EqualTo("Quota frame definitions cannot be empty."));
-        }
-
-        [Test]
-        public void Definitions_EveryVariableNeedsAtLeastTwoLevels()
+        public void Definitions_EveryVariableNeedsAtLeastOneLevel()
         {
             var quotaFrame = new QuotaFrameBuilder()
                 .Id("id")
@@ -52,11 +40,11 @@ namespace Nfield.Quota.Tests
             var result = validator.Validate(quotaFrame);
 
             Assert.That(result.Errors.Single().ErrorMessage,
-                Is.EqualTo("Quota frame definitions has variables with less than two or no levels. Affected variable definition id: 'varId'"));
+                Is.EqualTo("Quota frame definitions has variables with no levels. Affected variable definition id: 'varId'"));
         }
 
         [Test]
-        public void Definitions_UniqueIdsAndNames_NonUniqueIdInLevel()
+        public void Definitions_CannotContainDuplicateIds()
         {
             const string nonUniqueId = "non-unique";
 
@@ -77,7 +65,7 @@ namespace Nfield.Quota.Tests
         }
 
         [Test]
-        public void Definitions_UniqueIdsAndNames_NonUniqueNameInLevel()
+        public void Definitions_CannotContainDuplicateNames()
         {
             const string nonUniqueName = "non-unique";
 
@@ -98,7 +86,7 @@ namespace Nfield.Quota.Tests
         }
 
         [Test]
-        public void Definitions_UniqueIdsAndNames_NonUniqueIdAccrossLevelAndVariable()
+        public void Definitions_CannotContainDuplicateIdsBetweenVariablesAndLevels()
         {
             const string nonUniqueId = "non-unique";
 
@@ -119,7 +107,7 @@ namespace Nfield.Quota.Tests
         }
 
         [Test]
-        public void Definitions_UniqueIdsAndNames_NonUniqueNameAccrossLevelAndVariable()
+        public void Definitions_CannotContainDuplicateNamesBetweenVariablesAndLevels()
         {
             const string nonUniqueName = "non-unique";
 
@@ -163,7 +151,7 @@ namespace Nfield.Quota.Tests
         }
 
         [Test]
-        public void Frame_UniqueIds_NonUniqueAcrossVarAndLevels()
+        public void Frame_CannotContainDuplicateIds()
         {
             const string nonUniqueId = "non-unique";
 
@@ -189,7 +177,7 @@ namespace Nfield.Quota.Tests
         }
 
         [Test]
-        public void Frame_UniqueIds_NonUniqueWithinLevels()
+        public void public void Frame_CannotContainDuplicateIdInLevels()
         {
             const string nonUniqueId = "non-unique";
 
@@ -215,7 +203,7 @@ namespace Nfield.Quota.Tests
         }
 
         [Test]
-        public void Frame_VariableWithInvalidReferenceToDefinition()
+        public void Frame_CannotContainAReferenceToANonExistingVariableDefinition()
         {
             var quotaFrame = new QuotaFrameBuilder()
                 .Id("id")
@@ -240,7 +228,7 @@ namespace Nfield.Quota.Tests
 
 
         [Test]
-        public void Frame_LevelWithInvalidReferenceToDefinition()
+        public void Frame_CannotContainAReferenceToANonExistingLevelDefinition()
         {
             var quotaFrame = new QuotaFrameBuilder()
                 .Id("id")
@@ -264,7 +252,7 @@ namespace Nfield.Quota.Tests
         }
 
         [Test]
-        public void Frame_WrongLevelsUnderVariable_OneMissing()
+        public void Frame_CannotHaveLessLevelsInTheFrameThanUnderTheReferencedVariableDefinition()
         {
             var quotaFrame = new QuotaFrameBuilder()
                 .Id("id")
@@ -288,7 +276,7 @@ namespace Nfield.Quota.Tests
         }
 
         [Test]
-        public void Frame_WrongLevelsUnderVariable_OneExtra()
+        public void Frame_CannotHaveMoreLevelsInTheFrameThanUnderTheReferencedVariableDefinition()
         {
             var quotaFrame = new QuotaFrameBuilder()
                 .Id("id")
@@ -356,7 +344,7 @@ namespace Nfield.Quota.Tests
         }
 
         [Test]
-        public void ComplexFrame_InvalidVariableUnderOneOfTheLevels()
+        public void ComplexFrame_MissingVariableUnderOneOfTheLevels()
         {
             var quotaFrame = new QuotaFrameBuilder()
                 .Id("id")
