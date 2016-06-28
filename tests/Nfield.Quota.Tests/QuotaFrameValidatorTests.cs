@@ -32,7 +32,7 @@ namespace Nfield.Quota.Tests
                 .Id("id")
                 .VariableDefinition("varId", "varName", "odinVarName", var =>
                 {
-                    var.Level("level1Id", "level1Name");
+                    // no levels
                 })
                 .Build();
 
@@ -177,7 +177,7 @@ namespace Nfield.Quota.Tests
         }
 
         [Test]
-        public void public void Frame_CannotContainDuplicateIdInLevels()
+        public void Frame_CannotContainDuplicateIdInLevels()
         {
             const string nonUniqueId = "non-unique";
 
