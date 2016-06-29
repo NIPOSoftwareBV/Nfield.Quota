@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Nfield.Quota.Builders;
 using NUnit.Framework;
 
@@ -383,41 +384,29 @@ namespace Nfield.Quota.Tests
                 Is.EqualTo("Quota frame invalid. All levels of a variable should have the same variables underneath. Frame variable id 'frameVar1Id' has a mismatch for level 'frameLvl4Id'"));
         }
 
-        /*[Test]
+        [Test]
         public void NewBuilderSyntax()
         {
-            var quotaFrame = new QuotaFrameBuilder()
+            var quotaFrame = new Builders2.QuotaFrameBuilder()
                 .Id("id")
-                .SetupDefinitions(defBuilder =>
+                .VariableDefinition(
+                    variableId: "var1Id", variableName: "var1Name",
+                    odinVariableName: "odinVarName", levels: new[] {"Level 1", "Level 2"})
+                .VariableDefinition("var2Id", "var2Name", "odinVarName", new[] { "Level 3", "Level 4" })
+                .VariableDefinition("var3Id", "var3Name", "odinVarName", new[] { "Level 5", "Level 6", "Level 7" })
+                .Structure(sb =>
                 {
-                    defBuilder.VariableDefinition("var1Id", "varName", "odinVarName", lvlDefbuilder =>
-                    {
-                        lvlDefbuilder.LevelDefinition("var1lvl1Id", "Level 1");
-                        lvlDefbuilder.LevelDefinition("var1lvl2Id", "Level 2");
-                    });
-                    defBuilder.VariableDefinition("var2Id", "varName", "odinVarName", lvlDefbuilder =>
-                    {
-                        lvlDefbuilder.LevelDefinition("var2lvl1Id", "Level 1");
-                        lvlDefbuilder.LevelDefinition("var2lvl2Id", "Level 2");
-                        lvlDefbuilder.LevelDefinition("var2lvl3Id", "Level 3");
-                    });
-                    defBuilder.VariableDefinition("var3Id", "varName", "odinVarName", lvlDefbuilder =>
-                    {
-                        lvlDefbuilder.LevelDefinition("var3lvl1Id", "Level 1");
-                        lvlDefbuilder.LevelDefinition("var3lvl2Id", "Level 2");
-                    });
-                })
-                .SetupStructure(strucBuilder =>
-                {
-                    strucBuilder.AddVariable("var1Id", sb => sb.AddVariable("var2Id"));
-                    strucBuilder.AddVariable("var3Id");
+                    sb.Variable("var1Id", sb2 => sb2.Variable("var1Id"));
+                    sb.Variable("var2Id");
                 })
                 .Build();
+
+            //todo targets
 
             var validator = new QuotaFrameValidator();
             var result = validator.Validate(quotaFrame);
 
             Assert.That(result.IsValid, Is.True);
-        }*/
+        }
     }
 }

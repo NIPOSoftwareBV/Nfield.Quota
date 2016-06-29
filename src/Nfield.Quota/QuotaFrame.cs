@@ -1,11 +1,13 @@
-﻿namespace Nfield.Quota
+﻿using System.Collections.Generic;
+
+namespace Nfield.Quota
 {
     public class QuotaFrame
     {
         public QuotaFrame()
         {
-            VariableDefinitions = new QuotaVariableDefinitionCollection(this);
-            FrameVariables = new QuotaFrameVariableCollection(this);
+            VariableDefinitions = new List<QuotaVariableDefinition>();
+            FrameVariables = new List<QuotaFrameVariable>();
         }
 
         public string Id { get; set; }
@@ -14,8 +16,8 @@
 
 	    public int Successful { get; set; }
 
-        public QuotaVariableDefinitionCollection VariableDefinitions { get;}
+        public ICollection<QuotaVariableDefinition> VariableDefinitions { get;}
 
-        public QuotaFrameVariableCollection FrameVariables { get; }
+        public ICollection<QuotaFrameVariable> FrameVariables { get; }
     }
 }
