@@ -61,18 +61,18 @@ namespace Nfield.Quota.Builders
             string variableId,
             string variableName,
             string odinVariableName,
-            IEnumerable<string> levels)
+            IEnumerable<string> levelNames)
         {
-            var variableDefinitionBuilder = new QuotaVariableDefinitionBuilder(variableId, variableName, odinVariableName, levels);
+            var variableDefinitionBuilder = new QuotaVariableDefinitionBuilder(variableId, variableName, odinVariableName, levelNames);
             Add(variableDefinitionBuilder);
             return this;
         }
 
         public QuotaFrameBuilder VariableDefinition(
             string variableId,
-            IEnumerable<string> levels)
+            IEnumerable<string> levelNames)
         {
-            return VariableDefinition(variableId, variableId, variableId, levels);
+            return VariableDefinition(variableId, variableId, variableId, levelNames);
         }
 
 
