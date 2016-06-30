@@ -46,7 +46,8 @@ namespace Nfield.Quota.Builders
                 var variable = new QuotaFrameVariable
                 {
                     Id = Guid.NewGuid().ToString(),
-                    DefinitionId = variableDefinition.Id
+                    DefinitionId = variableDefinition.Id,
+                    Name = variableDefinition.Name
                 };
 
                 BuildLevel(quotaFrame, variableDefinition.Levels, variable);
@@ -60,12 +61,13 @@ namespace Nfield.Quota.Builders
             IEnumerable<QuotaLevelDefinition> newLevels,
             QuotaFrameVariable variable)
         {
-            foreach (var definitionLevel in newLevels)
+            foreach (var levelDefinition in newLevels)
             {
                 var frameLevel = new QuotaFrameLevel
                 {
                     Id = Guid.NewGuid().ToString(),
-                    DefinitionId = definitionLevel.Id
+                    DefinitionId = levelDefinition.Id,
+                    Name = levelDefinition.Name
                 };
 
                 variable.Levels.Add(frameLevel);

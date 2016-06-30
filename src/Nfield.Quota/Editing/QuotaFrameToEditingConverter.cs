@@ -13,7 +13,7 @@ namespace Nfield.Quota.Editing
                 Target = sourceFrame.Target,
                 Successful = sourceFrame.Successful,
                 VariableDefinitions = RewriteVariableDefinitions(sourceFrame.VariableDefinitions),
-                FrameVariables = null//RewriteFrameVariables(sourceFrame.FrameVariables)
+                FrameVariables = RewriteFrameVariables(sourceFrame.FrameVariables)
             };
         }
 
@@ -21,8 +21,7 @@ namespace Nfield.Quota.Editing
             IEnumerable<Quota.QuotaVariableDefinition> variableDefinitions)
         {
             var displayIndex = 0;
-            return null;
-            /*return variableDefinitions.Select(vd =>
+            return variableDefinitions.Select(vd =>
                 new QuotaVariableDefinition
                 {
                     Id = vd.Id,
@@ -30,11 +29,11 @@ namespace Nfield.Quota.Editing
                     OdinVariableName = vd.OdinVariableName,
                     DisplayIndex = displayIndex++,
                     Levels = RewriteLevelDefinitions(vd.Levels)
-                }).ToList();*/
+                }).ToList();
         }
 
-        /*private static IEnumerable<QuotaLevelDefinition> RewriteLevelDefinitions(
-            QuotaLevelDefinitionCollection levels)
+        private static IEnumerable<QuotaLevelDefinition> RewriteLevelDefinitions(
+            IEnumerable<Quota.QuotaLevelDefinition> levels)
         {
             var displayIndex = 0;
             return levels.Select(ld =>
@@ -61,7 +60,7 @@ namespace Nfield.Quota.Editing
         }
 
         private static IEnumerable<QuotaFrameLevel> RewriteFrameLevels(
-            QuotaFrameLevelCollection levels)
+            IEnumerable<Quota.QuotaFrameLevel> levels)
         {
             return levels.Select(l =>
                 new QuotaFrameLevel
@@ -72,6 +71,6 @@ namespace Nfield.Quota.Editing
                     Successful = l.Successful,
                     Variables = RewriteFrameVariables(l.Variables)
                 }).ToList();
-        }*/
+        }
     }
 }
