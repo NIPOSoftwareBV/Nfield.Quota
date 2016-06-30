@@ -387,7 +387,7 @@ namespace Nfield.Quota.Tests
         [Test]
         public void NewBuilderSyntax()
         {
-            var quotaFrame = new Builders2.QuotaFrameBuilder()
+            var quotaFrame = new QuotaFrameBuilder()
                 .Id("id")
                 .VariableDefinition(
                     variableId: "var1Id", variableName: "var1Name",

@@ -9,17 +9,12 @@ namespace Nfield.Quota.Builders
         private int? _target;
         private int _successful;
         private readonly List<QuotaVariableDefinitionBuilder> _variableDefinitionBuilders = new List<QuotaVariableDefinitionBuilder>();
-        private readonly List<QuotaFrameVariableBuilder> _variableBuilders = new List<QuotaFrameVariableBuilder>();
-        
+        private QuotaFrameStructureBuilder _structureBuilder;
+
         private void Add(QuotaVariableDefinitionBuilder builder)
         {
             _variableDefinitionBuilders.Add(builder);
         }
-        private void Add(QuotaFrameVariableBuilder builder)
-        {
-            _variableBuilders.Add(builder);
-        }
-
         public QuotaFrame Build()
         {
             var quotaFrame = new QuotaFrame
@@ -34,10 +29,7 @@ namespace Nfield.Quota.Builders
                 builder.Build(quotaFrame);
             }
 
-            foreach (var builder in _variableBuilders)
-            {
-                builder.Build(quotaFrame);
-            }
+            _structureBuilder.Build(quotaFrame);
 
             return quotaFrame;
         }
@@ -64,40 +56,26 @@ namespace Nfield.Quota.Builders
             string variableId,
             string variableName,
             string odinVariableName,
-            Action<QuotaVariableDefinitionBuilder> builderAction
-            )
+            IEnumerable<string> levels)
         {
             var variableDefinitionBuilder = new QuotaVariableDefinitionBuilder(variableId, variableName, odinVariableName);
-            builderAction(variableDefinitionBuilder);
             Add(variableDefinitionBuilder);
             return this;
         }
 
         public QuotaFrameBuilder VariableDefinition(
             string variableId,
-            Action<QuotaVariableDefinitionBuilder> builderAction
-            )
+            IEnumerable<string> levels)
         {
-            return VariableDefinition(variableId, variableId, variableId, builderAction);
+            return VariableDefinition(variableId, variableId, variableId, levels);
         }
 
-        public QuotaFrameBuilder FrameVariable(
-            string definitionId,
-            Action<QuotaFrameVariableBuilder> buildAction
-            )
-        {
-            return FrameVariable(definitionId, Guid.NewGuid().ToString(), buildAction);
-        }
 
-        public QuotaFrameBuilder FrameVariable(
-            string definitionId,
-            string id,
-            Action<QuotaFrameVariableBuilder> buildAction
-            )
+        public QuotaFrameBuilder Structure(
+            Action<QuotaFrameStructureBuilder> buildAction)
         {
-            var builder = new QuotaFrameVariableBuilder(id, definitionId);
-            buildAction(builder);
-            Add(builder);
+            _structureBuilder = new QuotaFrameStructureBuilder();
+            buildAction(_structureBuilder);
             return this;
         }
     }

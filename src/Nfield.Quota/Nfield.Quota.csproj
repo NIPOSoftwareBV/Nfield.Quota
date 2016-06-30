@@ -49,13 +49,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Builders2\QuotaFrameBuilder.cs" />
-    <Compile Include="Builders2\QuotaFrameStructureBuilder.cs" />
-    <Compile Include="Builders2\QuotaLevelDefinitionBuilder.cs" />
-    <Compile Include="Builders2\QuotaVariableDefinitionBuilder.cs" />
     <Compile Include="Builders\QuotaFrameBuilder.cs" />
-    <Compile Include="Builders\QuotaFrameLevelBuilder.cs" />
-    <Compile Include="Builders\QuotaFrameVariableBuilder.cs" />
+    <Compile Include="Builders\QuotaFrameStructureBuilder.cs" />
     <Compile Include="Builders\QuotaLevelDefinitionBuilder.cs" />
     <Compile Include="Builders\QuotaVariableDefinitionBuilder.cs" />
     <Compile Include="PreOrderQuotaFrameTraverser.cs" />

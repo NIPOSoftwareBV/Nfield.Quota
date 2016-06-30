@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Nfield.Quota.Builders2
+namespace Nfield.Quota.Builders
 {
     public class QuotaFrameStructureBuilder
     {
@@ -33,10 +33,17 @@ namespace Nfield.Quota.Builders2
 
         public void Build(QuotaFrame quotaFrame)
         {
+            BuildVariable(quotaFrame, quotaFrame.FrameVariables);
+        }
+
+        private void BuildVariable(
+            QuotaFrame quotaFrame,
+            ICollection<QuotaFrameVariable> currentRoot)
+        {
             foreach (var variableId in _variableIds)
             {
                 var definition = quotaFrame.VariableDefinitions.First(vd => vd.Id == variableId);
-                var variable = new QuotaFrameVariable()
+                var variable = new QuotaFrameVariable
                 {
                     Id = Guid.NewGuid().ToString(),
                     DefinitionId = definition.Id
@@ -44,16 +51,20 @@ namespace Nfield.Quota.Builders2
 
                 foreach (var definitionLevel in definition.Levels)
                 {
-                    var frameLevel = new QuotaFrameLevel()
+                    var frameLevel = new QuotaFrameLevel
                     {
                         Id = Guid.NewGuid().ToString(),
                         DefinitionId = definitionLevel.Id
                     };
                     variable.Levels.Add(frameLevel);
+
+                    foreach (var childBuilder in _childBuilders)
+                    {
+                        childBuilder.Build(quotaFrame);
+                    }
                 }
 
-                //todo wire up
-                //quotaFrame.FrameVariables
+                currentRoot.Add(variable);
             }
         }
     }

@@ -13,7 +13,7 @@ namespace Nfield.Quota
 
         public string DefinitionId { get; set; }
 
-        public IEnumerable<QuotaFrameVariable> Variables { get; }
+        public ICollection<QuotaFrameVariable> Variables { get; }
 
         public int? Target { get; set; }
 
