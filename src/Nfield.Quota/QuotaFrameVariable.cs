@@ -13,6 +13,8 @@ namespace Nfield.Quota
 
         public string DefinitionId { get; set; }
 
+        public string Name { get; set; }
+
         public ICollection<QuotaFrameLevel> Levels { get; }
     }
 }

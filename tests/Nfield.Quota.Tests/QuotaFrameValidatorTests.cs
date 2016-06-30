@@ -400,7 +400,8 @@ namespace Nfield.Quota.Tests
                 })
                 .Build();
 
-            //todo targets
+            quotaFrame["var1Name", "Level 1"]["var2Name", "Level 3"].Target = 100;
+            quotaFrame["var3Name", "Level 5"].Target = 100;
 
             var validator = new QuotaFrameValidator();
             var result = validator.Validate(quotaFrame);
