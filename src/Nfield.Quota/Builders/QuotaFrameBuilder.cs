@@ -8,8 +8,13 @@ namespace Nfield.Quota.Builders
         private string _id;
         private int? _target;
         private int _successful;
-        private readonly List<QuotaVariableDefinitionBuilder> _variableDefinitionBuilders = new List<QuotaVariableDefinitionBuilder>();
+        private readonly IList<QuotaVariableDefinitionBuilder> _variableDefinitionBuilders;
         private QuotaFrameStructureBuilder _structureBuilder;
+
+        public QuotaFrameBuilder()
+        {
+            _variableDefinitionBuilders = new List<QuotaVariableDefinitionBuilder>();
+        }
 
         private void Add(QuotaVariableDefinitionBuilder builder)
         {
@@ -58,7 +63,7 @@ namespace Nfield.Quota.Builders
             string odinVariableName,
             IEnumerable<string> levels)
         {
-            var variableDefinitionBuilder = new QuotaVariableDefinitionBuilder(variableId, variableName, odinVariableName);
+            var variableDefinitionBuilder = new QuotaVariableDefinitionBuilder(variableId, variableName, odinVariableName, levels);
             Add(variableDefinitionBuilder);
             return this;
         }

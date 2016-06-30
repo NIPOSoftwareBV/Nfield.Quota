@@ -395,8 +395,8 @@ namespace Nfield.Quota.Tests
                 .VariableDefinition("var3Id", "var3Name", "odinVarName", new[] { "Level 5", "Level 6", "Level 7" })
                 .Structure(sb =>
                 {
-                    sb.Variable("var1Id", sb2 => sb2.Variable("var1Id"));
-                    sb.Variable("var2Id");
+                    sb.Variable("var1Id", sb2 => sb2.Variable("var2Id"));
+                    sb.Variable("var3Id");
                 })
                 .Build();
 
