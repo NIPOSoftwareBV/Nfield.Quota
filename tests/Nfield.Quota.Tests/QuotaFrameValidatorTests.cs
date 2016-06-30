@@ -465,31 +465,5 @@ namespace Nfield.Quota.Tests
                         Is.EqualTo(expectedErrorMessage));
                 }
                 */
-
-        [Test, Ignore("Will be removed")]
-        public void NewBuilderSyntax()
-        {
-            var quotaFrame = new QuotaFrameBuilder()
-                .Id("id")
-                .VariableDefinition(
-                    variableId: "var1Id", variableName: "var1Name",
-                    odinVariableName: "odinVarName", levelNames: new[] {"Level 1", "Level 2"})
-                .VariableDefinition("var2Id", "var2Name", "odinVarName", new[] { "Level 3", "Level 4" })
-                .VariableDefinition("var3Id", "var3Name", "odinVarName", new[] { "Level 5", "Level 6", "Level 7" })
-                .Structure(sb =>
-                {
-                    sb.Variable("var1Id", sb2 => sb2.Variable("var2Id"));
-                    sb.Variable("var3Id");
-                })
-                .Build();
-
-            quotaFrame["var1Name", "Level 1"]["var2Name", "Level 3"].Target = 100;
-            quotaFrame["var3Name", "Level 5"].Target = 100;
-
-            var validator = new QuotaFrameValidator();
-            var result = validator.Validate(quotaFrame);
-
-            Assert.That(result.IsValid, Is.True);
-        }
     }
 }
