@@ -42,29 +42,39 @@ namespace Nfield.Quota.Builders
         {
             foreach (var variableId in _variableIds)
             {
-                var definition = quotaFrame.VariableDefinitions.First(vd => vd.Id == variableId);
+                var variableDefinition = quotaFrame.VariableDefinitions.First(vd => vd.Id == variableId);
                 var variable = new QuotaFrameVariable
                 {
                     Id = Guid.NewGuid().ToString(),
-                    DefinitionId = definition.Id
+                    DefinitionId = variableDefinition.Id
                 };
 
-                foreach (var definitionLevel in definition.Levels)
-                {
-                    var frameLevel = new QuotaFrameLevel
-                    {
-                        Id = Guid.NewGuid().ToString(),
-                        DefinitionId = definitionLevel.Id
-                    };
-                    variable.Levels.Add(frameLevel);
-
-                    foreach (var childBuilder in _childBuilders)
-                    {
-                        childBuilder.Build(quotaFrame);
-                    }
-                }
+                BuildLevel(quotaFrame, variableDefinition.Levels, variable);
 
                 currentRoot.Add(variable);
+            }
+        }
+
+        private void BuildLevel(
+            QuotaFrame quotaFrame,
+            IEnumerable<QuotaLevelDefinition> newLevels,
+            QuotaFrameVariable variable)
+        {
+            foreach (var definitionLevel in newLevels)
+            {
+                var frameLevel = new QuotaFrameLevel
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    DefinitionId = definitionLevel.Id
+                };
+
+                variable.Levels.Add(frameLevel);
+
+                // Recurse for every added level
+                foreach (var childBuilder in _childBuilders)
+                {
+                    childBuilder.BuildVariable(quotaFrame, frameLevel.Variables);
+                }
             }
         }
     }

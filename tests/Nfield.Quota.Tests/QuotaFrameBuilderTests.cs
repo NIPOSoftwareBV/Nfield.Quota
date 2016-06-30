@@ -6,7 +6,7 @@ namespace Nfield.Quota.Tests
     [TestFixture]
     public class QuotaFrameBuilderTests
     {
-        [Test]
+        /*[Test]
         public void BuildingSimpleTreeCreatesCorrectQuotaFrame()
         {
             var quotaFrame = new QuotaFrameBuilder()
@@ -146,6 +146,6 @@ namespace Nfield.Quota.Tests
             Assert.That(quotaFrame.FrameVariables[0].Levels[1].Variables[0].Levels[1].Target, Is.EqualTo(2));
             Assert.That(quotaFrame.FrameVariables[0].Levels[1].Variables[0].Levels[1].Successful, Is.EqualTo(1));
 
-        }
+        }*/
     }
 }

@@ -11,6 +11,7 @@ namespace Nfield.Quota.Persistence
         public static string Encode(QuotaFrame frame)
         {
             var resolver = new QuotaFrameContractResolver();
+
             resolver.Ignore(
                 typeof(QuotaFrame),
                 nameof(QuotaFrame.Target),
@@ -18,13 +19,8 @@ namespace Nfield.Quota.Persistence
 
             resolver.Ignore(
                 typeof(QuotaFrameLevel),
-                nameof(QuotaFrameLevel.QuotaFrame),
                 nameof(QuotaFrameLevel.Successful),
                 nameof(QuotaFrameLevel.Target));
-
-            resolver.Ignore(
-                typeof(QuotaFrameVariable),
-                nameof(QuotaFrameVariable.QuotaFrame));
 
             var settings = new JsonSerializerSettings
             {

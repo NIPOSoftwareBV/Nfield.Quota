@@ -8,7 +8,7 @@ namespace Nfield.Quota.Tests
     [TestFixture]
     internal class QuotaFrameValidatorTests
     {
-        [Test]
+        /*[Test]
         public void Definitions_HappyPath()
         {
             var quotaFrame = new QuotaFrameBuilder()
@@ -359,7 +359,6 @@ namespace Nfield.Quota.Tests
                     var.Level("var2level1Id", "var2Level1Name");
                     var.Level("var2level2Id", "var2Level2Name");
                 })
-
                 .FrameVariable("var1Id", "frameVar1Id", rootVarBuilder =>
                 {
                     rootVarBuilder.Level("var1level1Id", "frameLvl1Id", 6, 2, varBuilder =>
@@ -382,7 +381,7 @@ namespace Nfield.Quota.Tests
 
             Assert.That(result.Errors.Single().ErrorMessage,
                 Is.EqualTo("Quota frame invalid. All levels of a variable should have the same variables underneath. Frame variable id 'frameVar1Id' has a mismatch for level 'frameLvl4Id'"));
-        }
+        }*/
 
         [Test]
         public void NewBuilderSyntax()

@@ -13,7 +13,7 @@ namespace Nfield.Quota.Editing
                 Target = sourceFrame.Target,
                 Successful = sourceFrame.Successful,
                 VariableDefinitions = RewriteVariableDefinitions(sourceFrame.VariableDefinitions),
-                FrameVariables = RewriteFrameVariables(sourceFrame.FrameVariables)
+                FrameVariables = null//RewriteFrameVariables(sourceFrame.FrameVariables)
             };
         }
 
@@ -21,7 +21,8 @@ namespace Nfield.Quota.Editing
             IEnumerable<Quota.QuotaVariableDefinition> variableDefinitions)
         {
             var displayIndex = 0;
-            return variableDefinitions.Select(vd =>
+            return null;
+            /*return variableDefinitions.Select(vd =>
                 new QuotaVariableDefinition
                 {
                     Id = vd.Id,
@@ -29,10 +30,10 @@ namespace Nfield.Quota.Editing
                     OdinVariableName = vd.OdinVariableName,
                     DisplayIndex = displayIndex++,
                     Levels = RewriteLevelDefinitions(vd.Levels)
-                }).ToList();
+                }).ToList();*/
         }
 
-        private static IEnumerable<QuotaLevelDefinition> RewriteLevelDefinitions(
+        /*private static IEnumerable<QuotaLevelDefinition> RewriteLevelDefinitions(
             QuotaLevelDefinitionCollection levels)
         {
             var displayIndex = 0;
@@ -71,6 +72,6 @@ namespace Nfield.Quota.Editing
                     Successful = l.Successful,
                     Variables = RewriteFrameVariables(l.Variables)
                 }).ToList();
-        }
+        }*/
     }
 }
