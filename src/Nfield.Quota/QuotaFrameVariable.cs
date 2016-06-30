@@ -9,6 +9,11 @@ namespace Nfield.Quota
             Levels = new List<QuotaFrameLevel>();
         }
 
+        public QuotaFrameVariable(IEnumerable<QuotaFrameLevel> levels)
+        {
+            Levels = new List<QuotaFrameLevel>(levels);
+        }
+
         public string Id { get; set; }
 
         public string DefinitionId { get; set; }

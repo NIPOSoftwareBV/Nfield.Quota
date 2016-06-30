@@ -12,13 +12,21 @@ namespace Nfield.Quota
             FrameVariables = new List<QuotaFrameVariable>();
         }
 
+        public QuotaFrame(
+            IEnumerable<QuotaVariableDefinition> variableDefinitions,
+            IEnumerable<QuotaFrameVariable> frameVariables)
+        {
+            VariableDefinitions = new List<QuotaVariableDefinition>(variableDefinitions);
+            FrameVariables = new List<QuotaFrameVariable>(frameVariables);
+        }
+
         public string Id { get; set; }
 
         public int? Target { get; set; }
 
 	    public int Successful { get; set; }
 
-        public ICollection<QuotaVariableDefinition> VariableDefinitions { get;}
+        public ICollection<QuotaVariableDefinition> VariableDefinitions { get; }
 
         public ICollection<QuotaFrameVariable> FrameVariables { get; }
 
