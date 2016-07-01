@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Nfield.Quota.Builders;
+using Nfield.Quota.Helpers;
 using NUnit.Framework;
 
 namespace Nfield.Quota.Tests
@@ -65,6 +66,7 @@ namespace Nfield.Quota.Tests
             {
                 Id = Guid.NewGuid().ToString()
             };
+
             var variable = new QuotaVariableDefinition
             {
                 Id = Guid.NewGuid().ToString(),
@@ -72,20 +74,20 @@ namespace Nfield.Quota.Tests
                 OdinVariableName = "odinVarName"
             };
 
-            var level1 = new QuotaLevelDefinition
+            variable.Levels.AddRange(new []
             {
-                Id = nonUniqueId,
-                Name = "level1Name"
-            };
-            variable.Levels.Add(level1);
+                new QuotaLevelDefinition()
+                {
+                    Id = nonUniqueId,
+                    Name = "level1Name"
+                },
 
-            var level2 = new QuotaLevelDefinition
-            {
-                Id = nonUniqueId,
-                Name = "level2Name"
-            };
-            variable.Levels.Add(level2);
-
+                new QuotaLevelDefinition()
+                {
+                    Id = nonUniqueId,
+                    Name = "level2Name"
+                }
+            });
             quotaFrame.VariableDefinitions.Add(variable);
 
             var validator = new QuotaFrameValidator();
@@ -112,19 +114,20 @@ namespace Nfield.Quota.Tests
                 OdinVariableName = "odinVarName"
             };
 
-            var level1 = new QuotaLevelDefinition
+            variable.Levels.AddRange(new []
             {
-                Id = Guid.NewGuid().ToString(),
-                Name = nonUniqueName
-            };
-            variable.Levels.Add(level1);
+                new QuotaLevelDefinition
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Name = nonUniqueName
+                },
 
-            var level2 = new QuotaLevelDefinition
-            {
-                Id = Guid.NewGuid().ToString(),
-                Name = nonUniqueName
-            };
-            variable.Levels.Add(level2);
+                new QuotaLevelDefinition
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Name = nonUniqueName
+                }
+            });
 
             quotaFrame.VariableDefinitions.Add(variable);
 
@@ -155,19 +158,20 @@ namespace Nfield.Quota.Tests
                 OdinVariableName = "odinVarName"
             };
 
-            var level1 = new QuotaLevelDefinition
+            variable.Levels.AddRange(new[]
             {
-                Id = nonUniqueId,
-                Name = "level1Name"
-            };
-            variable.Levels.Add(level1);
+                new QuotaLevelDefinition
+                {
+                    Id = nonUniqueId,
+                    Name = "level1Name"
+                },
 
-            var level2 = new QuotaLevelDefinition
-            {
-                Id = Guid.NewGuid().ToString(),
-                Name = "level2Name"
-            };
-            variable.Levels.Add(level2);
+                new QuotaLevelDefinition
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Name = "level2Name"
+                }
+            });
 
             quotaFrame.VariableDefinitions.Add(variable);
 
@@ -195,19 +199,20 @@ namespace Nfield.Quota.Tests
                 OdinVariableName = "odinVarName"
             };
 
-            var level1 = new QuotaLevelDefinition
+            variable.Levels.AddRange(new[]
             {
-                Id = Guid.NewGuid().ToString(),
-                Name = nonUniqueName
-            };
-            variable.Levels.Add(level1);
+                new QuotaLevelDefinition
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Name = nonUniqueName
+                },
 
-            var level2 = new QuotaLevelDefinition
-            {
-                Id = Guid.NewGuid().ToString(),
-                Name = "level2Name"
-            };
-            variable.Levels.Add(level2);
+                new QuotaLevelDefinition
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Name = "level2Name"
+                }
+            });
 
             quotaFrame.VariableDefinitions.Add(variable);
 
@@ -237,19 +242,20 @@ namespace Nfield.Quota.Tests
                 OdinVariableName = "odinVarName"
             };
 
-            var level1 = new QuotaLevelDefinition
+            variable.Levels.AddRange(new[]
             {
-                Id = level1Id,
-                Name = "level1Name"
-            };
-            variable.Levels.Add(level1);
+                new QuotaLevelDefinition
+                {
+                    Id = level1Id,
+                    Name = "level1Name"
+                },
 
-            var level2 = new QuotaLevelDefinition
-            {
-                Id = level2Id,
-                Name = "level2Name"
-            };
-            variable.Levels.Add(level2);
+                new QuotaLevelDefinition
+                {
+                    Id = level2Id,
+                    Name = "level2Name"
+                }
+            });
 
             quotaFrame.VariableDefinitions.Add(variable);
 
@@ -259,22 +265,21 @@ namespace Nfield.Quota.Tests
                 Id = Guid.NewGuid().ToString()
             };
 
-            var frameLevel1 = new QuotaFrameLevel()
+            frameVariable.Levels.AddRange(new []
             {
-                DefinitionId = level1Id,
-                Id = Guid.NewGuid().ToString()
-            };
-            frameVariable.Levels.Add(frameLevel1);
-
-            var frameLevel2 = new QuotaFrameLevel()
-            {
-                DefinitionId = level2Id,
-                Id = Guid.NewGuid().ToString()
-            };
-            frameVariable.Levels.Add(frameLevel2);
+                new QuotaFrameLevel
+                {
+                    DefinitionId = level1Id,
+                    Id = Guid.NewGuid().ToString()
+                },
+                new QuotaFrameLevel
+                {
+                    DefinitionId = level2Id,
+                    Id = Guid.NewGuid().ToString()
+                }
+            });
 
             quotaFrame.FrameVariables.Add(frameVariable);
-
 
             var validator = new QuotaFrameValidator();
             var result = validator.Validate(quotaFrame);
@@ -305,19 +310,20 @@ namespace Nfield.Quota.Tests
                 OdinVariableName = "odinVarName"
             };
 
-            var level1 = new QuotaLevelDefinition
+            variable.Levels.AddRange(new[]
             {
-                Id = level1Id,
-                Name = "level1Name"
-            };
-            variable.Levels.Add(level1);
+                new QuotaLevelDefinition
+                {
+                    Id = level1Id,
+                    Name = "level1Name"
+                },
 
-            var level2 = new QuotaLevelDefinition
-            {
-                Id = level2Id,
-                Name = "level2Name"
-            };
-            variable.Levels.Add(level2);
+                new QuotaLevelDefinition
+                {
+                    Id = level2Id,
+                    Name = "level2Name"
+                }
+            });
 
             quotaFrame.VariableDefinitions.Add(variable);
 
@@ -327,19 +333,19 @@ namespace Nfield.Quota.Tests
                 Id = nonUniqueId
             };
 
-            var frameLevel1 = new QuotaFrameLevel()
+            frameVariable.Levels.AddRange(new[]
             {
-                DefinitionId = level1Id,
-                Id = nonUniqueId
-            };
-            frameVariable.Levels.Add(frameLevel1);
-
-            var frameLevel2 = new QuotaFrameLevel()
-            {
-                DefinitionId = level2Id,
-                Id = Guid.NewGuid().ToString()
-            };
-            frameVariable.Levels.Add(frameLevel2);
+                new QuotaFrameLevel
+                {
+                    DefinitionId = level1Id,
+                    Id = nonUniqueId
+                },
+                new QuotaFrameLevel
+                {
+                    DefinitionId = level2Id,
+                    Id = Guid.NewGuid().ToString()
+                }
+            });
 
             quotaFrame.FrameVariables.Add(frameVariable);
 
@@ -373,19 +379,20 @@ namespace Nfield.Quota.Tests
                 OdinVariableName = "odinVarName"
             };
 
-            var level1 = new QuotaLevelDefinition
+            variable.Levels.AddRange(new[]
             {
-                Id = level1Id,
-                Name = "level1Name"
-            };
-            variable.Levels.Add(level1);
+                new QuotaLevelDefinition
+                {
+                    Id = level1Id,
+                    Name = "level1Name"
+                },
 
-            var level2 = new QuotaLevelDefinition
-            {
-                Id = level2Id,
-                Name = "level2Name"
-            };
-            variable.Levels.Add(level2);
+                new QuotaLevelDefinition
+                {
+                    Id = level2Id,
+                    Name = "level2Name"
+                }
+            });
 
             quotaFrame.VariableDefinitions.Add(variable);
 
@@ -395,19 +402,19 @@ namespace Nfield.Quota.Tests
                 Id = Guid.NewGuid().ToString()
             };
 
-            var frameLevel1 = new QuotaFrameLevel()
+            frameVariable.Levels.AddRange(new[]
             {
-                DefinitionId = level1Id,
-                Id = nonUniqueId
-            };
-            frameVariable.Levels.Add(frameLevel1);
-
-            var frameLevel2 = new QuotaFrameLevel()
-            {
-                DefinitionId = level2Id,
-                Id = nonUniqueId
-            };
-            frameVariable.Levels.Add(frameLevel2);
+                new QuotaFrameLevel
+                {
+                    DefinitionId = level1Id,
+                    Id = nonUniqueId
+                },
+                new QuotaFrameLevel
+                {
+                    DefinitionId = level2Id,
+                    Id = nonUniqueId
+                }
+            });
 
             quotaFrame.FrameVariables.Add(frameVariable);
 
@@ -440,19 +447,20 @@ namespace Nfield.Quota.Tests
                 OdinVariableName = "odinVarName"
             };
 
-            var level1 = new QuotaLevelDefinition
+            variable.Levels.AddRange(new[]
             {
-                Id = level1Id,
-                Name = "level1Name"
-            };
-            variable.Levels.Add(level1);
+                new QuotaLevelDefinition
+                {
+                    Id = level1Id,
+                    Name = "level1Name"
+                },
 
-            var level2 = new QuotaLevelDefinition
-            {
-                Id = level2Id,
-                Name = "level2Name"
-            };
-            variable.Levels.Add(level2);
+                new QuotaLevelDefinition
+                {
+                    Id = level2Id,
+                    Name = "level2Name"
+                }
+            });
 
             quotaFrame.VariableDefinitions.Add(variable);
 
@@ -462,19 +470,19 @@ namespace Nfield.Quota.Tests
                 Id = Guid.NewGuid().ToString()
             };
 
-            var frameLevel1 = new QuotaFrameLevel()
+            frameVariable.Levels.AddRange(new[]
             {
-                DefinitionId = level1Id,
-                Id = Guid.NewGuid().ToString()
-            };
-            frameVariable.Levels.Add(frameLevel1);
-
-            var frameLevel2 = new QuotaFrameLevel()
-            {
-                DefinitionId = level2Id,
-                Id = Guid.NewGuid().ToString()
-            };
-            frameVariable.Levels.Add(frameLevel2);
+                new QuotaFrameLevel
+                {
+                    DefinitionId = level1Id,
+                    Id = Guid.NewGuid().ToString()
+                },
+                new QuotaFrameLevel
+                {
+                    DefinitionId = level2Id,
+                    Id = Guid.NewGuid().ToString()
+                }
+            });
 
             quotaFrame.FrameVariables.Add(frameVariable);
 
@@ -508,19 +516,20 @@ namespace Nfield.Quota.Tests
                 OdinVariableName = "odinVarName"
             };
 
-            var level1 = new QuotaLevelDefinition
+            variable.Levels.AddRange(new[]
             {
-                Id = level1Id,
-                Name = "level1Name"
-            };
-            variable.Levels.Add(level1);
+                new QuotaLevelDefinition
+                {
+                    Id = level1Id,
+                    Name = "level1Name"
+                },
 
-            var level2 = new QuotaLevelDefinition
-            {
-                Id = level2Id,
-                Name = "level2Name"
-            };
-            variable.Levels.Add(level2);
+                new QuotaLevelDefinition
+                {
+                    Id = level2Id,
+                    Name = "level2Name"
+                }
+            });
 
             quotaFrame.VariableDefinitions.Add(variable);
 
@@ -530,19 +539,19 @@ namespace Nfield.Quota.Tests
                 Id = Guid.NewGuid().ToString()
             };
 
-            var frameLevel1 = new QuotaFrameLevel()
+            frameVariable.Levels.AddRange(new[]
             {
-                DefinitionId = nonExistingId,
-                Id = Guid.NewGuid().ToString()
-            };
-            frameVariable.Levels.Add(frameLevel1);
-
-            var frameLevel2 = new QuotaFrameLevel()
-            {
-                DefinitionId = level2Id,
-                Id = Guid.NewGuid().ToString()
-            };
-            frameVariable.Levels.Add(frameLevel2);
+                new QuotaFrameLevel
+                {
+                    DefinitionId = nonExistingId,
+                    Id = Guid.NewGuid().ToString()
+                },
+                new QuotaFrameLevel
+                {
+                    DefinitionId = level2Id,
+                    Id = Guid.NewGuid().ToString()
+                }
+            });
 
             quotaFrame.FrameVariables.Add(frameVariable);
 
@@ -576,19 +585,20 @@ namespace Nfield.Quota.Tests
                 OdinVariableName = "odinVarName"
             };
 
-            var level1 = new QuotaLevelDefinition
+            variable.Levels.AddRange(new[]
             {
-                Id = level1Id,
-                Name = "level1Name"
-            };
-            variable.Levels.Add(level1);
+                new QuotaLevelDefinition
+                {
+                    Id = level1Id,
+                    Name = "level1Name"
+                },
 
-            var level2 = new QuotaLevelDefinition
-            {
-                Id = level2Id,
-                Name = "level2Name"
-            };
-            variable.Levels.Add(level2);
+                new QuotaLevelDefinition
+                {
+                    Id = level2Id,
+                    Name = "level2Name"
+                }
+            });
 
             quotaFrame.VariableDefinitions.Add(variable);
 
@@ -598,12 +608,15 @@ namespace Nfield.Quota.Tests
                 Id = varReferenceId
             };
 
-            var frameLevel1 = new QuotaFrameLevel()
+            frameVariable.Levels.AddRange(new[]
             {
-                DefinitionId = level1Id,
-                Id = Guid.NewGuid().ToString()
-            };
-            frameVariable.Levels.Add(frameLevel1); // Level 2 omitted
+                new QuotaFrameLevel
+                {
+                    DefinitionId = level1Id,
+                    Id = Guid.NewGuid().ToString()
+                }
+                // Level 2 omitted
+            });
 
             quotaFrame.FrameVariables.Add(frameVariable);
 
@@ -637,19 +650,20 @@ namespace Nfield.Quota.Tests
                 OdinVariableName = "odinVarName"
             };
 
-            var level1 = new QuotaLevelDefinition
+            variable.Levels.AddRange(new[]
             {
-                Id = level1Id,
-                Name = "level1Name"
-            };
-            variable.Levels.Add(level1);
+                new QuotaLevelDefinition
+                {
+                    Id = level1Id,
+                    Name = "level1Name"
+                },
 
-            var level2 = new QuotaLevelDefinition
-            {
-                Id = level2Id,
-                Name = "level2Name"
-            };
-            variable.Levels.Add(level2);
+                new QuotaLevelDefinition
+                {
+                    Id = level2Id,
+                    Name = "level2Name"
+                }
+            });
 
             quotaFrame.VariableDefinitions.Add(variable);
 
@@ -659,26 +673,24 @@ namespace Nfield.Quota.Tests
                 Id = Guid.NewGuid().ToString()
             };
 
-            var frameLevel1 = new QuotaFrameLevel()
+            frameVariable.Levels.AddRange(new[]
             {
-                DefinitionId = level1Id,
-                Id = Guid.NewGuid().ToString()
-            };
-            frameVariable.Levels.Add(frameLevel1);
-
-            var frameLevel2 = new QuotaFrameLevel()
-            {
-                DefinitionId = level2Id,
-                Id = Guid.NewGuid().ToString()
-            };
-            frameVariable.Levels.Add(frameLevel2);
-
-            var frameLevel3 = new QuotaFrameLevel()
-            {
-                DefinitionId = level3Id,
-                Id = Guid.NewGuid().ToString()
-            };
-            frameVariable.Levels.Add(frameLevel3);
+                new QuotaFrameLevel
+                {
+                    DefinitionId = level1Id,
+                    Id = Guid.NewGuid().ToString()
+                },
+                new QuotaFrameLevel
+                {
+                    DefinitionId = level2Id,
+                    Id = Guid.NewGuid().ToString()
+                },
+                new QuotaFrameLevel
+                {
+                    DefinitionId = level3Id,
+                    Id = Guid.NewGuid().ToString()
+                }
+            });
 
             quotaFrame.FrameVariables.Add(frameVariable);
 
@@ -711,21 +723,20 @@ namespace Nfield.Quota.Tests
                 OdinVariableName = "odinVar1Name"
             };
 
-            var var1Level1 = new QuotaLevelDefinition
+            variable1.Levels.AddRange(new[]
             {
-                Id = var1Level1Id,
-                Name = "var1Level1Name"
-            };
-            variable1.Levels.Add(var1Level1);
+                new QuotaLevelDefinition
+                {
+                    Id = var1Level1Id,
+                    Name = "var1Level1Name"
+                },
 
-            var var1Level2 = new QuotaLevelDefinition
-            {
-                Id = var1Level2Id,
-                Name = "var1Level2Name"
-            };
-            variable1.Levels.Add(var1Level2);
-
-            quotaFrame.VariableDefinitions.Add(variable1);
+                new QuotaLevelDefinition
+                {
+                    Id = var1Level2Id,
+                    Name = "var1Level2Name"
+                }
+            });
 
             var variable2 = new QuotaVariableDefinition
             {
@@ -734,22 +745,23 @@ namespace Nfield.Quota.Tests
                 OdinVariableName = "odinVar2Name"
             };
 
-            var var2Level1 = new QuotaLevelDefinition
+            variable2.Levels.AddRange(new[]
             {
-                Id = var2Level1Id,
-                Name = "var2Level1Name"
-            };
-            variable2.Levels.Add(var2Level1);
+                new QuotaLevelDefinition
+                {
+                    Id = var2Level1Id,
+                    Name = "var2Level1Name"
+                },
 
-            var var2Level2 = new QuotaLevelDefinition
-            {
-                Id = var2Level2Id,
-                Name = "var2Level2Name"
-            };
-            variable2.Levels.Add(var2Level2);
+                new QuotaLevelDefinition
+                {
+                    Id = var2Level2Id,
+                    Name = "var2Level2Name"
+                }
+            });
 
-            quotaFrame.VariableDefinitions.Add(variable2);
-
+            quotaFrame.VariableDefinitions.AddRange(new[] {variable1, variable2});
+             
             var frameVariable = new QuotaFrameVariable()
             {
                 DefinitionId = var1Id,
@@ -762,8 +774,19 @@ namespace Nfield.Quota.Tests
                 Id = Guid.NewGuid().ToString()
             };
 
-            frameVariable2.Levels.Add(new QuotaFrameLevel { DefinitionId = var2Level1Id, Id = Guid.NewGuid().ToString() });
-            frameVariable2.Levels.Add(new QuotaFrameLevel { DefinitionId = var2Level2Id, Id = Guid.NewGuid().ToString() });
+            frameVariable2.Levels.AddRange(new[]
+            {
+                new QuotaFrameLevel
+                {
+                    DefinitionId = var2Level1Id,
+                    Id = Guid.NewGuid().ToString()
+                },
+                new QuotaFrameLevel
+                {
+                    DefinitionId = var2Level2Id,
+                    Id = Guid.NewGuid().ToString()
+                }
+            });
 
             var frameLevel1Var1 = new QuotaFrameLevel()
             {
@@ -786,8 +809,19 @@ namespace Nfield.Quota.Tests
                 Id = Guid.NewGuid().ToString()
             };
 
-            frameVariable3.Levels.Add(new QuotaFrameLevel { DefinitionId = var2Level1Id, Id = Guid.NewGuid().ToString() });
-            frameVariable3.Levels.Add(new QuotaFrameLevel { DefinitionId = var2Level2Id, Id = Guid.NewGuid().ToString() });
+            frameVariable3.Levels.AddRange(new[]
+            {
+                new QuotaFrameLevel
+                {
+                    DefinitionId = var2Level1Id,
+                    Id = Guid.NewGuid().ToString()
+                },
+                new QuotaFrameLevel
+                {
+                    DefinitionId = var2Level2Id,
+                    Id = Guid.NewGuid().ToString()
+                }
+            });
 
             frameLevel2Var1.Variables.Add(frameVariable3);
 
@@ -829,21 +863,20 @@ namespace Nfield.Quota.Tests
                 OdinVariableName = "odinVar1Name"
             };
 
-            var var1Level1 = new QuotaLevelDefinition
+            variable1.Levels.AddRange(new[]
             {
-                Id = var1Level1Id,
-                Name = "var1Level1Name"
-            };
-            variable1.Levels.Add(var1Level1);
+                new QuotaLevelDefinition
+                {
+                    Id = var1Level1Id,
+                    Name = "var1Level1Name"
+                },
 
-            var var1Level2 = new QuotaLevelDefinition
-            {
-                Id = var1Level2Id,
-                Name = "var1Level2Name"
-            };
-            variable1.Levels.Add(var1Level2);
-
-            quotaFrame.VariableDefinitions.Add(variable1);
+                new QuotaLevelDefinition
+                {
+                    Id = var1Level2Id,
+                    Name = "var1Level2Name"
+                }
+            });
 
             var variable2 = new QuotaVariableDefinition
             {
@@ -852,21 +885,22 @@ namespace Nfield.Quota.Tests
                 OdinVariableName = "odinVar2Name"
             };
 
-            var var2Level1 = new QuotaLevelDefinition
+            variable2.Levels.AddRange(new[]
             {
-                Id = var2Level1Id,
-                Name = "var2Level1Name"
-            };
-            variable2.Levels.Add(var2Level1);
+                new QuotaLevelDefinition
+                {
+                    Id = var2Level1Id,
+                    Name = "var2Level1Name"
+                },
 
-            var var2Level2 = new QuotaLevelDefinition
-            {
-                Id = var2Level2Id,
-                Name = "var2Level2Name"
-            };
-            variable2.Levels.Add(var2Level2);
+                new QuotaLevelDefinition
+                {
+                    Id = var2Level2Id,
+                    Name = "var2Level2Name"
+                }
+            });
 
-            quotaFrame.VariableDefinitions.Add(variable2);
+            quotaFrame.VariableDefinitions.AddRange(new[] { variable1, variable2 });
 
             var frameVariable = new QuotaFrameVariable()
             {
@@ -880,8 +914,20 @@ namespace Nfield.Quota.Tests
                 Id = Guid.NewGuid().ToString()
             };
             
-            frameVariable2.Levels.Add(new QuotaFrameLevel { DefinitionId = var2Level1Id, Id = Guid.NewGuid().ToString() });
-            frameVariable2.Levels.Add(new QuotaFrameLevel { DefinitionId = var2Level2Id, Id = Guid.NewGuid().ToString() });
+            frameVariable2.Levels.AddRange(new[]
+            {
+                new QuotaFrameLevel
+                {
+                    DefinitionId = var2Level1Id,
+                    Id = Guid.NewGuid().ToString()
+                },
+                new QuotaFrameLevel
+                {
+                    DefinitionId = var2Level2Id,
+                    Id = Guid.NewGuid().ToString()
+                }
+            });
+
 
             var frameLevel1Var1 = new QuotaFrameLevel()
             {

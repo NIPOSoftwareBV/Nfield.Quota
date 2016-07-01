@@ -53,6 +53,7 @@
     <Compile Include="Builders\QuotaFrameStructureBuilder.cs" />
     <Compile Include="Builders\QuotaLevelDefinitionBuilder.cs" />
     <Compile Include="Builders\QuotaVariableDefinitionBuilder.cs" />
+    <Compile Include="Helpers\CollectionExtensions.cs" />
     <Compile Include="PreOrderQuotaFrameTraverser.cs" />
     <Compile Include="Helpers\Ensure.cs" />
     <Compile Include="Editing\QuotaFrameToEditingConverter.cs" />
