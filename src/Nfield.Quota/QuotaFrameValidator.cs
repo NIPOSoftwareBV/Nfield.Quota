@@ -38,7 +38,7 @@ namespace Nfield.Quota
 
         private static bool HaveUniqueIds(
             QuotaFrame frame,
-            QuotaVariableDefinitionCollection varDefinitions,
+            IEnumerable<QuotaVariableDefinition> varDefinitions,
             PropertyValidatorContext context)
         {
             var usedIds = new HashSet<string>();
@@ -64,7 +64,7 @@ namespace Nfield.Quota
 
         private static bool HaveUniqueNames(
             QuotaFrame frame,
-            QuotaVariableDefinitionCollection varDefinitions,
+            IEnumerable<QuotaVariableDefinition> varDefinitions,
             PropertyValidatorContext context)
         {
             var usedNames = new HashSet<string>();
@@ -90,7 +90,7 @@ namespace Nfield.Quota
 
         private static bool HaveVariablesWithAtLeastOneLevel(
             QuotaFrame frame,
-            QuotaVariableDefinitionCollection varDefinitions,
+            IEnumerable<QuotaVariableDefinition> varDefinitions,
             PropertyValidatorContext context)
         {
             foreach (var varDefinition in varDefinitions)
@@ -107,7 +107,7 @@ namespace Nfield.Quota
 
         private static bool HaveUniqueIds(
             QuotaFrame frame,
-            QuotaFrameVariableCollection variables,
+            IEnumerable<QuotaFrameVariable> variables,
             PropertyValidatorContext context)
         {
             var usedIds = new HashSet<string>();
@@ -170,7 +170,7 @@ namespace Nfield.Quota
 
         private static bool ReferenceDefinitions(
             QuotaFrame frame,
-            QuotaFrameVariableCollection variables,
+            IEnumerable<QuotaFrameVariable> variables,
             PropertyValidatorContext context)
         {
             var variableIds = new HashSet<string>(
@@ -204,7 +204,7 @@ namespace Nfield.Quota
 
         private static bool HaveTheSameLevelsUnderAVariableAsTheLinkedVariableDefinition(
             QuotaFrame frame,
-            QuotaFrameVariableCollection variables,
+            IEnumerable<QuotaFrameVariable> variables,
             PropertyValidatorContext context)
         {
             var hasMissingLevel = false;
@@ -233,7 +233,7 @@ namespace Nfield.Quota
 
         private static bool HaveVariablesWithTheSameVariablesUnderEveryLevel(
             QuotaFrame frame,
-            QuotaFrameVariableCollection variables,
+            IEnumerable<QuotaFrameVariable> variables,
             PropertyValidatorContext context)
         {
             var hasInvalidChilds = false;

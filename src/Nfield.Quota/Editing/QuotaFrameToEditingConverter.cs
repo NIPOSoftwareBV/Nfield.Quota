@@ -33,7 +33,7 @@ namespace Nfield.Quota.Editing
         }
 
         private static IEnumerable<QuotaLevelDefinition> RewriteLevelDefinitions(
-            QuotaLevelDefinitionCollection levels)
+            IEnumerable<Quota.QuotaLevelDefinition> levels)
         {
             var displayIndex = 0;
             return levels.Select(ld =>
@@ -60,7 +60,7 @@ namespace Nfield.Quota.Editing
         }
 
         private static IEnumerable<QuotaFrameLevel> RewriteFrameLevels(
-            QuotaFrameLevelCollection levels)
+            IEnumerable<Quota.QuotaFrameLevel> levels)
         {
             return levels.Select(l =>
                 new QuotaFrameLevel

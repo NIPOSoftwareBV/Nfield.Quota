@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Nfield.Quota.Builders;
 
 namespace Nfield.Quota.Editing
 {
@@ -8,82 +7,71 @@ namespace Nfield.Quota.Editing
     {
         public static Quota.QuotaFrame Convert(QuotaFrame sourceFrame)
         {
-            var builder = new QuotaFrameBuilder()
-                .Id(sourceFrame.Id)
-                .Target(sourceFrame.Target)
-                .Successful(sourceFrame.Successful);
+            var definitions = RewriteVariableDefinitions(sourceFrame.VariableDefinitions);
+            var frameVariables = RewriteFrameVariables(sourceFrame.FrameVariables);
 
-            AddVariableDefinitions(builder, sourceFrame.VariableDefinitions);
-            AddFrameVariables(builder, sourceFrame.FrameVariables);
-
-            return builder.Build();
+            return new Quota.QuotaFrame(definitions, frameVariables)
+            {
+                Id = sourceFrame.Id,
+                Target = sourceFrame.Target,
+                Successful = sourceFrame.Successful,
+            };
         }
 
-        private static void AddVariableDefinitions(
-            QuotaFrameBuilder builder, IEnumerable<QuotaVariableDefinition> variableDefinitions)
+        private static IEnumerable<Quota.QuotaVariableDefinition> RewriteVariableDefinitions(
+            IEnumerable<QuotaVariableDefinition> variableDefinitions)
         {
-            foreach (var vd in variableDefinitions.OrderBy(d => d.DisplayIndex))
+            return variableDefinitions.OrderBy(vd => vd.DisplayIndex).Select(vd =>
             {
-                builder.VariableDefinition(
-                    vd.Id,
-                    vd.Name,
-                    vd.OdinVariableName,
-                    lb => AddLevelDefinitions(lb, vd.Levels)
-                );
-            }
+                var levels = RewriteLevelDefinitions(vd.Levels);
+                return new Quota.QuotaVariableDefinition(levels)
+                {
+                    Id = vd.Id,
+                    Name = vd.Name,
+                    OdinVariableName = vd.OdinVariableName
+                };
+            }).ToList();
         }
 
-        private static void AddLevelDefinitions(
-            QuotaVariableDefinitionBuilder builder, IEnumerable<QuotaLevelDefinition> levelDefinitions)
+        private static IEnumerable<Quota.QuotaLevelDefinition> RewriteLevelDefinitions(
+            IEnumerable<QuotaLevelDefinition> levels)
         {
-            foreach (var ld in levelDefinitions.OrderBy(l => l.DisplayIndex))
-            {
-                builder.Level(
-                    ld.Id,
-                    ld.Name
-                );
-            }
+            return levels.OrderBy(ld => ld.DisplayIndex).Select(ld =>
+                new Quota.QuotaLevelDefinition
+                {
+                    Id = ld.Id,
+                    Name = ld.Name,
+                }).ToList();
         }
 
-        private static void AddFrameVariables(
-            QuotaFrameBuilder builder, IEnumerable<QuotaFrameVariable> frameVariables)
+        private static IEnumerable<Quota.QuotaFrameVariable> RewriteFrameVariables(
+            IEnumerable<QuotaFrameVariable> variables)
         {
-            foreach (var frameVariable in frameVariables.OrderBy(v => v.DisplayIndex))
+            return variables.OrderBy(v => v.DisplayIndex).Select(v =>
             {
-                builder.FrameVariable(
-                    frameVariable.DefinitionId,
-                    frameVariable.Id,
-                    lb => AddFrameLevels(lb, frameVariable.Levels)
-                );
-            }
+                var levels = RewriteFrameLevels(v.Levels);
+                return new Quota.QuotaFrameVariable(levels)
+                {
+                    Id = v.Id,
+                    DefinitionId = v.DefinitionId
+                };
+            }).ToList();
         }
 
-        private static void AddFrameLevels(
-            QuotaFrameVariableBuilder builder, IEnumerable<QuotaFrameLevel> levels)
+        private static IEnumerable<Quota.QuotaFrameLevel> RewriteFrameLevels(
+            IEnumerable<QuotaFrameLevel> levels)
         {
-            foreach (var frameLevel in levels)
+            return levels.Select(l =>
             {
-                builder.Level(
-                    frameLevel.DefinitionId,
-                    frameLevel.Id,
-                    frameLevel.Target,
-                    frameLevel.Successful,
-                    lb => AddFrameVariables(lb, frameLevel.Variables)
-                );
-            }
-        }
-
-        private static void AddFrameVariables(
-            QuotaFrameLevelBuilder builder, IEnumerable<QuotaFrameVariable> frameVariables)
-        {
-            foreach (var frameVariable in frameVariables)
-            {
-                builder.Variable(
-                    frameVariable.DefinitionId,
-                    frameVariable.Id,
-                    lb => AddFrameLevels(lb, frameVariable.Levels)
-                );
-            }
+                var variables = RewriteFrameVariables(l.Variables);
+                return new Quota.QuotaFrameLevel(variables)
+                {
+                    Id = l.Id,
+                    DefinitionId = l.DefinitionId,
+                    Target = l.Target,
+                    Successful = l.Successful,
+                };
+            }).ToList();
         }
     }
 }

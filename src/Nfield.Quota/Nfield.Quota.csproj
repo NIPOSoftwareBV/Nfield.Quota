@@ -50,10 +50,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Builders\QuotaFrameBuilder.cs" />
-    <Compile Include="Builders\QuotaFrameLevelBuilder.cs" />
-    <Compile Include="Builders\QuotaFrameVariableBuilder.cs" />
+    <Compile Include="Builders\QuotaFrameStructureBuilder.cs" />
     <Compile Include="Builders\QuotaLevelDefinitionBuilder.cs" />
     <Compile Include="Builders\QuotaVariableDefinitionBuilder.cs" />
+    <Compile Include="Helpers\CollectionExtensions.cs" />
     <Compile Include="PreOrderQuotaFrameTraverser.cs" />
     <Compile Include="Helpers\Ensure.cs" />
     <Compile Include="Editing\QuotaFrameToEditingConverter.cs" />
@@ -63,7 +63,6 @@
     <Compile Include="Editing\QuotaFrameVariable.cs" />
     <Compile Include="Editing\QuotaLevelDefinition.cs" />
     <Compile Include="Editing\QuotaVariableDefinition.cs" />
-    <Compile Include="IQuotaFrameAttached.cs" />
     <Compile Include="Monitoring\QuotaFrameToMonitoringConverter.cs" />
     <Compile Include="Monitoring\QuotaFrame.cs" />
     <Compile Include="Monitoring\QuotaFrameLevel.cs" />
@@ -74,14 +73,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QuotaFrame.cs" />
     <Compile Include="QuotaFrameLevel.cs" />
-    <Compile Include="QuotaFrameLevelCollection.cs" />
     <Compile Include="QuotaFrameValidator.cs" />
     <Compile Include="QuotaFrameVariable.cs" />
-    <Compile Include="QuotaFrameVariableCollection.cs" />
     <Compile Include="QuotaLevelDefinition.cs" />
-    <Compile Include="QuotaLevelDefinitionCollection.cs" />
     <Compile Include="QuotaVariableDefinition.cs" />
-    <Compile Include="QuotaVariableDefinitionCollection.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Nfield.Quota.nuspec" />

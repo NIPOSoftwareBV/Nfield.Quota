@@ -1,10 +1,17 @@
-﻿namespace Nfield.Quota
+﻿using System.Collections.Generic;
+
+namespace Nfield.Quota
 {
     public class QuotaVariableDefinition
     {
         public QuotaVariableDefinition()
         {
-            Levels = new QuotaLevelDefinitionCollection();
+            Levels = new List<QuotaLevelDefinition>();
+        }
+
+        public QuotaVariableDefinition(IEnumerable<QuotaLevelDefinition> levels)
+        {
+            Levels = new List<QuotaLevelDefinition>(levels);
         }
 
         public string Id { get; set; }
@@ -12,6 +19,6 @@
 
         public string OdinVariableName { get; set; }
 
-        public QuotaLevelDefinitionCollection Levels { get; }
+        public ICollection<QuotaLevelDefinition> Levels { get; }
     }
 }
