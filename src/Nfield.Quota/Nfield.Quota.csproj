@@ -56,17 +56,6 @@
     <Compile Include="Helpers\CollectionExtensions.cs" />
     <Compile Include="PreOrderQuotaFrameTraverser.cs" />
     <Compile Include="Helpers\Ensure.cs" />
-    <Compile Include="Editing\QuotaFrameToEditingConverter.cs" />
-    <Compile Include="Editing\QuotaFrameFromEditingConverter.cs" />
-    <Compile Include="Editing\QuotaFrame.cs" />
-    <Compile Include="Editing\QuotaFrameLevel.cs" />
-    <Compile Include="Editing\QuotaFrameVariable.cs" />
-    <Compile Include="Editing\QuotaLevelDefinition.cs" />
-    <Compile Include="Editing\QuotaVariableDefinition.cs" />
-    <Compile Include="Monitoring\QuotaFrameToMonitoringConverter.cs" />
-    <Compile Include="Monitoring\QuotaFrame.cs" />
-    <Compile Include="Monitoring\QuotaFrameLevel.cs" />
-    <Compile Include="Monitoring\QuotaFrameVariable.cs" />
     <Compile Include="Persistence\QuotaFrameContractResolver.cs" />
     <Compile Include="Persistence\QuotaFrameDecoder.cs" />
     <Compile Include="Persistence\QuotaFrameEncoder.cs" />
