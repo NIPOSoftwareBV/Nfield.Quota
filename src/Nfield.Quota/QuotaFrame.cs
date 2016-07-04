@@ -24,8 +24,6 @@ namespace Nfield.Quota
 
         public int? Target { get; set; }
 
-	    public int Successful { get; set; }
-
         public ICollection<QuotaVariableDefinition> VariableDefinitions { get; }
 
         public ICollection<QuotaFrameVariable> FrameVariables { get; }

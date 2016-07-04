@@ -14,12 +14,10 @@ namespace Nfield.Quota.Persistence
 
             resolver.Ignore(
                 typeof(QuotaFrame),
-                nameof(QuotaFrame.Target),
-                nameof(QuotaFrame.Successful));
+                nameof(QuotaFrame.Target));
 
             resolver.Ignore(
                 typeof(QuotaFrameLevel),
-                nameof(QuotaFrameLevel.Successful),
                 nameof(QuotaFrameLevel.Target));
 
             var settings = new JsonSerializerSettings

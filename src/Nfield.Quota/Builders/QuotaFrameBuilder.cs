@@ -7,7 +7,6 @@ namespace Nfield.Quota.Builders
     {
         private string _id;
         private int? _target;
-        private int _successful;
         private readonly IList<QuotaVariableDefinitionBuilder> _variableDefinitionBuilders;
         private readonly QuotaFrameStructureBuilder _structureBuilder;
 
@@ -27,7 +26,6 @@ namespace Nfield.Quota.Builders
             {
                 Id = _id,
                 Target = _target,
-                Successful = _successful
             };
 
             foreach (var builder in _variableDefinitionBuilders)
@@ -49,12 +47,6 @@ namespace Nfield.Quota.Builders
         public QuotaFrameBuilder Target(int? target)
         {
             _target = target;
-            return this;
-        }
-
-        public QuotaFrameBuilder Successful(int successful)
-        {
-            _successful = successful;
             return this;
         }
 
