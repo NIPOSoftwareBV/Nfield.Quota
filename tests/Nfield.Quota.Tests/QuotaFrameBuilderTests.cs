@@ -26,9 +26,7 @@ namespace Nfield.Quota.Tests
                 .Build();
 
             quotaFrame["varName", "level1Name"].Target = 6;
-            quotaFrame["varName", "level1Name"].Successful = 2;
             quotaFrame["varName", "level2Name"].Target = 4;
-            quotaFrame["varName", "level2Name"].Successful = 3;
 
             Assert.That(quotaFrame.Id, Is.EqualTo("id"));
             Assert.That(quotaFrame.Target.HasValue, Is.True);
@@ -52,11 +50,9 @@ namespace Nfield.Quota.Tests
             Assert.That(Guid.TryParse(quotaFrame.FrameVariables.First().Levels.First().Id, out result), Is.True);
             Assert.That(Guid.TryParse(quotaFrame.FrameVariables.First().Levels.First().DefinitionId, out result), Is.True);
             Assert.That(quotaFrame.FrameVariables.First().Levels.First().Target, Is.EqualTo(6));
-            Assert.That(quotaFrame.FrameVariables.First().Levels.First().Successful, Is.EqualTo(2));
             Assert.That(Guid.TryParse(quotaFrame.FrameVariables.First().Levels.ElementAt(1).Id, out result), Is.True);
             Assert.That(Guid.TryParse(quotaFrame.FrameVariables.First().Levels.ElementAt(1).DefinitionId, out result), Is.True);
             Assert.That(quotaFrame.FrameVariables.First().Levels.ElementAt(1).Target, Is.EqualTo(4));
-            Assert.That(quotaFrame.FrameVariables.First().Levels.ElementAt(1).Successful, Is.EqualTo(3));
         }
 
         [Test]
@@ -79,18 +75,12 @@ namespace Nfield.Quota.Tests
                 .Build();
 
             quotaFrame["gender", "Male"].Target = 6;
-            quotaFrame["gender", "Male"].Successful = 2;
             quotaFrame["gender", "Male"]["region", "North"].Target = 3;
-            quotaFrame["gender", "Male"]["region", "North"].Successful = 1;
             quotaFrame["gender", "Male"]["region", "South"].Target = 3;
-            quotaFrame["gender", "Male"]["region", "South"].Successful = 1;
 
             quotaFrame["gender", "Female"].Target = 4;
-            quotaFrame["gender", "Female"].Successful = 3;
             quotaFrame["gender", "Female"]["region", "North"].Target = 2;
-            quotaFrame["gender", "Female"]["region", "North"].Successful = 2;
             quotaFrame["gender", "Female"]["region", "South"].Target = 2;
-            quotaFrame["gender", "Female"]["region", "South"].Successful = 1;
 
             Assert.That(quotaFrame.Id, Is.EqualTo("id"));
             Assert.That(quotaFrame.Target.HasValue, Is.True);
@@ -124,31 +114,24 @@ namespace Nfield.Quota.Tests
             Assert.That(quotaFrame.FrameVariables.First().Levels.Count, Is.EqualTo(2));
             Assert.That(Guid.TryParse(quotaFrame.FrameVariables.First().Levels.First().DefinitionId, out result), Is.True);
             Assert.That(quotaFrame.FrameVariables.First().Levels.First().Target, Is.EqualTo(6));
-            Assert.That(quotaFrame.FrameVariables.First().Levels.First().Successful, Is.EqualTo(2));
             Assert.That(quotaFrame.FrameVariables.First().Levels.First().Variables.Count, Is.EqualTo(1));
             Assert.That(quotaFrame.FrameVariables.First().Levels.First().Variables.First().DefinitionId, Is.EqualTo("region"));
             Assert.That(quotaFrame.FrameVariables.First().Levels.First().Variables.First().Levels.Count, Is.EqualTo(2));
             Assert.That(Guid.TryParse(quotaFrame.FrameVariables.First().Levels.First().Variables.First().Levels.First().DefinitionId, out result), Is.True);
             Assert.That(quotaFrame.FrameVariables.First().Levels.First().Variables.First().Levels.First().Target, Is.EqualTo(3));
-            Assert.That(quotaFrame.FrameVariables.First().Levels.First().Variables.First().Levels.First().Successful, Is.EqualTo(1));
             Assert.That(Guid.TryParse(quotaFrame.FrameVariables.First().Levels.First().Variables.First().Levels.ElementAt(1).DefinitionId, out result), Is.True);
             Assert.That(quotaFrame.FrameVariables.First().Levels.First().Variables.First().Levels.ElementAt(1).Target, Is.EqualTo(3));
-            Assert.That(quotaFrame.FrameVariables.First().Levels.First().Variables.First().Levels.ElementAt(1).Successful, Is.EqualTo(1));
 
 
             Assert.That(Guid.TryParse(quotaFrame.FrameVariables.First().Levels.ElementAt(1).DefinitionId, out result), Is.True);
             Assert.That(quotaFrame.FrameVariables.First().Levels.ElementAt(1).Target, Is.EqualTo(4));
-            Assert.That(quotaFrame.FrameVariables.First().Levels.ElementAt(1).Successful, Is.EqualTo(3));
             Assert.That(quotaFrame.FrameVariables.First().Levels.ElementAt(1).Variables.Count, Is.EqualTo(1));
             Assert.That(quotaFrame.FrameVariables.First().Levels.ElementAt(1).Variables.First().DefinitionId, Is.EqualTo("region"));
             Assert.That(quotaFrame.FrameVariables.First().Levels.ElementAt(1).Variables.First().Levels.Count, Is.EqualTo(2));
             Assert.That(Guid.TryParse(quotaFrame.FrameVariables.First().Levels.ElementAt(1).Variables.First().Levels.First().DefinitionId, out result), Is.True);
             Assert.That(quotaFrame.FrameVariables.First().Levels.ElementAt(1).Variables.First().Levels.First().Target, Is.EqualTo(2));
-            Assert.That(quotaFrame.FrameVariables.First().Levels.ElementAt(1).Variables.First().Levels.First().Successful, Is.EqualTo(2));
             Assert.That(Guid.TryParse(quotaFrame.FrameVariables.First().Levels.ElementAt(1).Variables.First().Levels.ElementAt(1).DefinitionId, out result), Is.True);
             Assert.That(quotaFrame.FrameVariables.First().Levels.ElementAt(1).Variables.First().Levels.ElementAt(1).Target, Is.EqualTo(2));
-            Assert.That(quotaFrame.FrameVariables.First().Levels.ElementAt(1).Variables.First().Levels.ElementAt(1).Successful, Is.EqualTo(1));
-
         }
     }
 }

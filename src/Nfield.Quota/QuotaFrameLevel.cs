@@ -26,7 +26,6 @@ namespace Nfield.Quota
 
         public int? Target { get; set; }
 
-        public int Successful { get; set; }
 
         public QuotaFrameVariable this[string variableName]
         {
