@@ -1,0 +1,7 @@
+site_name: Nfield Quota Documentation
+pages:
+- 'Home': 'index.md'
+- 'Getting started': 'getting_started.md'
+- 'Samples': 'samples.md'
+- 'License': 'license.md'
+theme: readthedocs
