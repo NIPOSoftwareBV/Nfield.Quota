@@ -1,0 +1,29 @@
+﻿{
+  "id": "frameId",
+  "variableDefinitions": [
+    {
+      "id": "regionId",
+      "name": "Region",
+      "odinVariableName": "regionOdin",
+      "levels": [
+        {
+          "id": "hrlmId",
+          "name": "Haarlem"
+        }
+      ]
+    }
+  ],
+  "frameVariables": [
+    {
+      "id": "var1",
+      "definitionId": "regionId",
+      "levels": [
+        {
+          "id": "lvl1",
+          "definitionId": "hrlmId",
+          "variables": []
+        }
+      ]
+    }
+  ]
+}
