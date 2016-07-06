@@ -88,7 +88,7 @@ Using indexers you can easily setup targets for the nested variables that were s
 previous code sample. If you index on a variable that is not available at that depth in the quota tree an 
 [InvalidOperationException] will be thrown that will indicate the variable that cannot be found.
 
-As demonstrated above it is possible to set targets on higher level higher in the hierarchy. Keep in mind that in 
+As demonstrated above it is possible to set targets on levels higher in the hierarchy. Keep in mind that in 
 Nfield this target is a minimum, only the overall target is a maximum value.
 
 # Next steps
