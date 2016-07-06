@@ -22,7 +22,7 @@ namespace Nfield.Quota.Builders
         }
         public QuotaFrame Build()
         {
-            var quotaFrame = new QuotaFrame
+            var frame = new QuotaFrame
             {
                 Id = _id,
                 Target = _target,
@@ -30,12 +30,15 @@ namespace Nfield.Quota.Builders
 
             foreach (var builder in _variableDefinitionBuilders)
             {
-                builder.Build(quotaFrame);
+                builder.Build(frame);
             }
 
-            _structureBuilder.Build(quotaFrame);
+            _structureBuilder.Build(frame);
 
-            return quotaFrame;
+            var validator = new QuotaFrameValidator();
+            validator.Validate(frame);
+
+            return frame;
         }
 
         public QuotaFrameBuilder Id(string id)
