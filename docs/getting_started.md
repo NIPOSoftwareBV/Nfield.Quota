@@ -73,8 +73,8 @@ var quotaFrame = new QuotaFrameBuilder()
       )
     .Build();
 ```
-This creates a quota frame that nests the region variable under the gender variable. This will allow setting the target 
-for a region in context of a gender.
+This creates a quota frame that interlocks the region variable with the gender variable. This will allow setting the 
+target for a region in context of a gender.
 
 ```
 quotaFrame["Gender", "Male"].Target = 100;
@@ -86,7 +86,7 @@ quotaFrame["Gender", "Male"]["Region", "East"].Target = 25;
 ```  
 Using indexers you can easily setup targets for the nested variables that were setup in the _Structure_ call in the 
 previous code sample. If you index on a variable that is not available at that depth in the quota tree an 
-[InvalidOperationException] will be thrown.
+[InvalidOperationException] will be thrown that will indicate the variable that cannot be found.
 
 As demonstrated above it is possible to set target on higher level variables. Keep in mind that in Nfield this target
 is a minimum, only the overall target is a maximum value.
