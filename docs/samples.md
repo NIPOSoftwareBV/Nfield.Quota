@@ -28,6 +28,7 @@ var quotaFrame = new QuotaFrameBuilder()
       levels: new [] { "Male", "Female" })
     .Structure(
       root => root.Variable("Gender")
+      )
     .Build();
 quotaFrame["Gender", "Male"].Target = 50;
 quotaFrame["Gender", "Female"].Target = 50;
@@ -55,6 +56,7 @@ var quotaFrame = new QuotaFrameBuilder()
       root => {
         root.Variable("Gender");
         root.Variable("Region");
+      })
     .Build();
 quotaFrame["Gender", "Male"].Target = 50;
 quotaFrame["Gender", "Female"].Target = 50;
