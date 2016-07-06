@@ -17,7 +17,7 @@ definitions and the targets.
 
 Let's start by creating the simplest quota frame.
 
-```
+```csharp
 var quotaFrame = new QuotaFrameBuilder()
     .Id("<survey ID>")
     .Target(200)
@@ -28,7 +28,7 @@ This quota frame contains the minimum quota configuration, it only sets an overa
 
 To identify groups, we can add a quota variable definition.
 
-```
+```csharp
 var quotaFrame = new QuotaFrameBuilder()
     .Id("<survey ID>")
     .Target(200)
@@ -52,7 +52,7 @@ To refer to this variable add the following to you ODIN questionnaire:
 
 After defining our variable we need to create the structure of the quota frame, but first we'll add another variable to make the example a bit more 'realistic'.
 
-```
+```csharp
 var quotaFrame = new QuotaFrameBuilder()
     .Id("<survey ID>")
     .Target(200)
@@ -76,7 +76,7 @@ var quotaFrame = new QuotaFrameBuilder()
 This creates a quota frame that interlocks the region variable with the gender variable. This will allow setting the 
 target for a region in context of a gender.
 
-```
+```csharp
 quotaFrame["Gender", "Male"].Target = 100;
 quotaFrame["Gender", "Male"]["Region", "North"].Target = 25;
 quotaFrame["Gender", "Male"]["Region", "South"].Target = 25;

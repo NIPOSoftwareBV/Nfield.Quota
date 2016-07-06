@@ -6,7 +6,7 @@ This section contains a number of example quota frames with different structures
 
 The minimal quota frame only sets a total target.
 
-```
+```csharp
 var quotaFrame = new QuotaFrameBuilder()
     .Id("721C2E57-1232-48E3-9C3C-822D89B0B635") // the ID of the survey
     .Target(100)
@@ -17,7 +17,7 @@ var quotaFrame = new QuotaFrameBuilder()
 
 A small quota frame containing only a single variable with targets.
 
-```
+```csharp
 var quotaFrame = new QuotaFrameBuilder()
     .Id("721C2E57-1232-48E3-9C3C-822D89B0B635") // the ID of the survey
     .Target(100)
@@ -37,7 +37,7 @@ quotaFrame["Gender", "Female"].Target = 50;
 
 This quota frame contains two independent variables. 
 
-```
+```csharp
 var quotaFrame = new QuotaFrameBuilder()
     .Id("721C2E57-1232-48E3-9C3C-822D89B0B635") // the ID of the survey
     .Target(100)
@@ -69,7 +69,7 @@ quotaFrame["Region", "East"].Target = 25;
 This quota frame contains two interlocked variables, allowing more fine-grained control over the distribution
 of respondents. 
 
-```
+```csharp
 var quotaFrame = new QuotaFrameBuilder()
     .Id("721C2E57-1232-48E3-9C3C-822D89B0B635") // the ID of the survey
     .Target(200)
