@@ -21,7 +21,7 @@ namespace Nfield.Quota.Tests
                     odinVariableName: "odinVarName", levelNames: new[] { "level1Name", "level2Name" })
                 .Structure(sb =>
                 {
-                    sb.Variable("varId");
+                    sb.Variable("varName");
                 })
                 .Build();
 

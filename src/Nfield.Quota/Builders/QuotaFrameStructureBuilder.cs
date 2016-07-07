@@ -6,29 +6,29 @@ namespace Nfield.Quota.Builders
 {
     public class QuotaFrameStructureBuilder
     {
-        private readonly IList<string> _variableIds;
+        private readonly IList<string> _variableNames;
         private readonly IList<QuotaFrameStructureBuilder> _childBuilders;
 
         public QuotaFrameStructureBuilder()
         {
-            _variableIds = new List<string>();
+            _variableNames = new List<string>();
             _childBuilders = new List<QuotaFrameStructureBuilder>();
         }
 
-        public QuotaFrameStructureBuilder Variable(string variableId)
+        public QuotaFrameStructureBuilder Variable(string variableName)
         {
-            _variableIds.Add(variableId);
+            _variableNames.Add(variableName);
             return this;
         }
 
         public QuotaFrameStructureBuilder Variable(
-            string variableId,
+            string variableName,
             Action<QuotaFrameStructureBuilder> buildAction)
         {
             var childBuilder = new QuotaFrameStructureBuilder();
             buildAction(childBuilder);
             _childBuilders.Add(childBuilder);
-            return Variable(variableId);
+            return Variable(variableName);
         }
 
         public void Build(QuotaFrame quotaFrame)
@@ -40,9 +40,9 @@ namespace Nfield.Quota.Builders
             QuotaFrame quotaFrame,
             ICollection<QuotaFrameVariable> currentRoot)
         {
-            foreach (var variableId in _variableIds)
+            foreach (var variableName in _variableNames)
             {
-                var variableDefinition = quotaFrame.VariableDefinitions.First(vd => vd.Id == variableId);
+                var variableDefinition = quotaFrame.VariableDefinitions.First(vd => vd.Name == variableName);
                 var variable = new QuotaFrameVariable
                 {
                     Id = Guid.NewGuid().ToString(),
