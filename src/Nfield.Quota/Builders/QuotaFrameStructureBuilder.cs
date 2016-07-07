@@ -45,7 +45,7 @@ namespace Nfield.Quota.Builders
                 var variableDefinition = quotaFrame.VariableDefinitions.First(vd => vd.Name == variableName);
                 var variable = new QuotaFrameVariable
                 {
-                    Id = Guid.NewGuid().ToString(),
+                    Id = Guid.NewGuid(),
                     DefinitionId = variableDefinition.Id,
                     Name = variableDefinition.Name
                 };
@@ -65,7 +65,7 @@ namespace Nfield.Quota.Builders
             {
                 var frameLevel = new QuotaFrameLevel
                 {
-                    Id = Guid.NewGuid().ToString(),
+                    Id = Guid.NewGuid(),
                     DefinitionId = levelDefinition.Id,
                     Name = levelDefinition.Name
                 };

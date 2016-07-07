@@ -59,7 +59,7 @@ namespace Nfield.Quota.Builders
             IEnumerable<string> levelNames)
         {
             var variableDefinitionBuilder = new QuotaVariableDefinitionBuilder(
-                Guid.NewGuid().ToString(),
+                Guid.NewGuid(),
                 variableName,
                 odinVariableName,
                 levelNames

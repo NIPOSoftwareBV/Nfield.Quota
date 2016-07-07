@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Nfield.Quota
 {
@@ -14,9 +15,9 @@ namespace Nfield.Quota
             Levels = new List<QuotaFrameLevel>(levels);
         }
 
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
-        public string DefinitionId { get; set; }
+        public Guid DefinitionId { get; set; }
 
         public string Name { get; set; }
 
