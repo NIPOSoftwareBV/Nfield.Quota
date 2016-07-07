@@ -16,8 +16,8 @@ namespace Nfield.Quota.Tests
         {
             var quotaFrame = new QuotaFrameBuilder()
                 .Id(Guid.NewGuid().ToString())
-                .VariableDefinition(Guid.NewGuid().ToString(), "varName", "odinVarName",
-                    new List<string>() {"level1Name", "level2Name"})
+                .VariableDefinition(
+                    "varName",new [] {"level1Name", "level2Name"})
                 .Structure(sb => { })
                 .Build();
 
