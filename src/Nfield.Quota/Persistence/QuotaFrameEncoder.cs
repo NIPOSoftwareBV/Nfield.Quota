@@ -26,6 +26,8 @@ namespace Nfield.Quota.Persistence
                 Formatting = Formatting.Indented
             };
 
+            settings.Converters.Add(new GuidJsonConverter());
+
             return JsonConvert.SerializeObject(frame, settings);
         }
 

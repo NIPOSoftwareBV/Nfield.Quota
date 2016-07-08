@@ -16,8 +16,8 @@ namespace Nfield.Quota.Tests
         {
             var quotaFrame = new QuotaFrameBuilder()
                 .Id(Guid.NewGuid().ToString())
-                .VariableDefinition(Guid.NewGuid().ToString(), "varName", "odinVarName",
-                    new List<string>() {"level1Name", "level2Name"})
+                .VariableDefinition(
+                    "varName",new [] {"level1Name", "level2Name"})
                 .Structure(sb => { })
                 .Build();
 
@@ -30,7 +30,7 @@ namespace Nfield.Quota.Tests
         [Test]
         public void Definitions_EveryVariableNeedsAtLeastOneLevel()
         {
-            var variableId = Guid.NewGuid().ToString();
+            var variableId = Guid.NewGuid();
             var expectedErrorMessage = string.Format(CultureInfo.InvariantCulture,
                 "Quota frame definitions has variables with no levels. Affected variable definition id: '{0}'",
                 variableId);
@@ -57,7 +57,7 @@ namespace Nfield.Quota.Tests
         [Test]
         public void Definitions_CannotContainDuplicateIds()
         {
-            var nonUniqueId = Guid.NewGuid().ToString();
+            var nonUniqueId = Guid.NewGuid();
             var expectedErrorMessage = string.Format(CultureInfo.InvariantCulture,
                 "Quota frame definitions contain a duplicate id. Duplicate id: '{0}'",
                 nonUniqueId);
@@ -69,7 +69,7 @@ namespace Nfield.Quota.Tests
 
             var variable = new QuotaVariableDefinition
             {
-                Id = Guid.NewGuid().ToString(),
+                Id = Guid.NewGuid(),
                 Name = "varName",
                 OdinVariableName = "odinVarName"
             };
@@ -109,7 +109,7 @@ namespace Nfield.Quota.Tests
 
             var variable = new QuotaVariableDefinition
             {
-                Id = Guid.NewGuid().ToString(),
+                Id = Guid.NewGuid(),
                 Name = "varName",
                 OdinVariableName = "odinVarName"
             };
@@ -118,13 +118,13 @@ namespace Nfield.Quota.Tests
             {
                 new QuotaLevelDefinition
                 {
-                    Id = Guid.NewGuid().ToString(),
+                    Id = Guid.NewGuid(),
                     Name = nonUniqueName
                 },
 
                 new QuotaLevelDefinition
                 {
-                    Id = Guid.NewGuid().ToString(),
+                    Id = Guid.NewGuid(),
                     Name = nonUniqueName
                 }
             });
@@ -141,7 +141,7 @@ namespace Nfield.Quota.Tests
         [Test]
         public void Definitions_CannotContainDuplicateIdsBetweenVariablesAndLevels()
         {
-            var nonUniqueId = Guid.NewGuid().ToString();
+            var nonUniqueId = Guid.NewGuid();
             var expectedErrorMessage = string.Format(CultureInfo.InvariantCulture,
                 "Quota frame definitions contain a duplicate id. Duplicate id: '{0}'",
                 nonUniqueId);
@@ -168,7 +168,7 @@ namespace Nfield.Quota.Tests
 
                 new QuotaLevelDefinition
                 {
-                    Id = Guid.NewGuid().ToString(),
+                    Id = Guid.NewGuid(),
                     Name = "level2Name"
                 }
             });
@@ -194,7 +194,7 @@ namespace Nfield.Quota.Tests
 
             var variable = new QuotaVariableDefinition
             {
-                Id = Guid.NewGuid().ToString(),
+                Id = Guid.NewGuid(),
                 Name = nonUniqueName,
                 OdinVariableName = "odinVarName"
             };
@@ -203,13 +203,13 @@ namespace Nfield.Quota.Tests
             {
                 new QuotaLevelDefinition
                 {
-                    Id = Guid.NewGuid().ToString(),
+                    Id = Guid.NewGuid(),
                     Name = nonUniqueName
                 },
 
                 new QuotaLevelDefinition
                 {
-                    Id = Guid.NewGuid().ToString(),
+                    Id = Guid.NewGuid(),
                     Name = "level2Name"
                 }
             });
@@ -226,9 +226,9 @@ namespace Nfield.Quota.Tests
         [Test]
         public void Frame_HappyPath()
         {
-            var varId = Guid.NewGuid().ToString();
-            var level1Id = Guid.NewGuid().ToString();
-            var level2Id = Guid.NewGuid().ToString();
+            var varId = Guid.NewGuid();
+            var level1Id = Guid.NewGuid();
+            var level2Id = Guid.NewGuid();
 
             var quotaFrame = new QuotaFrame()
             {
@@ -262,7 +262,7 @@ namespace Nfield.Quota.Tests
             var frameVariable = new QuotaFrameVariable()
             {
                 DefinitionId = varId,
-                Id = Guid.NewGuid().ToString()
+                Id = Guid.NewGuid()
             };
 
             frameVariable.Levels.AddRange(new []
@@ -270,12 +270,12 @@ namespace Nfield.Quota.Tests
                 new QuotaFrameLevel
                 {
                     DefinitionId = level1Id,
-                    Id = Guid.NewGuid().ToString()
+                    Id = Guid.NewGuid()
                 },
                 new QuotaFrameLevel
                 {
                     DefinitionId = level2Id,
-                    Id = Guid.NewGuid().ToString()
+                    Id = Guid.NewGuid()
                 }
             });
 
@@ -290,10 +290,10 @@ namespace Nfield.Quota.Tests
         [Test]
         public void Frame_CannotContainDuplicateIds()
         {
-            var varId = Guid.NewGuid().ToString();
-            var level1Id = Guid.NewGuid().ToString();
-            var level2Id = Guid.NewGuid().ToString();
-            var nonUniqueId = Guid.NewGuid().ToString();
+            var varId = Guid.NewGuid();
+            var level1Id = Guid.NewGuid();
+            var level2Id = Guid.NewGuid();
+            var nonUniqueId = Guid.NewGuid();
             var expectedErrorMessage = string.Format(CultureInfo.InvariantCulture,
                 "Quota frame contains a duplicate id. Duplicate id: '{0}'",
                 nonUniqueId);
@@ -343,7 +343,7 @@ namespace Nfield.Quota.Tests
                 new QuotaFrameLevel
                 {
                     DefinitionId = level2Id,
-                    Id = Guid.NewGuid().ToString()
+                    Id = Guid.NewGuid()
                 }
             });
 
@@ -359,10 +359,10 @@ namespace Nfield.Quota.Tests
         [Test]
         public void Frame_CannotContainDuplicateIdInLevels()
         {
-            var varId = Guid.NewGuid().ToString();
-            var level1Id = Guid.NewGuid().ToString();
-            var level2Id = Guid.NewGuid().ToString();
-            var nonUniqueId = Guid.NewGuid().ToString();
+            var varId = Guid.NewGuid();
+            var level1Id = Guid.NewGuid();
+            var level2Id = Guid.NewGuid();
+            var nonUniqueId = Guid.NewGuid();
             var expectedErrorMessage = string.Format(CultureInfo.InvariantCulture,
                 "Quota frame contains a duplicate id. Duplicate id: '{0}'",
                 nonUniqueId);
@@ -399,7 +399,7 @@ namespace Nfield.Quota.Tests
             var frameVariable = new QuotaFrameVariable()
             {
                 DefinitionId = varId,
-                Id = Guid.NewGuid().ToString()
+                Id = Guid.NewGuid()
             };
 
             frameVariable.Levels.AddRange(new[]
@@ -428,9 +428,9 @@ namespace Nfield.Quota.Tests
         [Test]
         public void Frame_CannotContainAReferenceToANonExistingVariableDefinition()
         {
-            var level1Id = Guid.NewGuid().ToString();
-            var level2Id = Guid.NewGuid().ToString();
-            var nonExistingId = Guid.NewGuid().ToString();
+            var level1Id = Guid.NewGuid();
+            var level2Id = Guid.NewGuid();
+            var nonExistingId = Guid.NewGuid();
             var expectedErrorMessage = string.Format(CultureInfo.InvariantCulture,
                 "Quota frame contains a reference to a non-existing definition. Definition id: '{0}'",
                 nonExistingId);
@@ -442,7 +442,7 @@ namespace Nfield.Quota.Tests
 
             var variable = new QuotaVariableDefinition
             {
-                Id = Guid.NewGuid().ToString(),
+                Id = Guid.NewGuid(),
                 Name = "varName",
                 OdinVariableName = "odinVarName"
             };
@@ -467,7 +467,7 @@ namespace Nfield.Quota.Tests
             var frameVariable = new QuotaFrameVariable()
             {
                 DefinitionId = nonExistingId,
-                Id = Guid.NewGuid().ToString()
+                Id = Guid.NewGuid()
             };
 
             frameVariable.Levels.AddRange(new[]
@@ -475,12 +475,12 @@ namespace Nfield.Quota.Tests
                 new QuotaFrameLevel
                 {
                     DefinitionId = level1Id,
-                    Id = Guid.NewGuid().ToString()
+                    Id = Guid.NewGuid()
                 },
                 new QuotaFrameLevel
                 {
                     DefinitionId = level2Id,
-                    Id = Guid.NewGuid().ToString()
+                    Id = Guid.NewGuid()
                 }
             });
 
@@ -496,10 +496,10 @@ namespace Nfield.Quota.Tests
         [Test]
         public void Frame_CannotContainAReferenceToANonExistingLevelDefinition()
         {
-            var varId = Guid.NewGuid().ToString();
-            var level1Id = Guid.NewGuid().ToString();
-            var level2Id = Guid.NewGuid().ToString();
-            var nonExistingId = Guid.NewGuid().ToString();
+            var varId = Guid.NewGuid();
+            var level1Id = Guid.NewGuid();
+            var level2Id = Guid.NewGuid();
+            var nonExistingId = Guid.NewGuid();
             var expectedErrorMessage = string.Format(CultureInfo.InvariantCulture,
                 "Quota frame contains a reference to a non-existing definition. Definition id: '{0}'",
                 nonExistingId);
@@ -536,7 +536,7 @@ namespace Nfield.Quota.Tests
             var frameVariable = new QuotaFrameVariable()
             {
                 DefinitionId = varId,
-                Id = Guid.NewGuid().ToString()
+                Id = Guid.NewGuid()
             };
 
             frameVariable.Levels.AddRange(new[]
@@ -544,12 +544,12 @@ namespace Nfield.Quota.Tests
                 new QuotaFrameLevel
                 {
                     DefinitionId = nonExistingId,
-                    Id = Guid.NewGuid().ToString()
+                    Id = Guid.NewGuid()
                 },
                 new QuotaFrameLevel
                 {
                     DefinitionId = level2Id,
-                    Id = Guid.NewGuid().ToString()
+                    Id = Guid.NewGuid()
                 }
             });
 
@@ -565,10 +565,10 @@ namespace Nfield.Quota.Tests
         [Test]
         public void Frame_CannotHaveLessLevelsInTheFrameThanUnderTheReferencedVariableDefinition()
         {
-            var varId = Guid.NewGuid().ToString();
-            var level1Id = Guid.NewGuid().ToString();
-            var level2Id = Guid.NewGuid().ToString();
-            var varReferenceId = Guid.NewGuid().ToString();
+            var varId = Guid.NewGuid();
+            var level1Id = Guid.NewGuid();
+            var level2Id = Guid.NewGuid();
+            var varReferenceId = Guid.NewGuid();
             var expectedErrorMessage = string.Format(CultureInfo.InvariantCulture,
                 "Quota frame contains a variable that doesnt have all the defined levels associated. Affected frame variable id: '{0}', missing level definition id: '{1}'",
                 varReferenceId, level2Id);
@@ -613,7 +613,7 @@ namespace Nfield.Quota.Tests
                 new QuotaFrameLevel
                 {
                     DefinitionId = level1Id,
-                    Id = Guid.NewGuid().ToString()
+                    Id = Guid.NewGuid()
                 }
                 // Level 2 omitted
             });
@@ -630,10 +630,10 @@ namespace Nfield.Quota.Tests
         [Test]
         public void Frame_CannotHaveMoreLevelsInTheFrameThanUnderTheReferencedVariableDefinition()
         {
-            var varId = Guid.NewGuid().ToString();
-            var level1Id = Guid.NewGuid().ToString();
-            var level2Id = Guid.NewGuid().ToString();
-            var level3Id = Guid.NewGuid().ToString();
+            var varId = Guid.NewGuid();
+            var level1Id = Guid.NewGuid();
+            var level2Id = Guid.NewGuid();
+            var level3Id = Guid.NewGuid();
             var expectedErrorMessage = string.Format(CultureInfo.InvariantCulture,
                 "Quota frame contains a reference to a non-existing definition. Definition id: '{0}'",
                 level3Id);
@@ -670,7 +670,7 @@ namespace Nfield.Quota.Tests
             var frameVariable = new QuotaFrameVariable()
             {
                 DefinitionId = varId,
-                Id = Guid.NewGuid().ToString()
+                Id = Guid.NewGuid()
             };
 
             frameVariable.Levels.AddRange(new[]
@@ -678,17 +678,17 @@ namespace Nfield.Quota.Tests
                 new QuotaFrameLevel
                 {
                     DefinitionId = level1Id,
-                    Id = Guid.NewGuid().ToString()
+                    Id = Guid.NewGuid()
                 },
                 new QuotaFrameLevel
                 {
                     DefinitionId = level2Id,
-                    Id = Guid.NewGuid().ToString()
+                    Id = Guid.NewGuid()
                 },
                 new QuotaFrameLevel
                 {
                     DefinitionId = level3Id,
-                    Id = Guid.NewGuid().ToString()
+                    Id = Guid.NewGuid()
                 }
             });
 
@@ -704,12 +704,12 @@ namespace Nfield.Quota.Tests
         [Test]
         public void ComplexFrame_HappyPath()
         {
-            var var1Id = Guid.NewGuid().ToString();
-            var var2Id = Guid.NewGuid().ToString();
-            var var1Level1Id = Guid.NewGuid().ToString();
-            var var1Level2Id = Guid.NewGuid().ToString();
-            var var2Level1Id = Guid.NewGuid().ToString();
-            var var2Level2Id = Guid.NewGuid().ToString();
+            var var1Id = Guid.NewGuid();
+            var var2Id = Guid.NewGuid();
+            var var1Level1Id = Guid.NewGuid();
+            var var1Level2Id = Guid.NewGuid();
+            var var2Level1Id = Guid.NewGuid();
+            var var2Level2Id = Guid.NewGuid();
 
             var quotaFrame = new QuotaFrame()
             {
@@ -765,13 +765,13 @@ namespace Nfield.Quota.Tests
             var frameVariable = new QuotaFrameVariable()
             {
                 DefinitionId = var1Id,
-                Id = Guid.NewGuid().ToString()
+                Id = Guid.NewGuid()
             };
 
             var frameVariable2 = new QuotaFrameVariable()
             {
                 DefinitionId = var2Id,
-                Id = Guid.NewGuid().ToString()
+                Id = Guid.NewGuid()
             };
 
             frameVariable2.Levels.AddRange(new[]
@@ -779,19 +779,19 @@ namespace Nfield.Quota.Tests
                 new QuotaFrameLevel
                 {
                     DefinitionId = var2Level1Id,
-                    Id = Guid.NewGuid().ToString()
+                    Id = Guid.NewGuid()
                 },
                 new QuotaFrameLevel
                 {
                     DefinitionId = var2Level2Id,
-                    Id = Guid.NewGuid().ToString()
+                    Id = Guid.NewGuid()
                 }
             });
 
             var frameLevel1Var1 = new QuotaFrameLevel()
             {
                 DefinitionId = var1Level1Id,
-                Id = Guid.NewGuid().ToString()
+                Id = Guid.NewGuid()
             };
             frameLevel1Var1.Variables.Add(frameVariable2);
 
@@ -800,13 +800,13 @@ namespace Nfield.Quota.Tests
             var frameLevel2Var1 = new QuotaFrameLevel()
             {
                 DefinitionId = var1Level2Id,
-                Id = Guid.NewGuid().ToString()
+                Id = Guid.NewGuid()
             };
 
             var frameVariable3 = new QuotaFrameVariable()
             {
                 DefinitionId = var2Id,
-                Id = Guid.NewGuid().ToString()
+                Id = Guid.NewGuid()
             };
 
             frameVariable3.Levels.AddRange(new[]
@@ -814,12 +814,12 @@ namespace Nfield.Quota.Tests
                 new QuotaFrameLevel
                 {
                     DefinitionId = var2Level1Id,
-                    Id = Guid.NewGuid().ToString()
+                    Id = Guid.NewGuid()
                 },
                 new QuotaFrameLevel
                 {
                     DefinitionId = var2Level2Id,
-                    Id = Guid.NewGuid().ToString()
+                    Id = Guid.NewGuid()
                 }
             });
 
@@ -838,14 +838,14 @@ namespace Nfield.Quota.Tests
         [Test]
         public void ComplexFrame_MissingVariableUnderOneOfTheLevels()
         {
-            var var1Id = Guid.NewGuid().ToString();
-            var var2Id = Guid.NewGuid().ToString();
-            var var1Level1Id = Guid.NewGuid().ToString();
-            var var1Level2Id = Guid.NewGuid().ToString();
-            var var2Level1Id = Guid.NewGuid().ToString();
-            var var2Level2Id = Guid.NewGuid().ToString();
-            var frameVar1Id = Guid.NewGuid().ToString();
-            var frameLvl4Id = Guid.NewGuid().ToString();
+            var var1Id = Guid.NewGuid();
+            var var2Id = Guid.NewGuid();
+            var var1Level1Id = Guid.NewGuid();
+            var var1Level2Id = Guid.NewGuid();
+            var var2Level1Id = Guid.NewGuid();
+            var var2Level2Id = Guid.NewGuid();
+            var frameVar1Id = Guid.NewGuid();
+            var frameLvl4Id = Guid.NewGuid();
 
             var expectedErrorMessage = string.Format(CultureInfo.InvariantCulture,
                 "Quota frame invalid. All levels of a variable should have the same variables underneath. Frame variable id '{0}' has a mismatch for level '{1}'",
@@ -911,7 +911,7 @@ namespace Nfield.Quota.Tests
             var frameVariable2 = new QuotaFrameVariable()
             {
                 DefinitionId = var2Id,
-                Id = Guid.NewGuid().ToString()
+                Id = Guid.NewGuid()
             };
             
             frameVariable2.Levels.AddRange(new[]
@@ -919,12 +919,12 @@ namespace Nfield.Quota.Tests
                 new QuotaFrameLevel
                 {
                     DefinitionId = var2Level1Id,
-                    Id = Guid.NewGuid().ToString()
+                    Id = Guid.NewGuid()
                 },
                 new QuotaFrameLevel
                 {
                     DefinitionId = var2Level2Id,
-                    Id = Guid.NewGuid().ToString()
+                    Id = Guid.NewGuid()
                 }
             });
 
@@ -932,7 +932,7 @@ namespace Nfield.Quota.Tests
             var frameLevel1Var1 = new QuotaFrameLevel()
             {
                 DefinitionId = var1Level1Id,
-                Id = Guid.NewGuid().ToString()                
+                Id = Guid.NewGuid()                
             };
             frameLevel1Var1.Variables.Add(frameVariable2);
 

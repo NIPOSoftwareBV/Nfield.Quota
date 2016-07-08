@@ -10,7 +10,10 @@ namespace Nfield.Quota.Persistence
     {
         public static QuotaFrame Decode(string json)
         {
-            return JsonConvert.DeserializeObject<QuotaFrame>(json);
+            var settings = new JsonSerializerSettings();
+            settings.Converters.Add(new GuidJsonConverter());
+
+            return JsonConvert.DeserializeObject<QuotaFrame>(json, settings);
         }
     }
 }

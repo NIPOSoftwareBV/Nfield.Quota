@@ -48,8 +48,8 @@ namespace Nfield.Quota.Tests
         {
             var frame = new QuotaFrameBuilder()
                 .Id("frameId")
-                .VariableDefinition("var", "varName", "odinVarName", new List<string>() { "level" })
-                .Structure(sb => sb.Variable("var"))
+                .VariableDefinition("varName", new List<string>() { "level" })
+                .Structure(sb => sb.Variable("varName"))
                 .Build();
 
             frame["varName", "level"].Target = 60;
