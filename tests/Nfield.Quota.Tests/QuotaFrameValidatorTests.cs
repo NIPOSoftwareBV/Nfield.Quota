@@ -702,6 +702,60 @@ namespace Nfield.Quota.Tests
         }
 
         [Test]
+        public void Frame_CannotHaveLevelTargetWithNegativeValue()
+        {
+            const int invalidTarget = -10;
+            const string lvl2Name = "level2Name";
+
+            var quotaFrame = new QuotaFrameBuilder()
+                .Id("id")
+                .VariableDefinition("varName", "odinVarName", new[] {"level1Name", lvl2Name})
+                .Structure(sb =>
+                {
+                    sb.Variable("varName");
+                })
+                .Build();
+
+            quotaFrame["varName", lvl2Name].Target = invalidTarget;
+            var lvl2Id = quotaFrame["varName", lvl2Name].Id;
+
+            var expectedErrorMessage = string.Format(CultureInfo.InvariantCulture,
+                "Target invalid. All Targets must be of a positive value. Frame level Id '{0}' with name '{1}' has an invalid negative target '{2}'",
+                lvl2Id, lvl2Name, invalidTarget);
+
+            var validator = new QuotaFrameValidator();
+            var result = validator.Validate(quotaFrame);
+
+
+            Assert.That(result.Errors.Single().ErrorMessage,
+                Is.EqualTo(expectedErrorMessage));
+        }
+
+        [Test]
+        public void Frame_CannotHaveTotalTargetWithNegativeValue()
+        {
+            const int invalidTotalTarget = -100;
+
+            var expectedErrorMessage = string.Format(CultureInfo.InvariantCulture,
+                "Target invalid. All Targets must be of a positive value. Quota frame total target has a negative value '{0}'",
+                invalidTotalTarget);
+
+            var quotaFrame = new QuotaFrameBuilder()
+                 .Id(Guid.NewGuid().ToString())
+                 .VariableDefinition(
+                     "varName", new[] { "level1Name", "level2Name" })
+                 .Structure(sb => { })
+                 .Build();
+            quotaFrame.Target = invalidTotalTarget;
+
+            var validator = new QuotaFrameValidator();
+            var result = validator.Validate(quotaFrame);
+
+            Assert.That(result.Errors.Single().ErrorMessage,
+                Is.EqualTo(expectedErrorMessage));
+        }
+
+        [Test]
         public void ComplexFrame_HappyPath()
         {
             var var1Id = Guid.NewGuid();
