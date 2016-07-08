@@ -232,11 +232,11 @@ namespace Nfield.Quota
             ICollection<QuotaFrameVariable> frameVariables,
             PropertyValidatorContext context)
         {
-            var inValid = false;
+            var inValidTarget = false;
             if (frame.Target < 0)
             {
                 context.MessageFormatter.AppendArgument("InvalidTarget", frame.Target);
-                inValid = true;
+                inValidTarget = true;
             }
 
             var traverser = new PreOrderQuotaFrameTraverser();
@@ -250,7 +250,7 @@ namespace Nfield.Quota
                         context.MessageFormatter.AppendArgument("LevelName", level.Name);
                         context.MessageFormatter.AppendArgument("LevelId", level.Id);
                         context.MessageFormatter.AppendArgument("InvalidTarget", level.Target);
-                        inValid = true;
+                        inValidTarget = true;
                     }
                 },
                 level =>
@@ -259,10 +259,10 @@ namespace Nfield.Quota
                     context.MessageFormatter.AppendArgument("LevelName", level.Name);
                     context.MessageFormatter.AppendArgument("LevelId", level.Id);
                     context.MessageFormatter.AppendArgument("InvalidTarget", level.Target);
-                    inValid = true;
+                    inValidTarget = true;
                 });
 
-            return inValid;
+            return !inValidTarget;
         }
 
         // Assumes set.Add returns false if value already in collection
