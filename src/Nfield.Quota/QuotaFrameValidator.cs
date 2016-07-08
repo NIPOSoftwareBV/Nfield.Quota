@@ -25,13 +25,17 @@ namespace Nfield.Quota
                 .Must(HaveUniqueIds)
                 .WithMessage("Quota frame contains a duplicate id. Duplicate id: '{DuplicateValue}'")
                 .Must(ReferenceDefinitions)
-                .WithMessage("Quota frame contains a reference to a non-existing definition. Definition id: '{DefinitionId}'")
+                .WithMessage(
+                    "Quota frame contains a reference to a non-existing definition. Definition id: '{DefinitionId}'")
                 .Must(HaveTheSameLevelsUnderAVariableAsTheLinkedVariableDefinition)
-                .WithMessage("Quota frame contains a variable that doesnt have all the defined levels associated. Affected frame variable id: '{AffectedFrameVariableId}', missing level definition id: '{MissingLevelDefinitionId}'")
+                .WithMessage(
+                    "Quota frame contains a variable that doesnt have all the defined levels associated. Affected frame variable id: '{AffectedFrameVariableId}', missing level definition id: '{MissingLevelDefinitionId}'")
                 .Must(HaveVariablesWithTheSameVariablesUnderEveryLevel)
-                .WithMessage("Quota frame invalid. All levels of a variable should have the same variables underneath. Frame variable id '{AffectedFrameVariableId}' has a mismatch for level '{MismatchLevelId}'")
+                .WithMessage(
+                    "Quota frame invalid. All levels of a variable should have the same variables underneath. Frame variable id '{AffectedFrameVariableId}' has a mismatch for level '{MismatchLevelId}'")
                 .Must(HaveValidTargets)
-                .WithMessage("Target invalid. All Targets must be of a positive value. Frame level id '{LevelId}' with Name '{LevelName}' has a negative Target '{InvalidTarget}'");
+                .WithMessage(
+                    "Target invalid. All Targets must be of a positive value. {Message} has a negative Target '{InvalidTarget}'");
         }
 
         private static bool HaveUniqueIds(
@@ -235,6 +239,7 @@ namespace Nfield.Quota
             var inValidTarget = false;
             if (frame.Target < 0)
             {
+                context.MessageFormatter.AppendArgument("Message", "Quota frame total target");
                 context.MessageFormatter.AppendArgument("InvalidTarget", frame.Target);
                 inValidTarget = true;
             }
@@ -242,22 +247,11 @@ namespace Nfield.Quota
             var traverser = new PreOrderQuotaFrameTraverser();
             traverser.Traverse( // always walks whole tree, might want to change this
                 frame,
-                variable =>
-                {
-                    foreach (var level in variable.Levels)
-                    {
-                        if (!(level.Target < 0)) continue;
-                        context.MessageFormatter.AppendArgument("LevelName", level.Name);
-                        context.MessageFormatter.AppendArgument("LevelId", level.Id);
-                        context.MessageFormatter.AppendArgument("InvalidTarget", level.Target);
-                        inValidTarget = true;
-                    }
-                },
                 level =>
                 {
                     if (!(level.Target < 0)) return;
-                    context.MessageFormatter.AppendArgument("LevelName", level.Name);
-                    context.MessageFormatter.AppendArgument("LevelId", level.Id);
+                    context.MessageFormatter.AppendArgument("Message",
+                        $"Frame level id '{level.Id}' with Name '{level.Name}'");
                     context.MessageFormatter.AppendArgument("InvalidTarget", level.Target);
                     inValidTarget = true;
                 });

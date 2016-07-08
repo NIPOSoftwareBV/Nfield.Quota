@@ -700,6 +700,171 @@ namespace Nfield.Quota.Tests
             Assert.That(result.Errors.Single().ErrorMessage,
                 Is.EqualTo(expectedErrorMessage));
         }
+        [Test]
+        public void Frame_CannotHaveLevelTargetWithNegativeValue()
+        {
+            var varId = Guid.NewGuid();
+            var level1Id = Guid.NewGuid();
+            var level2Id = Guid.NewGuid();
+            var level3Id = Guid.NewGuid();
+            const string level3Name = "lvl3";
+            const int invalidTarget = -10;
+
+            var expectedErrorMessage = string.Format(CultureInfo.InvariantCulture,
+                "Target invalid. All Targets must be of a positive value. Frame level id '{0}' with Name '{1}' has a negative Target '{2}'",
+                level3Id,level3Name,invalidTarget);
+
+            var quotaFrame = new QuotaFrame()
+            {
+                Id = Guid.NewGuid().ToString()
+            };
+
+            var variable = new QuotaVariableDefinition
+            {
+                Id = varId,
+                Name = "varName",
+                OdinVariableName = "odinVarName"
+            };
+
+            variable.Levels.AddRange(new[]
+            {
+                new QuotaLevelDefinition
+                {
+                    Id = level1Id,
+                    Name = "level1Name"
+                },
+
+                new QuotaLevelDefinition
+                {
+                    Id = level2Id,
+                    Name = "level2Name"
+                },
+                new QuotaLevelDefinition
+                {
+                    Id = level3Id,
+                    Name = level3Name
+                }
+            });
+
+            quotaFrame.VariableDefinitions.Add(variable);
+
+            var frameVariable = new QuotaFrameVariable()
+            {
+                DefinitionId = varId,
+                Id = Guid.NewGuid(),
+            };
+
+            frameVariable.Levels.AddRange(new[]
+            {
+                new QuotaFrameLevel
+                {
+                    DefinitionId = level1Id,
+                    Id = Guid.NewGuid()
+                },
+                new QuotaFrameLevel
+                {
+                    DefinitionId = level2Id,
+                    Id = Guid.NewGuid()
+                },
+                new QuotaFrameLevel
+                {
+                    DefinitionId = level3Id,
+                    Id = level3Id,
+                    Name = level3Name,
+                    Target = invalidTarget
+                }
+            });
+
+            quotaFrame.FrameVariables.Add(frameVariable);
+
+            var validator = new QuotaFrameValidator();
+            var result = validator.Validate(quotaFrame);
+
+            Assert.That(result.Errors.Single().ErrorMessage,
+                Is.EqualTo(expectedErrorMessage));
+        }
+
+        [Test]
+        public void Frame_CannotHaveTotalTargetWithNegativeValue()
+        {
+            var varId = Guid.NewGuid();
+            var level1Id = Guid.NewGuid();
+            var level2Id = Guid.NewGuid();
+            var level3Id = Guid.NewGuid();
+            const int invalidTotalTarget = -100;
+
+            var expectedErrorMessage = string.Format(CultureInfo.InvariantCulture,
+                "Target invalid. All Targets must be of a positive value. Quota frame total target has a negative Target '{0}'",
+                invalidTotalTarget);
+
+            var quotaFrame = new QuotaFrame()
+            {
+                Id = Guid.NewGuid().ToString(),
+                Target = invalidTotalTarget
+            };
+
+            var variable = new QuotaVariableDefinition
+            {
+                Id = varId,
+                Name = "varName",
+                OdinVariableName = "odinVarName"
+            };
+
+            variable.Levels.AddRange(new[]
+            {
+                new QuotaLevelDefinition
+                {
+                    Id = level1Id,
+                    Name = "level1Name"
+                },
+
+                new QuotaLevelDefinition
+                {
+                    Id = level2Id,
+                    Name = "level2Name"
+                },
+                new QuotaLevelDefinition
+                {
+                    Id = level3Id,
+                    Name = "level3Name"
+                }
+            });
+
+            quotaFrame.VariableDefinitions.Add(variable);
+
+            var frameVariable = new QuotaFrameVariable()
+            {
+                DefinitionId = varId,
+                Id = Guid.NewGuid(),
+            };
+
+            frameVariable.Levels.AddRange(new[]
+            {
+                new QuotaFrameLevel
+                {
+                    DefinitionId = level1Id,
+                    Id = Guid.NewGuid()
+                },
+                new QuotaFrameLevel
+                {
+                    DefinitionId = level2Id,
+                    Id = Guid.NewGuid()
+                },
+                new QuotaFrameLevel
+                {
+                    DefinitionId = level3Id,
+                    Id = Guid.NewGuid()
+                }
+            });
+
+            quotaFrame.FrameVariables.Add(frameVariable);
+
+            var validator = new QuotaFrameValidator();
+            var result = validator.Validate(quotaFrame);
+
+            Assert.That(result.Errors.Single().ErrorMessage,
+                Is.EqualTo(expectedErrorMessage));
+        }
 
         [Test]
         public void ComplexFrame_HappyPath()
