@@ -280,7 +280,7 @@ namespace Nfield.Quota
             ICollection<QuotaFrameVariable> frameVariables,
             PropertyValidatorContext context)
         {
-            var expression =new Regex("^([a-zA-Z][a-zA-Z0-9_]*)*$");
+            var expression =new Regex("^([a-zA-Z][a-zA-Z0-9_]*)?$");
 
             foreach (var quotaVariableDefinition in frame.VariableDefinitions)
             {
