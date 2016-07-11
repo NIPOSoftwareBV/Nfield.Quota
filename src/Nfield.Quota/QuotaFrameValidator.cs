@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using FluentValidation;
 using FluentValidation.Validators;
 
@@ -38,7 +39,10 @@ namespace Nfield.Quota
                     "Target invalid. All Targets must be of a positive value. Quota frame total target has a negative value '{InvalidTarget}'")
                 .Must(HaveValidLevelTargets)
                 .WithMessage(
-                    "Target invalid. All Targets must be of a positive value. Frame level Id '{LevelId}' with name '{LevelName}' has an invalid negative target '{InvalidTarget}'");
+                    "Target invalid. All Targets must be of a positive value. Frame level Id '{LevelId}' with name '{LevelName}' has an invalid negative target '{InvalidTarget}'")
+                .Must(HaveValidOdinVariableName)
+                .WithMessage(
+                    "Odin variable name invalid. Odin variable names can only contain numbers, letters and '_'. They can only ​start with​ a letter. First character cannot be '_' or a number. Variable definition Id '{DefId}' with name '{DefName}' has an invalid Odin Variable Name '{InvalidOdin}'");
         }
 
         private static bool HaveUniqueIds(
@@ -271,6 +275,24 @@ namespace Nfield.Quota
             return !inValidTarget;
         }
 
+        private static bool HaveValidOdinVariableName(
+            QuotaFrame frame,
+            ICollection<QuotaFrameVariable> frameVariables,
+            PropertyValidatorContext context)
+        {
+            var expression =new Regex("^([a-zA-Z][a-zA-Z0-9_]*)*$");
+
+            foreach (var quotaVariableDefinition in frame.VariableDefinitions)
+            {
+                if (expression.Match(quotaVariableDefinition.OdinVariableName).Success) continue;
+                context.MessageFormatter.AppendArgument("DefId", quotaVariableDefinition.Id);
+                context.MessageFormatter.AppendArgument("DefName", quotaVariableDefinition.Name);
+                context.MessageFormatter.AppendArgument("InvalidOdin", quotaVariableDefinition.OdinVariableName);
+                return false;
+            }
+            return true;
+        }
+        
         // Assumes set.Add returns false if value already in collection
         private static bool IsDuplicateValue<T>(PropertyValidatorContext context, ISet<T> set, T entry)
         {

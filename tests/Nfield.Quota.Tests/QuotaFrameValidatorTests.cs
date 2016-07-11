@@ -756,6 +756,34 @@ namespace Nfield.Quota.Tests
         }
 
         [Test]
+        public void Frame_CannotHaveInvalidOdinVariableName()
+        {
+            const string invalidOdinVarName = "_varName";
+            const string variableName = "varName";
+
+            var quotaFrame = new QuotaFrameBuilder()
+                .Id(Guid.NewGuid().ToString())
+                .VariableDefinition(
+                    "varName", invalidOdinVarName, new[] {"level1Name", "level2Name"})
+                .Structure(sb => { })
+                .Build();
+
+            var varId = quotaFrame.VariableDefinitions.Single().Id;
+
+            var expectedErrorMessage = string.Format(CultureInfo.InvariantCulture,
+                "Odin variable name invalid. Odin variable names can only contain numbers, letters and '_'." +
+                " They can only ​start with​ a letter. First character cannot be '_' or a number." +
+                " Variable definition Id '{0}' with name '{1}' has an invalid Odin Variable Name '{2}'",
+                varId, variableName, invalidOdinVarName);
+
+            var validator = new QuotaFrameValidator();
+            var result = validator.Validate(quotaFrame);
+
+            Assert.That(result.Errors.Single().ErrorMessage,
+                Is.EqualTo(expectedErrorMessage));
+        }
+
+        [Test]
         public void ComplexFrame_HappyPath()
         {
             var var1Id = Guid.NewGuid();
