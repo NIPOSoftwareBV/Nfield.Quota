@@ -19,7 +19,6 @@ Let's start by creating the simplest quota frame.
 
 ```csharp
 var quotaFrame = new QuotaFrameBuilder()
-    .Id("<survey ID>")
     .Target(200)
     .Build();
 ```
@@ -30,13 +29,11 @@ To identify groups, we can add a quota variable definition.
 
 ```csharp
 var quotaFrame = new QuotaFrameBuilder()
-    .Id("<survey ID>")
     .Target(200)
     .VariableDefinition(
-      variableId: "gender",
       variableName: "Gender",
-      odinVariableName: "GENDER",
-      levels: new [] { "Male", "Female" })
+      odinVariableName: "gender",
+      levelNames: new [] { "Male", "Female" })
     .Build();
 ```
 
@@ -54,18 +51,15 @@ After defining our variable we need to create the structure of the quota frame, 
 
 ```csharp
 var quotaFrame = new QuotaFrameBuilder()
-    .Id("<survey ID>")
     .Target(200)
     .VariableDefinition(
-      variableId: "gender",
       variableName: "Gender",
-      odinVariableName: "GENDER",
-      levels: new [] { "Male", "Female" })
+      odinVariableName: "gender",
+      levelNames: new [] { "Male", "Female" })
     .VariableDefinition(
-      variableId: "region",
       variableName: "Region",
-      odinVariableName: "REGION",
-      levels : new [] { "North", "South", "West", "East"})
+      odinVariableName: "region",
+      levelNames : new [] { "North", "South", "West", "East"})
     .Structure(
       root => root.Variable("gender",
         gender => gender.Variable("region")

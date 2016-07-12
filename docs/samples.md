@@ -8,7 +8,6 @@ The minimal quota frame only sets a total target.
 
 ```csharp
 var quotaFrame = new QuotaFrameBuilder()
-    .Id("721C2E57-1232-48E3-9C3C-822D89B0B635") // the ID of the survey
     .Target(100)
     .Build();
 ``` 
@@ -19,13 +18,11 @@ A small quota frame containing only a single variable with targets.
 
 ```csharp
 var quotaFrame = new QuotaFrameBuilder()
-    .Id("721C2E57-1232-48E3-9C3C-822D89B0B635") // the ID of the survey
     .Target(100)
     .VariableDefinition(
-      variableId: "gender",
       variableName: "Gender",
-      odinVariableName: "GENDER",
-      levels: new [] { "Male", "Female" })
+      odinVariableName: "gender",
+      levelNames: new [] { "Male", "Female" })
     .Structure(
       root => root.Variable("Gender")
       )
@@ -40,18 +37,15 @@ This quota frame contains two independent variables.
 
 ```csharp
 var quotaFrame = new QuotaFrameBuilder()
-    .Id("721C2E57-1232-48E3-9C3C-822D89B0B635") // the ID of the survey
     .Target(100)
     .VariableDefinition(
-      variableId: "gender",
       variableName: "Gender",
-      odinVariableName: "GENDER",
-      levels: new [] { "Male", "Female" })
+      odinVariableName: "gender",
+      levelNames: new [] { "Male", "Female" })
     .VariableDefinition(
-      variableId: "region",
       variableName: "Region",
-      odinVariableName: "REGION",
-      levels : new [] { "North", "South", "West", "East"})
+      odinVariableName: "region",
+      levelNames : new [] { "North", "South", "West", "East"})
     .Structure(
       root => {
         root.Variable("Gender");
@@ -73,18 +67,15 @@ of respondents.
 
 ```csharp
 var quotaFrame = new QuotaFrameBuilder()
-    .Id("721C2E57-1232-48E3-9C3C-822D89B0B635") // the ID of the survey
     .Target(200)
     .VariableDefinition(
-      variableId: "gender",
       variableName: "Gender",
-      odinVariableName: "GENDER",
-      levels: new [] { "Male", "Female" })
+      odinVariableName: "gender",
+      levelNames: new [] { "Male", "Female" })
     .VariableDefinition(
-      variableId: "region",
       variableName: "Region",
-      odinVariableName: "REGION",
-      levels : new [] { "North", "South", "West", "East"})
+      odinVariableName: "region",
+      levelNames : new [] { "North", "South", "West", "East"})
     .Structure(
       root => root.Variable("Gender", gender =>
         gender.Variable("Region")
