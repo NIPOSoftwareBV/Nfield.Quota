@@ -13,7 +13,6 @@ namespace Nfield.Quota.Tests
         public void BuildingSimpleTreeCreatesCorrectQuotaFrame()
         {
             var quotaFrame = new QuotaFrameBuilder()
-                .Id("id")
                 .Target(10)
                 .VariableDefinition("varName", "odinVarName", new[] { "level1Name", "level2Name" })
                 .Structure(sb =>
@@ -25,7 +24,6 @@ namespace Nfield.Quota.Tests
             quotaFrame["varName", "level1Name"].Target = 6;
             quotaFrame["varName", "level2Name"].Target = 4;
 
-            Assert.That(quotaFrame.Id, Is.EqualTo("id"));
             Assert.That(quotaFrame.Target.HasValue, Is.True);
             Debug.Assert(quotaFrame.Target != null, "quotaFrame.Target != null");
             Assert.That(quotaFrame.Target.Value, Is.EqualTo(10));
@@ -50,7 +48,6 @@ namespace Nfield.Quota.Tests
         public void BuildingNestedTreeCreatesCorrectQuotaFrame()
         {
             var quotaFrame = new QuotaFrameBuilder()
-                .Id("id")
                 .Target(10)
                 .VariableDefinition("gender", new[]
                 {
@@ -73,7 +70,6 @@ namespace Nfield.Quota.Tests
             quotaFrame["gender", "Female"]["region", "North"].Target = 2;
             quotaFrame["gender", "Female"]["region", "South"].Target = 2;
 
-            Assert.That(quotaFrame.Id, Is.EqualTo("id"));
             Assert.That(quotaFrame.Target.HasValue, Is.True);
             Debug.Assert(quotaFrame.Target != null, "quotaFrame.Target != null");
             Assert.That(quotaFrame.Target.Value, Is.EqualTo(10));
