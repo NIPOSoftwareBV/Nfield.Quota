@@ -20,8 +20,6 @@ namespace Nfield.Quota
             FrameVariables = new List<QuotaFrameVariable>(frameVariables);
         }
 
-        public string Id { get; set; }
-
         public int? Target { get; set; }
 
         public ICollection<QuotaVariableDefinition> VariableDefinitions { get; }

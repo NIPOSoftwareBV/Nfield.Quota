@@ -24,7 +24,6 @@ namespace Nfield.Quota.Builders
         {
             var frame = new QuotaFrame
             {
-                Id = _id,
                 Target = _target,
             };
 
@@ -39,12 +38,6 @@ namespace Nfield.Quota.Builders
             validator.Validate(frame);
 
             return frame;
-        }
-
-        public QuotaFrameBuilder Id(string id)
-        {
-            _id = id;
-            return this;
         }
 
         public QuotaFrameBuilder Target(int? target)
