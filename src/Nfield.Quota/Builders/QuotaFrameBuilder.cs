@@ -7,45 +7,37 @@ namespace Nfield.Quota.Builders
     {
         private string _id;
         private int? _target;
-        private int _successful;
-        private readonly List<QuotaVariableDefinitionBuilder> _variableDefinitionBuilders = new List<QuotaVariableDefinitionBuilder>();
-        private readonly List<QuotaFrameVariableBuilder> _variableBuilders = new List<QuotaFrameVariableBuilder>();
-        
+        private readonly IList<QuotaVariableDefinitionBuilder> _variableDefinitionBuilders;
+        private readonly QuotaFrameStructureBuilder _structureBuilder;
+
+        public QuotaFrameBuilder()
+        {
+            _variableDefinitionBuilders = new List<QuotaVariableDefinitionBuilder>();
+            _structureBuilder = new QuotaFrameStructureBuilder();
+        }
+
         private void Add(QuotaVariableDefinitionBuilder builder)
         {
             _variableDefinitionBuilders.Add(builder);
         }
-        private void Add(QuotaFrameVariableBuilder builder)
-        {
-            _variableBuilders.Add(builder);
-        }
-
         public QuotaFrame Build()
         {
-            var quotaFrame = new QuotaFrame
+            var frame = new QuotaFrame
             {
-                Id = _id,
                 Target = _target,
-                Successful = _successful
             };
 
             foreach (var builder in _variableDefinitionBuilders)
             {
-                builder.Build(quotaFrame);
+                builder.Build(frame);
             }
 
-            foreach (var builder in _variableBuilders)
-            {
-                builder.Build(quotaFrame);
-            }
+            _structureBuilder.Build(frame);
 
-            return quotaFrame;
-        }
+            var validator = new QuotaFrameValidator();
+            validator.Validate(frame);
 
-        public QuotaFrameBuilder Id(string id)
-        {
-            _id = id;
-            return this;
+            return frame;
         }
 
         public QuotaFrameBuilder Target(int? target)
@@ -54,50 +46,33 @@ namespace Nfield.Quota.Builders
             return this;
         }
 
-        public QuotaFrameBuilder Successful(int successful)
-        {
-            _successful = successful;
-            return this;
-        }
-
         public QuotaFrameBuilder VariableDefinition(
-            string variableId,
             string variableName,
             string odinVariableName,
-            Action<QuotaVariableDefinitionBuilder> builderAction
-            )
+            IEnumerable<string> levelNames)
         {
-            var variableDefinitionBuilder = new QuotaVariableDefinitionBuilder(variableId, variableName, odinVariableName);
-            builderAction(variableDefinitionBuilder);
+            var variableDefinitionBuilder = new QuotaVariableDefinitionBuilder(
+                Guid.NewGuid(),
+                variableName,
+                odinVariableName,
+                levelNames
+                );
             Add(variableDefinitionBuilder);
             return this;
         }
 
         public QuotaFrameBuilder VariableDefinition(
-            string variableId,
-            Action<QuotaVariableDefinitionBuilder> builderAction
-            )
+            string variableName,
+            IEnumerable<string> levelNames)
         {
-            return VariableDefinition(variableId, variableId, variableId, builderAction);
+            return VariableDefinition(variableName, variableName.ToLowerInvariant(), levelNames);
         }
 
-        public QuotaFrameBuilder FrameVariable(
-            string definitionId,
-            Action<QuotaFrameVariableBuilder> buildAction
-            )
-        {
-            return FrameVariable(definitionId, Guid.NewGuid().ToString(), buildAction);
-        }
 
-        public QuotaFrameBuilder FrameVariable(
-            string definitionId,
-            string id,
-            Action<QuotaFrameVariableBuilder> buildAction
-            )
+        public QuotaFrameBuilder Structure(
+            Action<QuotaFrameStructureBuilder> buildAction)
         {
-            var builder = new QuotaFrameVariableBuilder(id, definitionId);
-            buildAction(builder);
-            Add(builder);
+            buildAction(_structureBuilder);
             return this;
         }
     }

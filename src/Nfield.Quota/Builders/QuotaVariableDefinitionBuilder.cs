@@ -1,24 +1,22 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Nfield.Quota.Builders
 {
     public class QuotaVariableDefinitionBuilder
     {
-        private readonly string _id;
+        private readonly Guid _id;
         private readonly string _name;
         private readonly string _odinVariableName;
-        private readonly List<QuotaLevelDefinitionBuilder> _levelDefinitionBuilders = new List<QuotaLevelDefinitionBuilder>();
+        private readonly IEnumerable<string> _levelNames;
 
-        public QuotaVariableDefinitionBuilder(string id, string name, string odinVariableName)
+        public QuotaVariableDefinitionBuilder(
+            Guid id, string name, string odinVariableName, IEnumerable<string> levelNames)
         {
             _id = id;
             _name = name;
             _odinVariableName = odinVariableName;
-        }
-
-        public void Add(QuotaLevelDefinitionBuilder builder)
-        {
-            _levelDefinitionBuilders.Add(builder);
+            _levelNames = levelNames;
         }
 
         public void Build(QuotaFrame quotaFrame)
@@ -29,24 +27,18 @@ namespace Nfield.Quota.Builders
                 Name = _name,
                 OdinVariableName = _odinVariableName
             };
-            quotaFrame.VariableDefinitions.Add(variable);
 
-            foreach (var builder in _levelDefinitionBuilders)
+            foreach (var levelName in _levelNames)
             {
-                builder.Build(variable);
+                var level = new QuotaLevelDefinition
+                {
+                    Id = Guid.NewGuid(),
+                    Name = levelName
+                };
+                variable.Levels.Add(level);
             }
-        }
 
-        public void Level(string id)
-        {
-            Level(id, id);
+            quotaFrame.VariableDefinitions.Add(variable);
         }
-
-        public void Level(string id, string name)
-        {
-            var levelBuilder = new QuotaLevelDefinitionBuilder(id, name);
-            Add(levelBuilder);
-        }
-
     }
 }

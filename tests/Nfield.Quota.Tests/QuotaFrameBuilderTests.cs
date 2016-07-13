@@ -1,5 +1,8 @@
-﻿using Nfield.Quota.Builders;
+﻿using System;
+using System.Diagnostics;
+using Nfield.Quota.Builders;
 using NUnit.Framework;
+using System.Linq;
 
 namespace Nfield.Quota.Tests
 {
@@ -10,142 +13,104 @@ namespace Nfield.Quota.Tests
         public void BuildingSimpleTreeCreatesCorrectQuotaFrame()
         {
             var quotaFrame = new QuotaFrameBuilder()
-                .Id("id")
                 .Target(10)
-                .VariableDefinition("varId", "varName", "odinVarName", var =>
+                .VariableDefinition("varName", "odinVarName", new[] { "level1Name", "level2Name" })
+                .Structure(sb =>
                 {
-                    var.Level("level1Id", "level1Name");
-                    var.Level("level2Id", "level2Name");
-                })
-                .FrameVariable("varId", "varReferenceId", variableReference =>
-                {
-                    variableReference.Level("level1Id", "level1RefId", 6, 2);
-                    variableReference.Level("level2Id", "level2RefId", 4, 3);
+                    sb.Variable("varName");
                 })
                 .Build();
 
-            Assert.That(quotaFrame.Id, Is.EqualTo("id"));
+            quotaFrame["varName", "level1Name"].Target = 6;
+            quotaFrame["varName", "level2Name"].Target = 4;
+
             Assert.That(quotaFrame.Target.HasValue, Is.True);
+            Debug.Assert(quotaFrame.Target != null, "quotaFrame.Target != null");
             Assert.That(quotaFrame.Target.Value, Is.EqualTo(10));
 
             Assert.That(quotaFrame.VariableDefinitions.Count, Is.EqualTo(1));
-            Assert.That(quotaFrame.VariableDefinitions[0].Id, Is.EqualTo("varId"));
-            Assert.That(quotaFrame.VariableDefinitions[0].Name, Is.EqualTo("varName"));
-            Assert.That(quotaFrame.VariableDefinitions[0].OdinVariableName, Is.EqualTo("odinVarName"));
-            Assert.That(quotaFrame.VariableDefinitions[0].Levels.Count, Is.EqualTo(2));
-            Assert.That(quotaFrame.VariableDefinitions[0].Levels[0].Id, Is.EqualTo("level1Id"));
-            Assert.That(quotaFrame.VariableDefinitions[0].Levels[0].Name, Is.EqualTo("level1Name"));
-            Assert.That(quotaFrame.VariableDefinitions[0].Levels[1].Id, Is.EqualTo("level2Id"));
-            Assert.That(quotaFrame.VariableDefinitions[0].Levels[1].Name, Is.EqualTo("level2Name"));
+            var variable = quotaFrame.VariableDefinitions.First();
+            Assert.That(variable.Id, Is.Not.Null);
+            Assert.That(variable.Name, Is.EqualTo("varName"));
+            Assert.That(variable.OdinVariableName, Is.EqualTo("odinVarName"));
+            Assert.That(variable.Levels.Count, Is.EqualTo(2));
+            Assert.That(variable.Levels.First().Name, Is.EqualTo("level1Name"));
+            Assert.That(variable.Levels.ElementAt(1).Name, Is.EqualTo("level2Name"));
 
             Assert.That(quotaFrame.FrameVariables.Count, Is.EqualTo(1));
-            Assert.That(quotaFrame.FrameVariables[0].Id, Is.EqualTo("varReferenceId"));
-            Assert.That(quotaFrame.FrameVariables[0].DefinitionId, Is.EqualTo("varId"));
-            Assert.That(quotaFrame.FrameVariables[0].Levels.Count, Is.EqualTo(2));
-            Assert.That(quotaFrame.FrameVariables[0].Levels[0].Id, Is.EqualTo("level1RefId"));
-            Assert.That(quotaFrame.FrameVariables[0].Levels[0].DefinitionId, Is.EqualTo("level1Id"));
-            Assert.That(quotaFrame.FrameVariables[0].Levels[0].Target, Is.EqualTo(6));
-            Assert.That(quotaFrame.FrameVariables[0].Levels[0].Successful, Is.EqualTo(2));
-            Assert.That(quotaFrame.FrameVariables[0].Levels[1].Id, Is.EqualTo("level2RefId"));
-            Assert.That(quotaFrame.FrameVariables[0].Levels[1].DefinitionId, Is.EqualTo("level2Id"));
-            Assert.That(quotaFrame.FrameVariables[0].Levels[1].Target, Is.EqualTo(4));
-            Assert.That(quotaFrame.FrameVariables[0].Levels[1].Successful, Is.EqualTo(3));
-
+            Assert.That(quotaFrame.FrameVariables.First().DefinitionId, Is.EqualTo(variable.Id));
+            Assert.That(quotaFrame.FrameVariables.First().Levels.Count, Is.EqualTo(2));
+            Assert.That(quotaFrame.FrameVariables.First().Levels.First().Target, Is.EqualTo(6));
+            Assert.That(quotaFrame.FrameVariables.First().Levels.ElementAt(1).Target, Is.EqualTo(4));
         }
 
         [Test]
         public void BuildingNestedTreeCreatesCorrectQuotaFrame()
         {
             var quotaFrame = new QuotaFrameBuilder()
-                .Id("id")
                 .Target(10)
-                .VariableDefinition("gender", gender =>
+                .VariableDefinition("gender", new[]
                 {
-                    gender.Level("male", "Male");
-                    gender.Level("female", "Female");
+                   "Male", "Female"
                 })
-                .VariableDefinition("region", region =>
+                .VariableDefinition("region", new []
                 {
-                    region.Level("north", "North");
-                    region.Level("south", "South");
+                     "North", "South"
                 })
-                .FrameVariable("gender", gender =>
-                {
-                    gender.Level("male", 6, 2, male =>
-                    {
-                        male.Variable("region", region =>
-                        {
-                            region.Level("north", 3, 1);
-                            region.Level("south", 3, 1);
-                        });
-                    });
-                    gender.Level("female", 4, 3, female =>
-                    {
-                        female.Variable("region", region =>
-                        {
-                            region.Level("north", 2, 2);
-                            region.Level("south", 2, 1);
-                        });
-                    });
-                })
+                .Structure(root =>
+                    root.Variable("gender",
+                        gender => gender.Variable("region")))
                 .Build();
 
-            Assert.That(quotaFrame.Id, Is.EqualTo("id"));
+            quotaFrame["gender", "Male"].Target = 6;
+            quotaFrame["gender", "Male"]["region", "North"].Target = 3;
+            quotaFrame["gender", "Male"]["region", "South"].Target = 3;
+
+            quotaFrame["gender", "Female"].Target = 4;
+            quotaFrame["gender", "Female"]["region", "North"].Target = 2;
+            quotaFrame["gender", "Female"]["region", "South"].Target = 2;
+
             Assert.That(quotaFrame.Target.HasValue, Is.True);
+            Debug.Assert(quotaFrame.Target != null, "quotaFrame.Target != null");
             Assert.That(quotaFrame.Target.Value, Is.EqualTo(10));
 
             Assert.That(quotaFrame.VariableDefinitions.Count, Is.EqualTo(2));
 
-            Assert.That(quotaFrame.VariableDefinitions[0].Id, Is.EqualTo("gender"));
-            Assert.That(quotaFrame.VariableDefinitions[0].Name, Is.EqualTo("gender"));
-            Assert.That(quotaFrame.VariableDefinitions[0].OdinVariableName, Is.EqualTo("gender"));
-            Assert.That(quotaFrame.VariableDefinitions[0].Levels.Count, Is.EqualTo(2));
-            Assert.That(quotaFrame.VariableDefinitions[0].Levels[0].Id, Is.EqualTo("male"));
-            Assert.That(quotaFrame.VariableDefinitions[0].Levels[0].Name, Is.EqualTo("Male"));
-            Assert.That(quotaFrame.VariableDefinitions[0].Levels[1].Id, Is.EqualTo("female"));
-            Assert.That(quotaFrame.VariableDefinitions[0].Levels[1].Name, Is.EqualTo("Female"));
+            var genderVariable = quotaFrame.VariableDefinitions.First();
+            Assert.That(genderVariable.Id, Is.Not.Null);
+            Assert.That(genderVariable.Name, Is.EqualTo("gender"));
+            Assert.That(genderVariable.OdinVariableName, Is.EqualTo("gender"));
+            Assert.That(genderVariable.Levels.Count, Is.EqualTo(2));
+            Assert.That(genderVariable.Levels.First().Name, Is.EqualTo("Male"));
+            Assert.That(genderVariable.Levels.ElementAt(1).Name, Is.EqualTo("Female"));
 
-            Assert.That(quotaFrame.VariableDefinitions[1].Id, Is.EqualTo("region"));
-            Assert.That(quotaFrame.VariableDefinitions[1].Name, Is.EqualTo("region"));
-            Assert.That(quotaFrame.VariableDefinitions[1].OdinVariableName, Is.EqualTo("region"));
-            Assert.That(quotaFrame.VariableDefinitions[1].Levels.Count, Is.EqualTo(2));
-            Assert.That(quotaFrame.VariableDefinitions[1].Levels[0].Id, Is.EqualTo("north"));
-            Assert.That(quotaFrame.VariableDefinitions[1].Levels[0].Name, Is.EqualTo("North"));
-            Assert.That(quotaFrame.VariableDefinitions[1].Levels[1].Id, Is.EqualTo("south"));
-            Assert.That(quotaFrame.VariableDefinitions[1].Levels[1].Name, Is.EqualTo("South"));
+            var regionVariable = quotaFrame.VariableDefinitions.ElementAt(1);
+            Assert.That(regionVariable.Id, Is.Not.Null);
+            Assert.That(regionVariable.Name, Is.EqualTo("region"));
+            Assert.That(regionVariable.OdinVariableName, Is.EqualTo("region"));
+            Assert.That(regionVariable.Levels.Count, Is.EqualTo(2));
+            Assert.That(regionVariable.Levels.First().Name, Is.EqualTo("North"));
+            Assert.That(regionVariable.Levels.ElementAt(1).Name, Is.EqualTo("South"));
 
-            // Bored yet?
+            //// Bored yet?
 
             Assert.That(quotaFrame.FrameVariables.Count, Is.EqualTo(1));
-            Assert.That(quotaFrame.FrameVariables[0].DefinitionId, Is.EqualTo("gender"));
-            Assert.That(quotaFrame.FrameVariables[0].Levels.Count, Is.EqualTo(2));
-            Assert.That(quotaFrame.FrameVariables[0].Levels[0].DefinitionId, Is.EqualTo("male"));
-            Assert.That(quotaFrame.FrameVariables[0].Levels[0].Target, Is.EqualTo(6));
-            Assert.That(quotaFrame.FrameVariables[0].Levels[0].Successful, Is.EqualTo(2));
-            Assert.That(quotaFrame.FrameVariables[0].Levels[0].Variables.Count, Is.EqualTo(1));
-            Assert.That(quotaFrame.FrameVariables[0].Levels[0].Variables[0].DefinitionId, Is.EqualTo("region"));
-            Assert.That(quotaFrame.FrameVariables[0].Levels[0].Variables[0].Levels.Count, Is.EqualTo(2));
-            Assert.That(quotaFrame.FrameVariables[0].Levels[0].Variables[0].Levels[0].DefinitionId, Is.EqualTo("north"));
-            Assert.That(quotaFrame.FrameVariables[0].Levels[0].Variables[0].Levels[0].Target, Is.EqualTo(3));
-            Assert.That(quotaFrame.FrameVariables[0].Levels[0].Variables[0].Levels[0].Successful, Is.EqualTo(1));
-            Assert.That(quotaFrame.FrameVariables[0].Levels[0].Variables[0].Levels[1].DefinitionId, Is.EqualTo("south"));
-            Assert.That(quotaFrame.FrameVariables[0].Levels[0].Variables[0].Levels[1].Target, Is.EqualTo(3));
-            Assert.That(quotaFrame.FrameVariables[0].Levels[0].Variables[0].Levels[1].Successful, Is.EqualTo(1));
+            Assert.That(quotaFrame.FrameVariables.First().DefinitionId, Is.EqualTo(genderVariable.Id));
+            Assert.That(quotaFrame.FrameVariables.First().Levels.Count, Is.EqualTo(2));
+            Assert.That(quotaFrame.FrameVariables.First().Levels.First().Target, Is.EqualTo(6));
+            Assert.That(quotaFrame.FrameVariables.First().Levels.First().Variables.Count, Is.EqualTo(1));
+            Assert.That(quotaFrame.FrameVariables.First().Levels.First().Variables.First().DefinitionId, Is.EqualTo(regionVariable.Id));
+            Assert.That(quotaFrame.FrameVariables.First().Levels.First().Variables.First().Levels.Count, Is.EqualTo(2));
+            Assert.That(quotaFrame.FrameVariables.First().Levels.First().Variables.First().Levels.First().Target, Is.EqualTo(3));
+            Assert.That(quotaFrame.FrameVariables.First().Levels.First().Variables.First().Levels.ElementAt(1).Target, Is.EqualTo(3));
 
 
-            Assert.That(quotaFrame.FrameVariables[0].Levels[1].DefinitionId, Is.EqualTo("female"));
-            Assert.That(quotaFrame.FrameVariables[0].Levels[1].Target, Is.EqualTo(4));
-            Assert.That(quotaFrame.FrameVariables[0].Levels[1].Successful, Is.EqualTo(3));
-            Assert.That(quotaFrame.FrameVariables[0].Levels[1].Variables.Count, Is.EqualTo(1));
-            Assert.That(quotaFrame.FrameVariables[0].Levels[1].Variables[0].DefinitionId, Is.EqualTo("region"));
-            Assert.That(quotaFrame.FrameVariables[0].Levels[1].Variables[0].Levels.Count, Is.EqualTo(2));
-            Assert.That(quotaFrame.FrameVariables[0].Levels[1].Variables[0].Levels[0].DefinitionId, Is.EqualTo("north"));
-            Assert.That(quotaFrame.FrameVariables[0].Levels[1].Variables[0].Levels[0].Target, Is.EqualTo(2));
-            Assert.That(quotaFrame.FrameVariables[0].Levels[1].Variables[0].Levels[0].Successful, Is.EqualTo(2));
-            Assert.That(quotaFrame.FrameVariables[0].Levels[1].Variables[0].Levels[1].DefinitionId, Is.EqualTo("south"));
-            Assert.That(quotaFrame.FrameVariables[0].Levels[1].Variables[0].Levels[1].Target, Is.EqualTo(2));
-            Assert.That(quotaFrame.FrameVariables[0].Levels[1].Variables[0].Levels[1].Successful, Is.EqualTo(1));
-
+            Assert.That(quotaFrame.FrameVariables.First().Levels.ElementAt(1).Target, Is.EqualTo(4));
+            Assert.That(quotaFrame.FrameVariables.First().Levels.ElementAt(1).Variables.Count, Is.EqualTo(1));
+            Assert.That(quotaFrame.FrameVariables.First().Levels.ElementAt(1).Variables.First().DefinitionId, Is.EqualTo(regionVariable.Id));
+            Assert.That(quotaFrame.FrameVariables.First().Levels.ElementAt(1).Variables.First().Levels.Count, Is.EqualTo(2));
+            Assert.That(quotaFrame.FrameVariables.First().Levels.ElementAt(1).Variables.First().Levels.First().Target, Is.EqualTo(2));
+            Assert.That(quotaFrame.FrameVariables.First().Levels.ElementAt(1).Variables.First().Levels.ElementAt(1).Target, Is.EqualTo(2));
         }
     }
 }

@@ -11,26 +11,22 @@ namespace Nfield.Quota.Persistence
         public static string Encode(QuotaFrame frame)
         {
             var resolver = new QuotaFrameContractResolver();
+
             resolver.Ignore(
                 typeof(QuotaFrame),
-                nameof(QuotaFrame.Target),
-                nameof(QuotaFrame.Successful));
+                nameof(QuotaFrame.Target));
 
             resolver.Ignore(
                 typeof(QuotaFrameLevel),
-                nameof(QuotaFrameLevel.QuotaFrame),
-                nameof(QuotaFrameLevel.Successful),
                 nameof(QuotaFrameLevel.Target));
-
-            resolver.Ignore(
-                typeof(QuotaFrameVariable),
-                nameof(QuotaFrameVariable.QuotaFrame));
 
             var settings = new JsonSerializerSettings
             {
                 ContractResolver = resolver,
                 Formatting = Formatting.Indented
             };
+
+            settings.Converters.Add(new GuidJsonConverter());
 
             return JsonConvert.SerializeObject(frame, settings);
         }

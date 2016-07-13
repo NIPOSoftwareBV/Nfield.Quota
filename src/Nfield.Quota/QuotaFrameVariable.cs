@@ -1,23 +1,26 @@
-﻿namespace Nfield.Quota
+﻿using System;
+using System.Collections.Generic;
+
+namespace Nfield.Quota
 {
-    public class QuotaFrameVariable : IQuotaFrameAttached
+    public class QuotaFrameVariable
     {
         public QuotaFrameVariable()
         {
-            Levels = new QuotaFrameLevelCollection();
+            Levels = new List<QuotaFrameLevel>();
         }
-        public QuotaFrame QuotaFrame { get; private set; }
 
-        public string Id { get; set; }
-
-        public string DefinitionId { get; set; }
-
-        public QuotaFrameLevelCollection Levels { get; }
-
-        void IQuotaFrameAttached.AttachTo(QuotaFrame quotaFrame)
+        public QuotaFrameVariable(IEnumerable<QuotaFrameLevel> levels)
         {
-            QuotaFrame = quotaFrame;
-            ((IQuotaFrameAttached)Levels).AttachTo(quotaFrame);
+            Levels = new List<QuotaFrameLevel>(levels);
         }
+
+        public Guid Id { get; set; }
+
+        public Guid DefinitionId { get; set; }
+
+        public string Name { get; set; }
+
+        public ICollection<QuotaFrameLevel> Levels { get; }
     }
 }
