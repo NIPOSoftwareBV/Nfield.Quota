@@ -4,6 +4,9 @@
 ##Introduction
 Using this project developers can create quota structures for Nfield Online surveys. For more information about Nfield and/or NIPO Software please visit the [NIPO Software] website.
 
+##Documentation
+See our [Read the Docs](http://nfieldquota.readthedocs.io/en/latest/getting_started/) page for documentation and examples to get started.
+
 ##Installation
 The recommended way to consume this project is to reference the NuGet package. You can install it by executing the following command in the Package Manager Console.
 
