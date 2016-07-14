@@ -38,13 +38,13 @@ var quotaFrame = new QuotaFrameBuilder()
 ```
 
 This created a quota frame with a single _gender_ variable with two levels (groups). The value provided through the 
-_odinVariableName_ parameter refers to the name of the _*SAMPLEDATA_ variable that should be used in ODIN script
+`odinVariableName` parameter refers to the name of the `*SAMPLEDATA` variable that should be used in ODIN questionnaire
 to assign a respondent to a group.
 
 To refer to this variable add the following to you ODIN questionnaire:  
 
 ```text
-*SAMPLEDATA GENDER
+*SAMPLEDATA gender
 ```
  
 After defining our variable we need to create the structure of the quota frame, but first we'll add another variable to make the example a bit more 'realistic'.
