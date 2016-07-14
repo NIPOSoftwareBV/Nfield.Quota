@@ -91,6 +91,6 @@ Now that you have been introduced to the basics of setting up quota, refer to th
 complex quota frames. 
 
 [Nfield]: http://www.nfieldmr.com
-[NuGet]: http://nuget.org
+[NuGet]: https://www.nuget.org/packages/Nfield.Quota
 [samples]: samples.md
 [InvalidOperationException]: https://msdn.microsoft.com/en-us/library/system.invalidoperationexception(v=vs.110).aspx
