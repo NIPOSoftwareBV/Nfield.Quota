@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using FluentValidation;
 using FluentValidation.Validators;
 
@@ -25,15 +26,23 @@ namespace Nfield.Quota
                 .Must(HaveUniqueIds)
                 .WithMessage("Quota frame contains a duplicate id. Duplicate id: '{DuplicateValue}'")
                 .Must(ReferenceDefinitions)
-                .WithMessage("Quota frame contains a reference to a non-existing definition. Definition id: '{DefinitionId}'")
+                .WithMessage(
+                    "Quota frame contains a reference to a non-existing definition. Definition id: '{DefinitionId}'")
                 .Must(HaveTheSameLevelsUnderAVariableAsTheLinkedVariableDefinition)
-                .WithMessage("Quota frame contains a variable that doesnt have all the defined levels associated. Affected frame variable id: '{AffectedFrameVariableId}', missing level definition id: '{MissingLevelDefinitionId}'")
+                .WithMessage(
+                    "Quota frame contains a variable that doesnt have all the defined levels associated. Affected frame variable id: '{AffectedFrameVariableId}', missing level definition id: '{MissingLevelDefinitionId}'")
                 .Must(HaveVariablesWithTheSameVariablesUnderEveryLevel)
-                .WithMessage("Quota frame invalid. All levels of a variable should have the same variables underneath. Frame variable id '{AffectedFrameVariableId}' has a mismatch for level '{MismatchLevelId}'");
-
-            RuleFor(qf => HaveGuidIds(qf))
-                .Equal(true)
-                .WithMessage("Quota frame invalid. All Id's should be GUID's");
+                .WithMessage(
+                    "Quota frame invalid. All levels of a variable should have the same variables underneath. Frame variable id '{AffectedFrameVariableId}' has a mismatch for level '{MismatchLevelId}'")
+                .Must(HaveValidTotalTarget)
+                .WithMessage(
+                    "Target invalid. All Targets must be of a positive value. Quota frame total target has a negative value '{InvalidTarget}'")
+                .Must(HaveValidLevelTargets)
+                .WithMessage(
+                    "Target invalid. All Targets must be of a positive value. Frame level Id '{LevelId}' with name '{LevelName}' has an invalid negative target '{InvalidTarget}'")
+                .Must(HaveValidOdinVariableName)
+                .WithMessage(
+                    "Odin variable name invalid. Odin variable names can only contain numbers, letters and '_'. They can only ​start with​ a letter. First character cannot be '_' or a number. Variable definition Id '{DefId}' with name '{DefName}' has an invalid Odin Variable Name '{InvalidOdin}'");
         }
 
         private static bool HaveUniqueIds(
@@ -41,7 +50,7 @@ namespace Nfield.Quota
             IEnumerable<QuotaVariableDefinition> varDefinitions,
             PropertyValidatorContext context)
         {
-            var usedIds = new HashSet<string>();
+            var usedIds = new HashSet<Guid>();
 
             foreach (var variableDefinition in varDefinitions)
             {
@@ -110,7 +119,7 @@ namespace Nfield.Quota
             IEnumerable<QuotaFrameVariable> variables,
             PropertyValidatorContext context)
         {
-            var usedIds = new HashSet<string>();
+            var usedIds = new HashSet<Guid>();
 
             var hasDuplicate = false;
             var traverser = new PreOrderQuotaFrameTraverser();
@@ -134,48 +143,14 @@ namespace Nfield.Quota
             return !hasDuplicate;
         }
 
-        private static bool HaveGuidIds(QuotaFrame frame)
-        {
-            if (!IsValidGuid(frame.Id))
-                return false;
-
-            var traverser = new PreOrderQuotaFrameTraverser();
-            try
-            {
-                traverser.Traverse(frame,
-                    variable =>
-                    {
-                        if (!IsValidGuid(variable.DefinitionId) || !IsValidGuid(variable.Id))
-                            throw new Exception();
-                    },
-                    level =>
-                    {
-                        if (!IsValidGuid(level.DefinitionId) || !IsValidGuid(level.Id))
-                            throw new Exception();
-
-                    });
-            }
-            catch
-            {
-                return false;
-            }
-            return true;
-        }
-
-        private static bool IsValidGuid(string guid)
-        {
-            Guid dummy;
-            return Guid.TryParse(guid, out dummy);
-        }
-
         private static bool ReferenceDefinitions(
             QuotaFrame frame,
             IEnumerable<QuotaFrameVariable> variables,
             PropertyValidatorContext context)
         {
-            var variableIds = new HashSet<string>(
+            var variableIds = new HashSet<Guid>(
                 frame.VariableDefinitions.Select(vd => vd.Id));
-            var levelIds = new HashSet<string>(
+            var levelIds = new HashSet<Guid>(
                 frame.VariableDefinitions.SelectMany(vd => vd.Levels).Select(ld => ld.Id));
 
             var traverser = new PreOrderQuotaFrameTraverser();
@@ -263,8 +238,63 @@ namespace Nfield.Quota
             return !hasInvalidChilds;
         }
 
+        private static bool HaveValidTotalTarget(
+            QuotaFrame frame,
+            ICollection<QuotaFrameVariable> frameVariables,
+            PropertyValidatorContext context)
+        {
+            var inValidTarget = false;
+            if (frame.Target < 0)
+            {
+                context.MessageFormatter.AppendArgument("InvalidTarget", frame.Target);
+                inValidTarget = true;
+            }
+
+           return !inValidTarget;
+        }
+
+        private static bool HaveValidLevelTargets(
+            QuotaFrame frame,
+            ICollection<QuotaFrameVariable> frameVariables,
+            PropertyValidatorContext context)
+        {
+            var inValidTarget = false;
+
+            var traverser = new PreOrderQuotaFrameTraverser();
+            traverser.Traverse( // always walks whole tree, might want to change this
+                frame,
+                level =>
+                {
+                    if (!(level.Target < 0)) return;
+                    context.MessageFormatter.AppendArgument("LevelId", level.Id);
+                    context.MessageFormatter.AppendArgument("LevelName", level.Name);
+                    context.MessageFormatter.AppendArgument("InvalidTarget", level.Target);
+                    inValidTarget = true;
+                });
+
+            return !inValidTarget;
+        }
+
+        private static bool HaveValidOdinVariableName(
+            QuotaFrame frame,
+            ICollection<QuotaFrameVariable> frameVariables,
+            PropertyValidatorContext context)
+        {
+            var expression =new Regex("^([a-zA-Z][a-zA-Z0-9_]*)?$");
+
+            foreach (var quotaVariableDefinition in frame.VariableDefinitions)
+            {
+                if (expression.Match(quotaVariableDefinition.OdinVariableName).Success) continue;
+                context.MessageFormatter.AppendArgument("DefId", quotaVariableDefinition.Id);
+                context.MessageFormatter.AppendArgument("DefName", quotaVariableDefinition.Name);
+                context.MessageFormatter.AppendArgument("InvalidOdin", quotaVariableDefinition.OdinVariableName);
+                return false;
+            }
+            return true;
+        }
+        
         // Assumes set.Add returns false if value already in collection
-        private static bool IsDuplicateValue(PropertyValidatorContext context, ISet<string> set, string entry)
+        private static bool IsDuplicateValue<T>(PropertyValidatorContext context, ISet<T> set, T entry)
         {
             var couldAdd = set.Add(entry);
             if (!couldAdd)

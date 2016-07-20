@@ -5,13 +5,13 @@ namespace Nfield.Quota.Builders
 {
     public class QuotaVariableDefinitionBuilder
     {
-        private readonly string _id;
+        private readonly Guid _id;
         private readonly string _name;
         private readonly string _odinVariableName;
         private readonly IEnumerable<string> _levelNames;
 
         public QuotaVariableDefinitionBuilder(
-            string id, string name, string odinVariableName, IEnumerable<string> levelNames)
+            Guid id, string name, string odinVariableName, IEnumerable<string> levelNames)
         {
             _id = id;
             _name = name;
@@ -32,7 +32,7 @@ namespace Nfield.Quota.Builders
             {
                 var level = new QuotaLevelDefinition
                 {
-                    Id = Guid.NewGuid().ToString(),
+                    Id = Guid.NewGuid(),
                     Name = levelName
                 };
                 variable.Levels.Add(level);

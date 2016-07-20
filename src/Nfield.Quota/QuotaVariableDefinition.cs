@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Nfield.Quota
 {
@@ -14,7 +15,7 @@ namespace Nfield.Quota
             Levels = new List<QuotaLevelDefinition>(levels);
         }
 
-        public string Id { get; set; }
+        public Guid Id { get; set; }
         public string Name { get; set; }
 
         public string OdinVariableName { get; set; }

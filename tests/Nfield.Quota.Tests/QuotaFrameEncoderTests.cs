@@ -13,8 +13,7 @@ namespace Nfield.Quota.Tests
         public void OutputIsCamelCased()
         {
             var frame = new QuotaFrameBuilder()
-                .Id("frameId")
-                .VariableDefinition("var", new List<string> { "level" })
+                .VariableDefinition("var", new List<string>() { "level" })
                 .Structure(sb => sb.Variable("var"))
                 .Build();
 
@@ -29,7 +28,6 @@ namespace Nfield.Quota.Tests
         public void OutputDoesNotContainSuccessful()
         {
             var frame = new QuotaFrameBuilder()
-                .Id("frameId")
                 .VariableDefinition("var", new List<string>() { "level" })
                 .Structure(sb => sb.Variable("var"))
                 .Build();
@@ -44,9 +42,8 @@ namespace Nfield.Quota.Tests
         public void OutputDoesNotContainTargetWhenTargetIsSet()
         {
             var frame = new QuotaFrameBuilder()
-                .Id("frameId")
-                .VariableDefinition("var", "varName", "odinVarName", new List<string> { "level" })
-                .Structure(sb => sb.Variable("var"))
+                .VariableDefinition("varName", new List<string>() { "level" })
+                .Structure(sb => sb.Variable("varName"))
                 .Build();
 
             frame["varName", "level"].Target = 60;
@@ -61,7 +58,6 @@ namespace Nfield.Quota.Tests
         public void OutputDoesNotContainTargetWhenTargetIsLeftEmpty()
         {
             var frame = new QuotaFrameBuilder()
-                .Id("frameId")
                 .VariableDefinition("var", new List<string>() { "level" }) 
                 .Structure(sb => sb.Variable("var"))
                 .Build();

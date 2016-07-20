@@ -16,9 +16,9 @@ namespace Nfield.Quota
             Variables = new List<QuotaFrameVariable>(variables);
         }
 
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
-        public string DefinitionId { get; set; }
+        public Guid DefinitionId { get; set; }
 
         public string Name { get; set; }
 
