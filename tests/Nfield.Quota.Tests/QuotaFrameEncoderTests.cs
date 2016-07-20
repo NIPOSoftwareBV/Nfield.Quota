@@ -82,7 +82,6 @@ namespace Nfield.Quota.Tests
         public void IsHiddenIsSerialized()
         {
             var frame = new QuotaFrameBuilder()
-                .Id("frameId")
                 .VariableDefinition("var", new List<string> { "level" })
                 .Structure(sb => sb.Variable("var"))
                 .Build();

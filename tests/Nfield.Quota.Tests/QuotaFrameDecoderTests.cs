@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using Nfield.Quota.Persistence;
 using Nfield.Quota.Tests.Assets;
@@ -60,7 +61,6 @@ namespace Nfield.Quota.Tests
             var frame = QuotaFrameDecoder.Decode(jsonFrame);
 
             Assert.That(frame, Is.Not.Null);
-            Assert.That(frame.Id, Is.EqualTo("frameId"));
             Assert.That(frame.Target, Is.Null);
             Assert.That(frame.VariableDefinitions, Has.Count.EqualTo(1));
             Assert.That(frame.FrameVariables, Has.Count.EqualTo(1));
