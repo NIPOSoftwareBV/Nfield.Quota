@@ -21,6 +21,8 @@ namespace Nfield.Quota
 
         public string Name { get; set; }
 
+        public bool IsHidden { get; set; } = false;
+
         public ICollection<QuotaFrameLevel> Levels { get; }
     }
 }
