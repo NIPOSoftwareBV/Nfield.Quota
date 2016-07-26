@@ -91,7 +91,7 @@ namespace Nfield.Quota.Tests
         }
 
         [Test]
-        public void Definitions_CannotContainDuplicateNames()
+        public void Definitions_CanContainDuplicateNamesInLevels()
         {
             const string nonUniqueName = "non-unique";
 
@@ -124,8 +124,7 @@ namespace Nfield.Quota.Tests
             var validator = new QuotaFrameValidator();
             var result = validator.Validate(quotaFrame);
 
-            Assert.That(result.Errors.Single().ErrorMessage,
-                Is.EqualTo("Quota frame definitions contain a duplicate name. Duplicate name: 'non-unique'"));
+            Assert.That(result.IsValid, Is.True);
         }
 
         [Test]
@@ -167,44 +166,6 @@ namespace Nfield.Quota.Tests
 
             Assert.That(result.Errors.Single().ErrorMessage,
                 Is.EqualTo(expectedErrorMessage));
-        }
-
-        [Test]
-        public void Definitions_CannotContainDuplicateNamesBetweenVariablesAndLevels()
-        {
-            const string nonUniqueName = "non-unique";
-
-            var quotaFrame = new QuotaFrame();
-
-            var variable = new QuotaVariableDefinition
-            {
-                Id = Guid.NewGuid(),
-                Name = nonUniqueName,
-                OdinVariableName = "odinVarName"
-            };
-
-            variable.Levels.AddRange(new[]
-            {
-                new QuotaLevelDefinition
-                {
-                    Id = Guid.NewGuid(),
-                    Name = nonUniqueName
-                },
-
-                new QuotaLevelDefinition
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "level2Name"
-                }
-            });
-
-            quotaFrame.VariableDefinitions.Add(variable);
-
-            var validator = new QuotaFrameValidator();
-            var result = validator.Validate(quotaFrame);
-
-            Assert.That(result.Errors.Single().ErrorMessage,
-                Is.EqualTo("Quota frame definitions contain a duplicate name. Duplicate name: 'non-unique'"));
         }
 
         [Test]
