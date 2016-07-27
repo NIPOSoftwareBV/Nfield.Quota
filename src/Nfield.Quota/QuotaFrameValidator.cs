@@ -43,10 +43,7 @@ namespace Nfield.Quota
                     "Target invalid. All Targets must be of a positive value. Quota frame total target has a negative value '{InvalidTarget}'")
                 .Must(HaveValidLevelTargets)
                 .WithMessage(
-                    "Target invalid. All Targets must be of a positive value. Frame level Id '{LevelId}' with name '{LevelName}' has an invalid negative target '{InvalidTarget}'")
-                .Must(HaveHiddenChildsWhenParentIsHidden)
-                .WithMessage(
-                    "Quota frame invalid. If a parent has IsHidden set to true, all childs should have it set to true. Parent: {Parent}. Incorrect child: {Child}.");
+                    "Target invalid. All Targets must be of a positive value. Frame level Id '{LevelId}' with name '{LevelName}' has an invalid negative target '{InvalidTarget}'");
         }
 
         private static bool HaveUniqueIds(
@@ -291,76 +288,6 @@ namespace Nfield.Quota
                 });
 
             return !inValidTarget;
-        }
-
-        private static bool HaveHiddenChildsWhenParentIsHidden(
-            QuotaFrame frame,
-            ICollection<QuotaFrameVariable> frameVariables,
-            PropertyValidatorContext context)
-        {
-            var violation = false;
-
-            var traverser = new PreOrderQuotaFrameTraverser();
-            traverser.Traverse(
-                frame,
-                rootVariable =>
-                {
-                    if (rootVariable.IsHidden)
-                    {
-                        traverser.Traverse(
-                            rootVariable,
-                            level =>
-                            {
-                                if (!level.IsHidden)
-                                {
-                                    context.MessageFormatter.AppendArgument("Parent", rootVariable.Id);
-                                    context.MessageFormatter.AppendArgument("Child", level.Id);
-                                    violation = true;
-                                }
-                            },
-                            variable =>
-                            {
-                                if (!variable.IsHidden)
-                                {
-                                    context.MessageFormatter.AppendArgument("Parent", rootVariable.Id);
-                                    context.MessageFormatter.AppendArgument("Child", variable.Id);
-                                    violation = true;
-                                }
-                            });
-
-                        // break traversing would be a nice optimization here. We don't bother yet due to small tree sizes.
-                    }
-                },
-                rootLevel =>
-                {
-                    if (rootLevel.IsHidden)
-                    {
-                        traverser.Traverse(
-                            rootLevel,
-                            level =>
-                            {
-                                if (!level.IsHidden)
-                                {
-                                    context.MessageFormatter.AppendArgument("Parent", rootLevel.Id);
-                                    context.MessageFormatter.AppendArgument("Child", level.Id);
-                                    violation = true;
-                                }
-                            },
-                            variable =>
-                            {
-                                if (!variable.IsHidden)
-                                {
-                                    context.MessageFormatter.AppendArgument("Parent", rootLevel.Id);
-                                    context.MessageFormatter.AppendArgument("Child", variable.Id);
-                                    violation = true;
-                                }
-                            });
-
-                        // break traversing would be a nice optimization here. We don't bother yet due to small tree sizes.
-                    }
-                });
-
-            return !violation;
         }
 
         // Assumes set.Add returns false if value already in collection
