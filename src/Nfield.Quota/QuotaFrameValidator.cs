@@ -18,13 +18,14 @@ namespace Nfield.Quota
                 .Must(HaveUniqueIds)
                 .WithMessage("Quota frame definitions contain a duplicate id. Duplicate id: '{DuplicateValue}'")
                 .Must(HaveUniqueVariableNames)
-                .WithMessage("Quota frame definitions contain a duplicate name. Duplicate name: '{DuplicateValue}'")
+                .WithMessage("Quota frame definitions contain a duplicate variable name. Duplicate name: '{DuplicateValue}'")
+                .Must(HaveUniqueLevelNamesPerVariable)
+                .WithMessage("Quota frame definitions contain a duplicate level name. Duplicate name: '{DuplicateValue}'")
                 .Must(HaveVariablesWithAtLeastOneLevel)
                 .WithMessage("Quota frame definitions has variables with no levels. Affected variable definition id: '{VariableDefinitionId}'")
                 .Must(HaveValidOdinVariableName)
                 .WithMessage(
                     "Odin variable name invalid. Odin variable names can only contain numbers, letters and '_'. They can only ​start with​ a letter. First character cannot be '_' or a number. Variable definition Id '{DefId}' with name '{DefName}' has an invalid Odin Variable Name '{InvalidOdin}'");
-
 
             RuleFor(qf => qf.FrameVariables)
                 .Must(HaveUniqueIds)
@@ -84,6 +85,27 @@ namespace Nfield.Quota
                 if (IsDuplicateValue(context, usedNames, variableDefinition.Name))
                 {
                     return false;
+                }
+            }
+
+            return true;
+        }
+
+        private static bool HaveUniqueLevelNamesPerVariable(
+            QuotaFrame frame,
+            IEnumerable<QuotaVariableDefinition> varDefinitions,
+            PropertyValidatorContext context)
+        {
+            foreach (var variableDefinition in varDefinitions)
+            {
+                var usedNames = new HashSet<string>();
+
+                foreach (var levelDefinition in variableDefinition.Levels)
+                {
+                    if (IsDuplicateValue(context, usedNames, levelDefinition.Name))
+                    {
+                        return false;
+                    }
                 }
             }
 

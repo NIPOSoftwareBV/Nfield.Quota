@@ -90,7 +90,36 @@ namespace Nfield.Quota.Tests
         }
 
         [Test]
-        public void Definitions_CanContainDuplicateNamesInLevels()
+        public void Definitions_CannotContainDuplicateNamesAcrossVariables()
+        {
+            const string nonUniqueName = "non-unique";
+
+            var quotaFrame = new QuotaFrame();
+
+            var variable1 = new QuotaVariableDefinition
+            {
+                Id = Guid.NewGuid(),
+                Name = nonUniqueName
+            };
+
+            var variable2 = new QuotaVariableDefinition
+            {
+                Id = Guid.NewGuid(),
+                Name = nonUniqueName
+            };
+
+            quotaFrame.VariableDefinitions.AddRange(new []{variable1, variable2});
+
+            var validator = new QuotaFrameValidator();
+            var result = validator.Validate(quotaFrame);
+
+            Assert.That(
+                result.Errors.Single().ErrorMessage,
+                Is.EqualTo("Quota frame definitions contain a duplicate variable name. Duplicate name: 'non-unique'"));
+        }
+
+        [Test]
+        public void Definitions_CannotContainDuplicateNamesInLevelsUnderSameVariable()
         {
             const string nonUniqueName = "non-unique";
 
@@ -123,7 +152,9 @@ namespace Nfield.Quota.Tests
             var validator = new QuotaFrameValidator();
             var result = validator.Validate(quotaFrame);
 
-            Assert.That(result.IsValid, Is.True);
+            Assert.That(
+                result.Errors.Single().ErrorMessage,
+                Is.EqualTo("Quota frame definitions contain a duplicate level name. Duplicate name: 'non-unique'"));
         }
 
         [Test]
