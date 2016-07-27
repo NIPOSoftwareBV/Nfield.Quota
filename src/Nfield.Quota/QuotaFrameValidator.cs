@@ -44,7 +44,10 @@ namespace Nfield.Quota
                     "Target invalid. All Targets must be of a positive value. Quota frame total target has a negative value '{InvalidTarget}'")
                 .Must(HaveValidLevelTargets)
                 .WithMessage(
-                    "Target invalid. All Targets must be of a positive value. Frame level Id '{LevelId}' with name '{LevelName}' has an invalid negative target '{InvalidTarget}'");
+                    "Target invalid. All Targets must be of a positive value. Frame level Id '{LevelId}' with name '{LevelName}' has an invalid negative target '{InvalidTarget}'")
+                .Must(HaveVariablesWithAtLeastOneVisibileLevel)
+                .WithMessage(
+                    "Quota frame invalid. Frame has variables with no visible levels. Affected variable name: '{VariableName}'. If you don't care about all the levels, consider hiding the mentioned variable instead.");
         }
 
         private static bool HaveUniqueIds(
@@ -310,6 +313,28 @@ namespace Nfield.Quota
                 });
 
             return !inValidTarget;
+        }
+
+        private static bool HaveVariablesWithAtLeastOneVisibileLevel(
+            QuotaFrame frame,
+            IEnumerable<QuotaFrameVariable> variables,
+            PropertyValidatorContext context)
+        {
+            var isValid = true;
+
+            var traverser = new PreOrderQuotaFrameTraverser();
+            traverser.Traverse( // always walks whole tree, might want to change this
+                frame,
+                variable =>
+                {
+                    if (variable.Levels.Count(l => !l.IsHidden) < 1)
+                    {
+                        context.MessageFormatter.AppendArgument("VariableName", variable.Name);
+                        isValid = false;
+                    }
+                });
+
+            return isValid;
         }
 
         // Assumes set.Add returns false if value already in collection

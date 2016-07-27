@@ -735,6 +735,26 @@ namespace Nfield.Quota.Tests
         }
 
         [Test]
+        public void Frame_VariablesShouldHaveAtLeastOneVisibleLevel()
+        {
+            var quotaFrame = new QuotaFrameBuilder()
+                 .VariableDefinition("varName", new[] { "level1Name", "level2Name" })
+                 .Structure(sb => sb.Variable("varName"))
+                 .Build();
+
+            // Hide both levels
+            quotaFrame["varName", "level1Name"].IsHidden = true;
+            quotaFrame["varName", "level2Name"].IsHidden = true;
+
+            var validator = new QuotaFrameValidator();
+            var result = validator.Validate(quotaFrame);
+
+            Assert.That(
+                            result.Errors.Single().ErrorMessage,
+                            Is.EqualTo("Quota frame invalid. Frame has variables with no visible levels. Affected variable name: 'varName'. If you don't care about all the levels, consider hiding the mentioned variable instead."));
+        }
+
+        [Test]
         public void ComplexFrame_HappyPath()
         {
             var var1Id = Guid.NewGuid();
@@ -979,6 +999,27 @@ namespace Nfield.Quota.Tests
 
             Assert.That(result.Errors.Single().ErrorMessage,
                 Is.EqualTo(expectedErrorMessage));
+        }
+
+        [Test]
+        public void ComplexFrame_VariablesShouldHaveAtLeastOneVisibleLevel()
+        {
+            var quotaFrame = new QuotaFrameBuilder()
+                 .VariableDefinition("varName1", new[] { "level1Name", "level2Name" })
+                 .VariableDefinition("varName2", new[] { "level1Name", "level2Name" })
+                 .Structure(sb => sb.Variable("varName1",
+                    s => s.Variable("varName2")))
+                 .Build();
+
+            quotaFrame["varName1", "level1Name"]["varName2", "level1Name"].IsHidden = true;
+            quotaFrame["varName1", "level1Name"]["varName2", "level2Name"].IsHidden = true;
+
+            var validator = new QuotaFrameValidator();
+            var result = validator.Validate(quotaFrame);
+            
+            Assert.That(
+                result.Errors.Single().ErrorMessage,
+                Is.EqualTo("Quota frame invalid. Frame has variables with no visible levels. Affected variable name: 'varName2'. If you don't care about all the levels, consider hiding the mentioned variable instead."));
         }
     }
 }
