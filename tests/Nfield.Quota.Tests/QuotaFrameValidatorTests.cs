@@ -750,8 +750,8 @@ namespace Nfield.Quota.Tests
             var result = validator.Validate(quotaFrame);
 
             Assert.That(
-                            result.Errors.Single().ErrorMessage,
-                            Is.EqualTo("Quota frame invalid. Frame has variables with no visible levels. Affected variable name: 'varName'. If you don't care about all the levels, consider hiding the mentioned variable instead."));
+                result.Errors.Single().ErrorMessage,
+                Is.EqualTo("Quota frame invalid. Frame has variables with no visible levels. Affected variable name: 'varName'. If you don't care about any levels under variable 'varName', consider hiding that variable instead."));
         }
 
         [Test]
@@ -1016,10 +1016,10 @@ namespace Nfield.Quota.Tests
 
             var validator = new QuotaFrameValidator();
             var result = validator.Validate(quotaFrame);
-            
+
             Assert.That(
                 result.Errors.Single().ErrorMessage,
-                Is.EqualTo("Quota frame invalid. Frame has variables with no visible levels. Affected variable name: 'varName2'. If you don't care about all the levels, consider hiding the mentioned variable instead."));
+                Is.EqualTo("Quota frame invalid. Frame has variables with no visible levels. Affected variable name: 'varName2'. If you don't care about any levels under variable 'varName2', consider hiding that variable instead."));
         }
     }
 }

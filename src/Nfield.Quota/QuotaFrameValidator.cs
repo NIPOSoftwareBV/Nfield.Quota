@@ -47,7 +47,7 @@ namespace Nfield.Quota
                     "Target invalid. All Targets must be of a positive value. Frame level Id '{LevelId}' with name '{LevelName}' has an invalid negative target '{InvalidTarget}'")
                 .Must(HaveVariablesWithAtLeastOneVisibileLevel)
                 .WithMessage(
-                    "Quota frame invalid. Frame has variables with no visible levels. Affected variable name: '{VariableName}'. If you don't care about all the levels, consider hiding the mentioned variable instead.");
+                    "Quota frame invalid. Frame has variables with no visible levels. Affected variable name: '{VariableName}'. If you don't care about any levels under variable '{VariableName}', consider hiding that variable instead.");
         }
 
         private static bool HaveUniqueIds(
