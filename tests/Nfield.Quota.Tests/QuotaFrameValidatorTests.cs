@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Nfield.Quota.Builders;
@@ -91,7 +90,36 @@ namespace Nfield.Quota.Tests
         }
 
         [Test]
-        public void Definitions_CannotContainDuplicateNames()
+        public void Definitions_CannotContainDuplicateNamesAcrossVariables()
+        {
+            const string nonUniqueName = "non-unique";
+
+            var quotaFrame = new QuotaFrame();
+
+            var variable1 = new QuotaVariableDefinition
+            {
+                Id = Guid.NewGuid(),
+                Name = nonUniqueName
+            };
+
+            var variable2 = new QuotaVariableDefinition
+            {
+                Id = Guid.NewGuid(),
+                Name = nonUniqueName
+            };
+
+            quotaFrame.VariableDefinitions.AddRange(new []{variable1, variable2});
+
+            var validator = new QuotaFrameValidator();
+            var result = validator.Validate(quotaFrame);
+
+            Assert.That(
+                result.Errors.Single().ErrorMessage,
+                Is.EqualTo("Quota frame definitions contain a duplicate variable name. Duplicate name: 'non-unique'"));
+        }
+
+        [Test]
+        public void Definitions_CannotContainDuplicateNamesInLevelsUnderSameVariable()
         {
             const string nonUniqueName = "non-unique";
 
@@ -124,8 +152,9 @@ namespace Nfield.Quota.Tests
             var validator = new QuotaFrameValidator();
             var result = validator.Validate(quotaFrame);
 
-            Assert.That(result.Errors.Single().ErrorMessage,
-                Is.EqualTo("Quota frame definitions contain a duplicate name. Duplicate name: 'non-unique'"));
+            Assert.That(
+                result.Errors.Single().ErrorMessage,
+                Is.EqualTo("Quota frame definitions contain a duplicate level name. Duplicate name: 'non-unique'"));
         }
 
         [Test]
@@ -170,41 +199,30 @@ namespace Nfield.Quota.Tests
         }
 
         [Test]
-        public void Definitions_CannotContainDuplicateNamesBetweenVariablesAndLevels()
+        public void Definitions_CannotHaveInvalidOdinVariableName()
         {
-            const string nonUniqueName = "non-unique";
+            const string invalidOdinVarName = "_varName";
+            const string variableName = "varName";
 
-            var quotaFrame = new QuotaFrame();
+            var quotaFrame = new QuotaFrameBuilder()
+                .VariableDefinition(
+                    "varName", invalidOdinVarName, new[] { "level1Name", "level2Name" })
+                .Structure(sb => { })
+                .Build();
 
-            var variable = new QuotaVariableDefinition
-            {
-                Id = Guid.NewGuid(),
-                Name = nonUniqueName,
-                OdinVariableName = "odinVarName"
-            };
+            var varId = quotaFrame.VariableDefinitions.Single().Id;
 
-            variable.Levels.AddRange(new[]
-            {
-                new QuotaLevelDefinition
-                {
-                    Id = Guid.NewGuid(),
-                    Name = nonUniqueName
-                },
-
-                new QuotaLevelDefinition
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "level2Name"
-                }
-            });
-
-            quotaFrame.VariableDefinitions.Add(variable);
+            var expectedErrorMessage = string.Format(CultureInfo.InvariantCulture,
+                "Odin variable name invalid. Odin variable names can only contain numbers, letters and '_'." +
+                " They can only ​start with​ a letter. First character cannot be '_' or a number." +
+                " Variable definition Id '{0}' with name '{1}' has an invalid Odin Variable Name '{2}'",
+                varId, variableName, invalidOdinVarName);
 
             var validator = new QuotaFrameValidator();
             var result = validator.Validate(quotaFrame);
 
             Assert.That(result.Errors.Single().ErrorMessage,
-                Is.EqualTo("Quota frame definitions contain a duplicate name. Duplicate name: 'non-unique'"));
+                Is.EqualTo(expectedErrorMessage));
         }
 
         [Test]
@@ -717,30 +735,23 @@ namespace Nfield.Quota.Tests
         }
 
         [Test]
-        public void Frame_CannotHaveInvalidOdinVariableName()
+        public void Frame_VariablesShouldHaveAtLeastOneVisibleLevel()
         {
-            const string invalidOdinVarName = "_varName";
-            const string variableName = "varName";
-
             var quotaFrame = new QuotaFrameBuilder()
-                .VariableDefinition(
-                    "varName", invalidOdinVarName, new[] {"level1Name", "level2Name"})
-                .Structure(sb => { })
-                .Build();
+                 .VariableDefinition("varName", new[] { "level1Name", "level2Name" })
+                 .Structure(sb => sb.Variable("varName"))
+                 .Build();
 
-            var varId = quotaFrame.VariableDefinitions.Single().Id;
-
-            var expectedErrorMessage = string.Format(CultureInfo.InvariantCulture,
-                "Odin variable name invalid. Odin variable names can only contain numbers, letters and '_'." +
-                " They can only ​start with​ a letter. First character cannot be '_' or a number." +
-                " Variable definition Id '{0}' with name '{1}' has an invalid Odin Variable Name '{2}'",
-                varId, variableName, invalidOdinVarName);
+            // Hide both levels
+            quotaFrame["varName", "level1Name"].IsHidden = true;
+            quotaFrame["varName", "level2Name"].IsHidden = true;
 
             var validator = new QuotaFrameValidator();
             var result = validator.Validate(quotaFrame);
 
-            Assert.That(result.Errors.Single().ErrorMessage,
-                Is.EqualTo(expectedErrorMessage));
+            Assert.That(
+                result.Errors.Single().ErrorMessage,
+                Is.EqualTo("Quota frame invalid. Frame has variables with no visible levels. Affected variable name: 'varName'. If you don't care about any levels under variable 'varName', consider hiding that variable instead."));
         }
 
         [Test]
@@ -988,6 +999,27 @@ namespace Nfield.Quota.Tests
 
             Assert.That(result.Errors.Single().ErrorMessage,
                 Is.EqualTo(expectedErrorMessage));
+        }
+
+        [Test]
+        public void ComplexFrame_VariablesShouldHaveAtLeastOneVisibleLevel()
+        {
+            var quotaFrame = new QuotaFrameBuilder()
+                 .VariableDefinition("varName1", new[] { "level1Name", "level2Name" })
+                 .VariableDefinition("varName2", new[] { "level1Name", "level2Name" })
+                 .Structure(sb => sb.Variable("varName1",
+                    s => s.Variable("varName2")))
+                 .Build();
+
+            quotaFrame["varName1", "level1Name"]["varName2", "level1Name"].IsHidden = true;
+            quotaFrame["varName1", "level1Name"]["varName2", "level2Name"].IsHidden = true;
+
+            var validator = new QuotaFrameValidator();
+            var result = validator.Validate(quotaFrame);
+
+            Assert.That(
+                result.Errors.Single().ErrorMessage,
+                Is.EqualTo("Quota frame invalid. Frame has variables with no visible levels. Affected variable name: 'varName2'. If you don't care about any levels under variable 'varName2', consider hiding that variable instead."));
         }
     }
 }
