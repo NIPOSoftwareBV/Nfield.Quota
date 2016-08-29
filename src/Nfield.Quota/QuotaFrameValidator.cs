@@ -17,10 +17,15 @@ namespace Nfield.Quota
             RuleFor(qf => qf.VariableDefinitions)
                 .Must(HaveUniqueIds)
                 .WithMessage("Quota frame definitions contain a duplicate id. Duplicate id: '{DuplicateValue}'")
-                .Must(HaveUniqueNames)
-                .WithMessage("Quota frame definitions contain a duplicate name. Duplicate name: '{DuplicateValue}'")
+                .Must(HaveUniqueVariableNames)
+                .WithMessage("Quota frame definitions contain a duplicate variable name. Duplicate name: '{DuplicateValue}'")
+                .Must(HaveUniqueLevelNamesPerVariable)
+                .WithMessage("Quota frame definitions contain a duplicate level name. Duplicate name: '{DuplicateValue}'")
                 .Must(HaveVariablesWithAtLeastOneLevel)
-                .WithMessage("Quota frame definitions has variables with no levels. Affected variable definition id: '{VariableDefinitionId}'");
+                .WithMessage("Quota frame definitions has variables with no levels. Affected variable definition id: '{VariableDefinitionId}'")
+                .Must(HaveValidOdinVariableName)
+                .WithMessage(
+                    "Odin variable name invalid. Odin variable names can only contain numbers, letters and '_'. They can only ​start with​ a letter. First character cannot be '_' or a number. Variable definition Id '{DefId}' with name '{DefName}' has an invalid Odin Variable Name '{InvalidOdin}'");
 
             RuleFor(qf => qf.FrameVariables)
                 .Must(HaveUniqueIds)
@@ -40,9 +45,9 @@ namespace Nfield.Quota
                 .Must(HaveValidLevelTargets)
                 .WithMessage(
                     "Target invalid. All Targets must be of a positive value. Frame level Id '{LevelId}' with name '{LevelName}' has an invalid negative target '{InvalidTarget}'")
-                .Must(HaveValidOdinVariableName)
+                .Must(HaveVariablesWithAtLeastOneVisibileLevel)
                 .WithMessage(
-                    "Odin variable name invalid. Odin variable names can only contain numbers, letters and '_'. They can only ​start with​ a letter. First character cannot be '_' or a number. Variable definition Id '{DefId}' with name '{DefName}' has an invalid Odin Variable Name '{InvalidOdin}'");
+                    "Quota frame invalid. Frame has variables with no visible levels. Affected variable name: '{VariableName}'. If you don't care about any levels under variable '{VariableName}', consider hiding that variable instead.");
         }
 
         private static bool HaveUniqueIds(
@@ -71,7 +76,7 @@ namespace Nfield.Quota
             return true;
         }
 
-        private static bool HaveUniqueNames(
+        private static bool HaveUniqueVariableNames(
             QuotaFrame frame,
             IEnumerable<QuotaVariableDefinition> varDefinitions,
             PropertyValidatorContext context)
@@ -84,6 +89,19 @@ namespace Nfield.Quota
                 {
                     return false;
                 }
+            }
+
+            return true;
+        }
+
+        private static bool HaveUniqueLevelNamesPerVariable(
+            QuotaFrame frame,
+            IEnumerable<QuotaVariableDefinition> varDefinitions,
+            PropertyValidatorContext context)
+        {
+            foreach (var variableDefinition in varDefinitions)
+            {
+                var usedNames = new HashSet<string>();
 
                 foreach (var levelDefinition in variableDefinition.Levels)
                 {
@@ -111,6 +129,28 @@ namespace Nfield.Quota
                 }
             }
 
+            return true;
+        }
+
+        private static bool HaveValidOdinVariableName(
+            QuotaFrame frame,
+            ICollection<QuotaVariableDefinition> varDefinitions,
+            PropertyValidatorContext context)
+        {
+            var expression = new Regex("^([a-zA-Z][a-zA-Z0-9_]*)?$");
+
+            foreach (var quotaVariableDefinition in varDefinitions)
+            {
+                if (expression.Match(quotaVariableDefinition.OdinVariableName).Success)
+                {
+                    continue;
+                }
+
+                context.MessageFormatter.AppendArgument("DefId", quotaVariableDefinition.Id);
+                context.MessageFormatter.AppendArgument("DefName", quotaVariableDefinition.Name);
+                context.MessageFormatter.AppendArgument("InvalidOdin", quotaVariableDefinition.OdinVariableName);
+                return false;
+            }
             return true;
         }
 
@@ -275,24 +315,28 @@ namespace Nfield.Quota
             return !inValidTarget;
         }
 
-        private static bool HaveValidOdinVariableName(
+        private static bool HaveVariablesWithAtLeastOneVisibileLevel(
             QuotaFrame frame,
-            ICollection<QuotaFrameVariable> frameVariables,
+            IEnumerable<QuotaFrameVariable> variables,
             PropertyValidatorContext context)
         {
-            var expression =new Regex("^([a-zA-Z][a-zA-Z0-9_]*)?$");
+            var isValid = true;
 
-            foreach (var quotaVariableDefinition in frame.VariableDefinitions)
-            {
-                if (expression.Match(quotaVariableDefinition.OdinVariableName).Success) continue;
-                context.MessageFormatter.AppendArgument("DefId", quotaVariableDefinition.Id);
-                context.MessageFormatter.AppendArgument("DefName", quotaVariableDefinition.Name);
-                context.MessageFormatter.AppendArgument("InvalidOdin", quotaVariableDefinition.OdinVariableName);
-                return false;
-            }
-            return true;
+            var traverser = new PreOrderQuotaFrameTraverser();
+            traverser.Traverse( // always walks whole tree, might want to change this
+                frame,
+                variable =>
+                {
+                    if (variable.Levels.Count(l => !l.IsHidden) < 1)
+                    {
+                        context.MessageFormatter.AppendArgument("VariableName", variable.Name);
+                        isValid = false;
+                    }
+                });
+
+            return isValid;
         }
-        
+
         // Assumes set.Add returns false if value already in collection
         private static bool IsDuplicateValue<T>(PropertyValidatorContext context, ISet<T> set, T entry)
         {

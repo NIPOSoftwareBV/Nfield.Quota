@@ -65,6 +65,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\glu-quota-format-v2-common-AddedIsHidden.json" />
     <None Include="Assets\glu-quota-format-v1-common.json" />
     <None Include="packages.config" />
   </ItemGroup>

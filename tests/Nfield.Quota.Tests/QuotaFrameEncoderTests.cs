@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Nfield.Quota.Builders;
 using Nfield.Quota.Persistence;
 using NUnit.Framework;
@@ -80,6 +77,22 @@ namespace Nfield.Quota.Tests
             Assert.That(json, Does.Contain("variableDefinitions"));
             Assert.That(json, Does.Contain("frameVariables"));
         }
-        
+
+        [Test]
+        public void IsHiddenIsSerialized()
+        {
+            var frame = new QuotaFrameBuilder()
+                .VariableDefinition("var", new List<string> { "level" })
+                .Structure(sb => sb.Variable("var"))
+                .Build();
+
+            frame["var"].IsHidden = true;
+            frame["var", "level"].IsHidden = true;
+
+            var json = QuotaFrameEncoder.Encode(frame);
+
+            Assert.That(Regex.Matches(json, @"""isHidden"": true").Count, Is.EqualTo(2));
+        }
+
     }
 }
