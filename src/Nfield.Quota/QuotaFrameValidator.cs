@@ -327,7 +327,9 @@ namespace Nfield.Quota
                 frame,
                 variable =>
                 {
-                    if (variable.Levels.Count(l => !l.IsHidden) < 1)
+                    // if the variable is hidden, we don't care about the children
+                    // but if it isn't, at least one child should be visible also
+                    if (variable.IsHidden == false && variable.Levels.Count(l => !l.IsHidden) < 1)
                     {
                         context.MessageFormatter.AppendArgument("VariableName", variable.Name);
                         isValid = false;
