@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Nfield.Quota.Builders;
@@ -213,7 +214,8 @@ namespace Nfield.Quota.Tests
             var varId = quotaFrame.VariableDefinitions.Single().Id;
 
             var expectedErrorMessage = string.Format(CultureInfo.InvariantCulture,
-                "Odin variable name invalid. Odin variable names can only contain numbers, letters and '_'." +
+                "Odin variable name invalid. Odin variable names can only contain numbers, letters and '_' " +
+                "and cannot be empty." +
                 " They can only ​start with​ a letter. First character cannot be '_' or a number." +
                 " Variable definition Id '{0}' with name '{1}' has an invalid Odin Variable Name '{2}'",
                 varId, variableName, invalidOdinVarName);
@@ -1021,5 +1023,106 @@ namespace Nfield.Quota.Tests
                 result.Errors.Single().ErrorMessage,
                 Is.EqualTo("Quota frame invalid. Frame has variables with no visible levels. Affected variable name: 'varName2'. If you don't care about any levels under variable 'varName2', consider hiding that variable instead."));
         }
+
+        [Test]
+        public void Definitions_OdinVariableShouldBePresent()
+        {
+            var var1Id = Guid.NewGuid();
+            var levelId = Guid.NewGuid();
+
+            var levelDefinitions = new[]
+            {
+                new QuotaLevelDefinition
+                {
+                    Id = levelId,
+                    Name = "Level 1"
+                }
+            };
+
+            var definitions = new[]
+            {
+                new QuotaVariableDefinition(levelDefinitions)
+                {
+                    Id = var1Id,
+                    Name = "var 1"
+                    // OdinVariableName = 
+                }
+            };
+
+            var level = new QuotaFrameLevel {DefinitionId = levelId};
+
+            var frame = new[]
+            {
+                new QuotaFrameVariable(new List<QuotaFrameLevel> { level })
+                {
+                    Id = Guid.NewGuid(),
+                    DefinitionId = var1Id
+                }
+            };
+
+            var quotaFrame = new QuotaFrame(definitions, frame);
+            var validator = new QuotaFrameValidator();
+
+            var result = validator.Validate(quotaFrame);
+
+            Assert.That(
+                result.Errors.Single().ErrorMessage,
+                Is.EqualTo("Odin variable name invalid. Odin variable names can only contain numbers, " +
+                           "letters and '_' and cannot be empty. They can only ​start with​ a letter. " +
+                           "First character cannot be '_' or a number. " +
+                           $"Variable definition Id '{var1Id}' with name 'var 1' " +
+                           "has an invalid Odin Variable Name ''"));
+        }
+
+        [Test]
+        public void Definitions_OdinVariableCannotBeEmpty()
+        {
+            var var1Id = Guid.NewGuid();
+            var levelId = Guid.NewGuid();
+
+            var levelDefinitions = new[]
+            {
+                new QuotaLevelDefinition
+                {
+                    Id = levelId,
+                    Name = "Level 1"
+                }
+            };
+
+            var definitions = new[]
+            {
+                new QuotaVariableDefinition(levelDefinitions)
+                {
+                    Id = var1Id,
+                    Name = "var 1",
+                    OdinVariableName = ""
+                }
+            };
+
+            var level = new QuotaFrameLevel { DefinitionId = levelId };
+
+            var frame = new[]
+            {
+                new QuotaFrameVariable(new List<QuotaFrameLevel> { level })
+                {
+                    Id = Guid.NewGuid(),
+                    DefinitionId = var1Id
+                }
+            };
+
+            var quotaFrame = new QuotaFrame(definitions, frame);
+            var validator = new QuotaFrameValidator();
+
+            var result = validator.Validate(quotaFrame);
+
+            Assert.That(
+                result.Errors.Single().ErrorMessage,
+                Is.EqualTo("Odin variable name invalid. Odin variable names can only contain numbers, " +
+                           "letters and '_' and cannot be empty. They can only ​start with​ a letter. " +
+                           "First character cannot be '_' or a number. " +
+                           $"Variable definition Id '{var1Id}' with name 'var 1' " +
+                           "has an invalid Odin Variable Name ''"));
+        }
+
     }
 }

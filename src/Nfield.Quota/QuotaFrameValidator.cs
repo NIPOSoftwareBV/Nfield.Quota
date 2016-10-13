@@ -25,7 +25,7 @@ namespace Nfield.Quota
                 .WithMessage("Quota frame definitions has variables with no levels. Affected variable definition id: '{VariableDefinitionId}'")
                 .Must(HaveValidOdinVariableName)
                 .WithMessage(
-                    "Odin variable name invalid. Odin variable names can only contain numbers, letters and '_'. They can only ​start with​ a letter. First character cannot be '_' or a number. Variable definition Id '{DefId}' with name '{DefName}' has an invalid Odin Variable Name '{InvalidOdin}'");
+                    "Odin variable name invalid. Odin variable names can only contain numbers, letters and '_' and cannot be empty. They can only ​start with​ a letter. First character cannot be '_' or a number. Variable definition Id '{DefId}' with name '{DefName}' has an invalid Odin Variable Name '{InvalidOdin}'");
 
             RuleFor(qf => qf.FrameVariables)
                 .Must(HaveUniqueIds)
@@ -137,11 +137,12 @@ namespace Nfield.Quota
             ICollection<QuotaVariableDefinition> varDefinitions,
             PropertyValidatorContext context)
         {
-            var expression = new Regex("^([a-zA-Z][a-zA-Z0-9_]*)?$");
+            var expression = new Regex("^[a-zA-Z][a-zA-Z0-9_]*$");
 
             foreach (var quotaVariableDefinition in varDefinitions)
             {
-                if (expression.Match(quotaVariableDefinition.OdinVariableName).Success)
+                if (quotaVariableDefinition.OdinVariableName != null
+                    && expression.Match(quotaVariableDefinition.OdinVariableName).Success)
                 {
                     continue;
                 }
