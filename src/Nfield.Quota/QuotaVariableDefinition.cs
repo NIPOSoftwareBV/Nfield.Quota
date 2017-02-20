@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nfield.Quota.Helpers;
 
 namespace Nfield.Quota
 {
@@ -22,7 +23,7 @@ namespace Nfield.Quota
         public string OdinVariableName { get; set; }
 
         public ICollection<QuotaLevelDefinition> Levels { get; }
-        
+
         public static bool operator ==(QuotaVariableDefinition left, QuotaVariableDefinition right)
         {
             return left?.Equals(right) ?? false;
@@ -53,12 +54,7 @@ namespace Nfield.Quota
             return (Id == other.Id)
                    && (Name == other.Name)
                    && (OdinVariableName == other.OdinVariableName)
-                   && ScrambledLevelsEquals(Levels, other.Levels);
-        }
-
-        private static bool ScrambledLevelsEquals<T>(ICollection<T> left, ICollection<T> right)
-        {
-            return left.Count == right.Count && left.All(right.Contains);
+                   && Levels.ScrambledDefinitionsEquals(other.Levels);
         }
     }
 }

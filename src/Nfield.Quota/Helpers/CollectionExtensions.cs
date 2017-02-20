@@ -23,5 +23,17 @@ namespace Nfield.Quota.Helpers
                 collection.Add(item);
             }
         }
+
+        /// <summary>
+        /// Compares two definitions' collection if they have the same items and count
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public static bool ScrambledDefinitionsEquals<T>(this ICollection<T> left, ICollection<T> right)
+        {
+            return left.Count == right.Count && left.All(right.Contains);
+        }
     }
 }
