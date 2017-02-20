@@ -23,14 +23,14 @@ namespace Nfield.Quota
 
         public ICollection<QuotaLevelDefinition> Levels { get; }
         
-        public static bool operator ==(QuotaVariableDefinition existingDefinition, QuotaVariableDefinition newDefinition)
+        public static bool operator ==(QuotaVariableDefinition left, QuotaVariableDefinition right)
         {
-            return existingDefinition?.Equals(newDefinition) ?? false;
+            return left?.Equals(right) ?? false;
         }
 
-        public static bool operator !=(QuotaVariableDefinition existingDefinition, QuotaVariableDefinition newDefinition)
+        public static bool operator !=(QuotaVariableDefinition left, QuotaVariableDefinition right)
         {
-            return !(existingDefinition == newDefinition);
+            return !(left == right);
         }
 
         public override bool Equals(object obj)
@@ -41,44 +41,24 @@ namespace Nfield.Quota
 
         public override int GetHashCode()
         {
-            return Id.GetHashCode() ^ Name.GetHashCode() ^ OdinVariableName.GetHashCode() ^ Levels.GetHashCode();
+            // we can't do better than this
+            return base.GetHashCode();
         }
 
         public bool Equals(QuotaVariableDefinition other)
         {
-            return other != null 
-                && (Id == other.Id) 
-                && (Name == other.Name) 
-                && (OdinVariableName == other.OdinVariableName) 
-                && ScrambledLevelsEquals(Levels,other.Levels);
+            if (ReferenceEquals(this, other)) return true;
+            if (ReferenceEquals(other, null)) return false;
+
+            return (Id == other.Id)
+                   && (Name == other.Name)
+                   && (OdinVariableName == other.OdinVariableName)
+                   && ScrambledLevelsEquals(Levels, other.Levels);
         }
-        private static bool ScrambledLevelsEquals<T>(IEnumerable<T> existingDefinition, IEnumerable<T> newDefinition)
+
+        private static bool ScrambledLevelsEquals<T>(ICollection<T> left, ICollection<T> right)
         {
-            var levels = new Dictionary<T, int>();
-            foreach (var ed in existingDefinition)
-            {
-                if (levels.ContainsKey(ed))
-                {
-                    levels[ed]++;
-                }
-                else
-                {
-                    levels.Add(ed, 1);
-                }
-            }
-            foreach (var nd in newDefinition)
-            {
-                if (levels.ContainsKey(nd))
-                {
-                    levels[nd]--;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            return levels.Values.All(qld=> qld == 0);
+            return left.Count == right.Count && left.All(right.Contains);
         }
-       
     }
 }

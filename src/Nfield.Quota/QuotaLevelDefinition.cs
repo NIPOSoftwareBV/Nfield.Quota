@@ -7,14 +7,14 @@ namespace Nfield.Quota
         public Guid Id { get; set; }
         public string Name { get; set; }
 
-        public static bool operator ==(QuotaLevelDefinition existingDefinition, QuotaLevelDefinition newDefinition)
+        public static bool operator ==(QuotaLevelDefinition left, QuotaLevelDefinition right)
         {
-            return existingDefinition?.Equals(newDefinition) ?? false;
+            return left?.Equals(right) ?? false;
         }
 
-        public static bool operator !=(QuotaLevelDefinition existingDefinition, QuotaLevelDefinition newDefinition)
+        public static bool operator !=(QuotaLevelDefinition left, QuotaLevelDefinition right)
         {
-            return !(existingDefinition == newDefinition);
+            return !(left == right);
         }
 
         public override bool Equals(object obj)
@@ -24,13 +24,17 @@ namespace Nfield.Quota
         }
 
         public override int GetHashCode()
-        {
-            return Id.GetHashCode() ^ Name.GetHashCode();
+        { 
+            // we can't do better than this
+            return base.GetHashCode();
         }
 
         public bool Equals(QuotaLevelDefinition other)
         {
-            return other != null && (Id == other.Id) && (Name == other.Name);
+            if (ReferenceEquals(this, other)) return true;
+            if (ReferenceEquals(other, null)) return false;
+
+            return (Id == other.Id) && (Name == other.Name);
         }
     }
 }
