@@ -29,7 +29,7 @@ namespace Nfield.Quota.Helpers
         /// <param name="left"></param>
         /// <param name="right"></param>
         /// <returns></returns>
-        public static bool ScrambledDefinitionsEquals<T>(this ICollection<T> left, ICollection<T> right)
+        internal static bool ScrambledDefinitionsEquals<T>(this ICollection<T> left, ICollection<T> right)
         {
             return left.Count == right.Count && left.All(right.Contains);
         }
