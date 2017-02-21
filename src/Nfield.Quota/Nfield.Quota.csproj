@@ -66,6 +66,7 @@
     <Compile Include="QuotaFrameVariable.cs" />
     <Compile Include="QuotaLevelDefinition.cs" />
     <Compile Include="QuotaVariableDefinition.cs" />
+    <Compile Include="QuotaVariableDefinitionCollection.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Nfield.Quota.nuspec" />

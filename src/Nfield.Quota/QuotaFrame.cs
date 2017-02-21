@@ -8,7 +8,7 @@ namespace Nfield.Quota
     {
         public QuotaFrame()
         {
-            VariableDefinitions = new List<QuotaVariableDefinition>();
+            VariableDefinitions = new QuotaVariableDefinitionCollection();
             FrameVariables = new List<QuotaFrameVariable>();
         }
 
@@ -16,13 +16,13 @@ namespace Nfield.Quota
             IEnumerable<QuotaVariableDefinition> variableDefinitions,
             IEnumerable<QuotaFrameVariable> frameVariables)
         {
-            VariableDefinitions = new List<QuotaVariableDefinition>(variableDefinitions);
+            VariableDefinitions = new QuotaVariableDefinitionCollection(variableDefinitions);
             FrameVariables = new List<QuotaFrameVariable>(frameVariables);
         }
 
         public int? Target { get; set; }
 
-        public ICollection<QuotaVariableDefinition> VariableDefinitions { get; }
+        public QuotaVariableDefinitionCollection VariableDefinitions { get; }
 
         public ICollection<QuotaFrameVariable> FrameVariables { get; }
 
@@ -46,7 +46,7 @@ namespace Nfield.Quota
             get
             {
                 var variable = this[variableName];
-                
+
                 var level = variable.Levels.FirstOrDefault(l => l.Name == levelName);
                 if (level == null)
                 {
