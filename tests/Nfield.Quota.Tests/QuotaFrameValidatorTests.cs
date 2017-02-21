@@ -293,6 +293,48 @@ namespace Nfield.Quota.Tests
             Assert.That(resultLevels1, Is.False);
             Assert.That(resultLevels2, Is.False);
         }
+
+        [Test]
+        public void Compare_Collection_Definistions_Are_Equal()
+        {
+            var varId = Guid.NewGuid();
+            var level1Id = Guid.NewGuid();
+            var level2Id = Guid.NewGuid();
+            var quotaFrameVariableId = Guid.NewGuid();
+            var quotaFrameLevelId1 = Guid.NewGuid();
+            var quotaFrameLevelId2 = Guid.NewGuid();
+
+
+            var quotaFrame1 = BuildQuotaFrame(varId, level1Id, level2Id, quotaFrameVariableId, quotaFrameLevelId1, quotaFrameLevelId2);
+            var quotaFrame2 = BuildQuotaFrame(varId, level1Id, level2Id, quotaFrameVariableId, quotaFrameLevelId1, quotaFrameLevelId2);
+
+            var resultCollectionVariableDefinitions = Equals(quotaFrame1.VariableDefinitions, quotaFrame2.VariableDefinitions);
+           
+
+            Assert.That(resultCollectionVariableDefinitions, Is.True);
+            
+        }
+        [Test]
+        public void Compare_Collection_Definistions_Are_Not_Equal()
+        {
+            var varId1 = Guid.NewGuid();
+            var varId2 = Guid.NewGuid();
+            var level11Id = Guid.NewGuid();
+            var level12Id = Guid.NewGuid();
+            var level21Id = Guid.NewGuid();
+            var level22Id = Guid.NewGuid();
+            var quotaFrameVariableId = Guid.NewGuid();
+            var quotaFrameLevelId1 = Guid.NewGuid();
+            var quotaFrameLevelId2 = Guid.NewGuid();
+
+
+            var quotaFrame1 = BuildQuotaFrame(varId1, level11Id, level12Id, quotaFrameVariableId, quotaFrameLevelId1, quotaFrameLevelId2);
+            var quotaFrame2 = BuildQuotaFrame(varId2, level21Id, level22Id, quotaFrameVariableId, quotaFrameLevelId1, quotaFrameLevelId2);
+
+            var resultVariableDefinitions = Equals(quotaFrame1.VariableDefinitions, quotaFrame2.VariableDefinitions);
+
+            Assert.That(resultVariableDefinitions, Is.False);
+        }
         private static QuotaFrame BuildQuotaFrame(Guid varId, Guid level1Id, Guid level2Id,
            Guid quotaFrameVariableId, Guid quotaFrameLevelId1, Guid quotaFrameLevelId2)
         {

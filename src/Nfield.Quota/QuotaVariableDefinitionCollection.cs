@@ -5,17 +5,14 @@ namespace Nfield.Quota
 {
     public class QuotaVariableDefinitionCollection : List<QuotaVariableDefinition>
     {
-        public ICollection<QuotaVariableDefinition> Variables { get; }
-        public QuotaVariableDefinitionCollection()
+        public QuotaVariableDefinitionCollection(IEnumerable<QuotaVariableDefinition> collection) : base(collection)
         {
-            Variables = new List<QuotaVariableDefinition>();
         }
 
-        public QuotaVariableDefinitionCollection(IEnumerable<QuotaVariableDefinition> variables)
+        public QuotaVariableDefinitionCollection()
         {
-            Variables = new List<QuotaVariableDefinition>(variables);
         }
-        
+
         public static bool operator ==(QuotaVariableDefinitionCollection left, QuotaVariableDefinitionCollection right)
         {
             return left?.Equals(right) ?? false;
@@ -28,7 +25,7 @@ namespace Nfield.Quota
 
         public override bool Equals(object obj)
         {
-            var other = obj as QuotaVariableDefinition;
+            var other = obj as QuotaVariableDefinitionCollection;
             return other != null && Equals(other);
         }
 
@@ -41,7 +38,7 @@ namespace Nfield.Quota
         public bool Equals(ICollection<QuotaVariableDefinition> other)
         {
             if (ReferenceEquals(this, other)) return true;
-            return !ReferenceEquals(other, null) && Variables.ScrambledDefinitionsEquals(other);
+            return !ReferenceEquals(other, null) && this.ScrambledDefinitionsEquals(other);
         }
     }
 }
