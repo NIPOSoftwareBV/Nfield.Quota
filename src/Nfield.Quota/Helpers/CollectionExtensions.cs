@@ -31,6 +31,7 @@ namespace Nfield.Quota.Helpers
         /// <returns></returns>
         internal static bool ScrambledDefinitionsEquals<T>(this ICollection<T> left, ICollection<T> right)
         {
+            if (ReferenceEquals(left, null)) return false;
             return left.Count == right.Count && left.All(right.Contains);
         }
     }
