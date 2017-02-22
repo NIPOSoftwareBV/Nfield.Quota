@@ -247,7 +247,7 @@ namespace Nfield.Quota.Tests
         }
        
         [Test]
-        public void Compare_Definistions_Are_Equal()
+        public void Compare_Definitions_Are_Equal()
         {
             var varId = Guid.NewGuid();
             var level1Id = Guid.NewGuid();
@@ -260,16 +260,16 @@ namespace Nfield.Quota.Tests
             var quotaFrame1 = BuildQuotaFrame(varId, level1Id, level2Id, quotaFrameVariableId, quotaFrameLevelId1, quotaFrameLevelId2);
             var quotaFrame2 = BuildQuotaFrame(varId, level1Id, level2Id, quotaFrameVariableId, quotaFrameLevelId1, quotaFrameLevelId2);
 
-            var resultVariableDefinitions = Equals(quotaFrame1.VariableDefinitions.First(), quotaFrame2.VariableDefinitions.First());
-            var resultLevels1 = Equals(quotaFrame1.VariableDefinitions.First().Levels.First(), quotaFrame2.VariableDefinitions.First().Levels.First());
-            var resultLevels2 = Equals(quotaFrame1.VariableDefinitions.First().Levels.First(), quotaFrame2.VariableDefinitions.First().Levels.First());
+            var resultVariableDefinitions = quotaFrame1.VariableDefinitions.First() == quotaFrame2.VariableDefinitions.First();
+            var resultLevels1 = quotaFrame1.VariableDefinitions.First().Levels.First() == quotaFrame2.VariableDefinitions.First().Levels.First();
+            var resultLevels2 = quotaFrame1.VariableDefinitions.First().Levels.First() == quotaFrame2.VariableDefinitions.First().Levels.First();
 
             Assert.That(resultVariableDefinitions, Is.True);
             Assert.That(resultLevels1, Is.True);
             Assert.That(resultLevels2, Is.True);
         }
         [Test]
-        public void Compare_Definistions_Are_Not_Equal()
+        public void Compare_Definitions_Are_Not_Equal()
         {
             var varId1 = Guid.NewGuid();
             var varId2 = Guid.NewGuid();
@@ -285,17 +285,17 @@ namespace Nfield.Quota.Tests
             var quotaFrame1 = BuildQuotaFrame(varId1, level11Id, level12Id, quotaFrameVariableId, quotaFrameLevelId1, quotaFrameLevelId2);
             var quotaFrame2 = BuildQuotaFrame(varId2, level21Id, level22Id, quotaFrameVariableId, quotaFrameLevelId1, quotaFrameLevelId2);
 
-            var resultVariableDefinitions = Equals(quotaFrame1.VariableDefinitions.First(), quotaFrame2.VariableDefinitions.First());
-            var resultLevels1 = Equals(quotaFrame1.VariableDefinitions.First().Levels.First(), quotaFrame2.VariableDefinitions.First().Levels.First());
-            var resultLevels2 = Equals(quotaFrame1.VariableDefinitions.First().Levels.First(), quotaFrame2.VariableDefinitions.First().Levels.First());
+            var resultVariableDefinitions = quotaFrame1.VariableDefinitions.First() != quotaFrame2.VariableDefinitions.First();
+            var resultLevels1 = quotaFrame1.VariableDefinitions.First().Levels.First() != quotaFrame2.VariableDefinitions.First().Levels.First();
+            var resultLevels2 = quotaFrame1.VariableDefinitions.First().Levels.First() != quotaFrame2.VariableDefinitions.First().Levels.First();
 
-            Assert.That(resultVariableDefinitions, Is.False);
-            Assert.That(resultLevels1, Is.False);
-            Assert.That(resultLevels2, Is.False);
+            Assert.That(resultVariableDefinitions, Is.True);
+            Assert.That(resultLevels1, Is.True);
+            Assert.That(resultLevels2, Is.True);
         }
 
         [Test]
-        public void Compare_Collection_Definistions_Are_Equal()
+        public void Compare_Collection_Definitions_Are_Equal()
         {
             var varId = Guid.NewGuid();
             var level1Id = Guid.NewGuid();
@@ -308,14 +308,14 @@ namespace Nfield.Quota.Tests
             var quotaFrame1 = BuildQuotaFrame(varId, level1Id, level2Id, quotaFrameVariableId, quotaFrameLevelId1, quotaFrameLevelId2);
             var quotaFrame2 = BuildQuotaFrame(varId, level1Id, level2Id, quotaFrameVariableId, quotaFrameLevelId1, quotaFrameLevelId2);
 
-            var resultCollectionVariableDefinitions = Equals(quotaFrame1.VariableDefinitions, quotaFrame2.VariableDefinitions);
+            var resultCollectionVariableDefinitions = quotaFrame1.VariableDefinitions == quotaFrame2.VariableDefinitions;
            
 
             Assert.That(resultCollectionVariableDefinitions, Is.True);
             
         }
         [Test]
-        public void Compare_Collection_Definistions_Are_Not_Equal()
+        public void Compare_Collection_Definitions_Are_Not_Equal()
         {
             var varId1 = Guid.NewGuid();
             var varId2 = Guid.NewGuid();
@@ -331,9 +331,9 @@ namespace Nfield.Quota.Tests
             var quotaFrame1 = BuildQuotaFrame(varId1, level11Id, level12Id, quotaFrameVariableId, quotaFrameLevelId1, quotaFrameLevelId2);
             var quotaFrame2 = BuildQuotaFrame(varId2, level21Id, level22Id, quotaFrameVariableId, quotaFrameLevelId1, quotaFrameLevelId2);
 
-            var resultVariableDefinitions = Equals(quotaFrame1.VariableDefinitions, quotaFrame2.VariableDefinitions);
+            var resultVariableDefinitions = quotaFrame1.VariableDefinitions != quotaFrame2.VariableDefinitions;
 
-            Assert.That(resultVariableDefinitions, Is.False);
+            Assert.That(resultVariableDefinitions, Is.True);
         }
         private static QuotaFrame BuildQuotaFrame(Guid varId, Guid level1Id, Guid level2Id,
            Guid quotaFrameVariableId, Guid quotaFrameLevelId1, Guid quotaFrameLevelId2)
