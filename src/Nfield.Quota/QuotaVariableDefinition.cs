@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Nfield.Quota.Helpers;
 
 namespace Nfield.Quota
 {
-    public class QuotaVariableDefinition
+    public class QuotaVariableDefinition : IEquatable<QuotaVariableDefinition>
     {
         public QuotaVariableDefinition()
         {
@@ -21,5 +23,38 @@ namespace Nfield.Quota
         public string OdinVariableName { get; set; }
 
         public ICollection<QuotaLevelDefinition> Levels { get; }
+
+        public static bool operator ==(QuotaVariableDefinition left, QuotaVariableDefinition right)
+        {
+            return left?.Equals(right) ?? false;
+        }
+
+        public static bool operator !=(QuotaVariableDefinition left, QuotaVariableDefinition right)
+        {
+            return !(left == right);
+        }
+
+        public override bool Equals(object obj)
+        {
+            var other = obj as QuotaVariableDefinition;
+            return Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            // we can't do better than this
+            return base.GetHashCode();
+        }
+
+        public bool Equals(QuotaVariableDefinition other)
+        {
+            if (ReferenceEquals(this, other)) return true;
+            if (ReferenceEquals(other, null)) return false;
+
+            return (Id == other.Id)
+                   && (Name == other.Name)
+                   && (OdinVariableName == other.OdinVariableName)
+                   && Levels.ScrambledDefinitionsEquals(other.Levels);
+        }
     }
 }

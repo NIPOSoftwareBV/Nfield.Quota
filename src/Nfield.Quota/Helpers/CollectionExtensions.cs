@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Nfield.Quota.Helpers
 {
@@ -22,6 +20,22 @@ namespace Nfield.Quota.Helpers
             {
                 collection.Add(item);
             }
+        }
+
+        /// <summary>
+        /// Compares two definitions' collection if they have the same items and count
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        internal static bool ScrambledDefinitionsEquals<T>(this ICollection<T> left, ICollection<T> right)
+        {
+            if (ReferenceEquals(left, null))
+            {
+                return ReferenceEquals(right, null);
+            }
+            return left.Count == right.Count && left.All(right.Contains);
         }
     }
 }

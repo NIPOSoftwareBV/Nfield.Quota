@@ -26,7 +26,7 @@ namespace Nfield.Quota.Tests
             Assert.That(result.IsValid, Is.True);
         }
 
-        [Test]
+       [Test]
         public void Definitions_EveryVariableNeedsAtLeastOneLevel()
         {
             var variableId = Guid.NewGuid();
@@ -69,13 +69,13 @@ namespace Nfield.Quota.Tests
 
             variable.Levels.AddRange(new []
             {
-                new QuotaLevelDefinition()
+                new QuotaLevelDefinition
                 {
                     Id = nonUniqueId,
                     Name = "level1Name"
                 },
 
-                new QuotaLevelDefinition()
+                new QuotaLevelDefinition
                 {
                     Id = nonUniqueId,
                     Name = "level2Name"
@@ -233,9 +233,112 @@ namespace Nfield.Quota.Tests
             var varId = Guid.NewGuid();
             var level1Id = Guid.NewGuid();
             var level2Id = Guid.NewGuid();
+            var quotaFrameVariableId = Guid.NewGuid();
+            var quotaFrameLevelId1 = Guid.NewGuid();
+            var quotaFrameLevelId2 = Guid.NewGuid();
 
+
+            var quotaFrame = BuildQuotaFrame(varId, level1Id, level2Id, quotaFrameVariableId, quotaFrameLevelId1, quotaFrameLevelId2);
+
+            var validator = new QuotaFrameValidator();
+            var result = validator.Validate(quotaFrame);
+
+            Assert.That(result.IsValid, Is.True);
+        }
+       
+        [Test]
+        public void Compare_Definitions_Are_Equal()
+        {
+            var varId = Guid.NewGuid();
+            var level1Id = Guid.NewGuid();
+            var level2Id = Guid.NewGuid();
+            var quotaFrameVariableId = Guid.NewGuid();
+            var quotaFrameLevelId1 = Guid.NewGuid();
+            var quotaFrameLevelId2 = Guid.NewGuid();
+
+
+            var quotaFrame1 = BuildQuotaFrame(varId, level1Id, level2Id, quotaFrameVariableId, quotaFrameLevelId1, quotaFrameLevelId2);
+            var quotaFrame2 = BuildQuotaFrame(varId, level1Id, level2Id, quotaFrameVariableId, quotaFrameLevelId1, quotaFrameLevelId2);
+
+            var resultVariableDefinitions = quotaFrame1.VariableDefinitions.First() == quotaFrame2.VariableDefinitions.First();
+            var resultLevels1 = quotaFrame1.VariableDefinitions.First().Levels.First() == quotaFrame2.VariableDefinitions.First().Levels.First();
+            var resultLevels2 = quotaFrame1.VariableDefinitions.First().Levels.First() == quotaFrame2.VariableDefinitions.First().Levels.First();
+
+            Assert.That(resultVariableDefinitions, Is.True);
+            Assert.That(resultLevels1, Is.True);
+            Assert.That(resultLevels2, Is.True);
+        }
+        [Test]
+        public void Compare_Definitions_Are_Not_Equal()
+        {
+            var varId1 = Guid.NewGuid();
+            var varId2 = Guid.NewGuid();
+            var level11Id = Guid.NewGuid();
+            var level12Id = Guid.NewGuid();
+            var level21Id = Guid.NewGuid();
+            var level22Id = Guid.NewGuid();
+            var quotaFrameVariableId = Guid.NewGuid();
+            var quotaFrameLevelId1 = Guid.NewGuid();
+            var quotaFrameLevelId2 = Guid.NewGuid();
+
+
+            var quotaFrame1 = BuildQuotaFrame(varId1, level11Id, level12Id, quotaFrameVariableId, quotaFrameLevelId1, quotaFrameLevelId2);
+            var quotaFrame2 = BuildQuotaFrame(varId2, level21Id, level22Id, quotaFrameVariableId, quotaFrameLevelId1, quotaFrameLevelId2);
+
+            var resultVariableDefinitions = quotaFrame1.VariableDefinitions.First() != quotaFrame2.VariableDefinitions.First();
+            var resultLevels1 = quotaFrame1.VariableDefinitions.First().Levels.First() != quotaFrame2.VariableDefinitions.First().Levels.First();
+            var resultLevels2 = quotaFrame1.VariableDefinitions.First().Levels.First() != quotaFrame2.VariableDefinitions.First().Levels.First();
+
+            Assert.That(resultVariableDefinitions, Is.True);
+            Assert.That(resultLevels1, Is.True);
+            Assert.That(resultLevels2, Is.True);
+        }
+
+        [Test]
+        public void Compare_Collection_Definitions_Are_Equal()
+        {
+            var varId = Guid.NewGuid();
+            var level1Id = Guid.NewGuid();
+            var level2Id = Guid.NewGuid();
+            var quotaFrameVariableId = Guid.NewGuid();
+            var quotaFrameLevelId1 = Guid.NewGuid();
+            var quotaFrameLevelId2 = Guid.NewGuid();
+
+
+            var quotaFrame1 = BuildQuotaFrame(varId, level1Id, level2Id, quotaFrameVariableId, quotaFrameLevelId1, quotaFrameLevelId2);
+            var quotaFrame2 = BuildQuotaFrame(varId, level1Id, level2Id, quotaFrameVariableId, quotaFrameLevelId1, quotaFrameLevelId2);
+
+            var resultCollectionVariableDefinitions = quotaFrame1.VariableDefinitions == quotaFrame2.VariableDefinitions;
+           
+
+            Assert.That(resultCollectionVariableDefinitions, Is.True);
+            
+        }
+        [Test]
+        public void Compare_Collection_Definitions_Are_Not_Equal()
+        {
+            var varId1 = Guid.NewGuid();
+            var varId2 = Guid.NewGuid();
+            var level11Id = Guid.NewGuid();
+            var level12Id = Guid.NewGuid();
+            var level21Id = Guid.NewGuid();
+            var level22Id = Guid.NewGuid();
+            var quotaFrameVariableId = Guid.NewGuid();
+            var quotaFrameLevelId1 = Guid.NewGuid();
+            var quotaFrameLevelId2 = Guid.NewGuid();
+
+
+            var quotaFrame1 = BuildQuotaFrame(varId1, level11Id, level12Id, quotaFrameVariableId, quotaFrameLevelId1, quotaFrameLevelId2);
+            var quotaFrame2 = BuildQuotaFrame(varId2, level21Id, level22Id, quotaFrameVariableId, quotaFrameLevelId1, quotaFrameLevelId2);
+
+            var resultVariableDefinitions = quotaFrame1.VariableDefinitions != quotaFrame2.VariableDefinitions;
+
+            Assert.That(resultVariableDefinitions, Is.True);
+        }
+        private static QuotaFrame BuildQuotaFrame(Guid varId, Guid level1Id, Guid level2Id,
+           Guid quotaFrameVariableId, Guid quotaFrameLevelId1, Guid quotaFrameLevelId2)
+        {
             var quotaFrame = new QuotaFrame();
-
             var variable = new QuotaVariableDefinition
             {
                 Id = varId,
@@ -250,7 +353,6 @@ namespace Nfield.Quota.Tests
                     Id = level1Id,
                     Name = "level1Name"
                 },
-
                 new QuotaLevelDefinition
                 {
                     Id = level2Id,
@@ -260,32 +362,28 @@ namespace Nfield.Quota.Tests
 
             quotaFrame.VariableDefinitions.Add(variable);
 
-            var frameVariable = new QuotaFrameVariable()
+            var frameVariable = new QuotaFrameVariable
             {
                 DefinitionId = varId,
-                Id = Guid.NewGuid()
+                Id = quotaFrameVariableId
             };
 
-            frameVariable.Levels.AddRange(new []
+            frameVariable.Levels.AddRange(new[]
             {
                 new QuotaFrameLevel
                 {
                     DefinitionId = level1Id,
-                    Id = Guid.NewGuid()
+                    Id = quotaFrameLevelId1
                 },
                 new QuotaFrameLevel
                 {
                     DefinitionId = level2Id,
-                    Id = Guid.NewGuid()
+                    Id = quotaFrameLevelId2
                 }
             });
 
             quotaFrame.FrameVariables.Add(frameVariable);
-
-            var validator = new QuotaFrameValidator();
-            var result = validator.Validate(quotaFrame);
-
-            Assert.That(result.IsValid, Is.True);
+            return quotaFrame;
         }
 
         [Test]
@@ -325,7 +423,7 @@ namespace Nfield.Quota.Tests
 
             quotaFrame.VariableDefinitions.Add(variable);
 
-            var frameVariable = new QuotaFrameVariable()
+            var frameVariable = new QuotaFrameVariable
             {
                 DefinitionId = varId,
                 Id = nonUniqueId
@@ -391,7 +489,7 @@ namespace Nfield.Quota.Tests
 
             quotaFrame.VariableDefinitions.Add(variable);
 
-            var frameVariable = new QuotaFrameVariable()
+            var frameVariable = new QuotaFrameVariable
             {
                 DefinitionId = varId,
                 Id = Guid.NewGuid()
@@ -456,7 +554,7 @@ namespace Nfield.Quota.Tests
 
             quotaFrame.VariableDefinitions.Add(variable);
 
-            var frameVariable = new QuotaFrameVariable()
+            var frameVariable = new QuotaFrameVariable
             {
                 DefinitionId = nonExistingId,
                 Id = Guid.NewGuid()
@@ -522,7 +620,7 @@ namespace Nfield.Quota.Tests
 
             quotaFrame.VariableDefinitions.Add(variable);
 
-            var frameVariable = new QuotaFrameVariable()
+            var frameVariable = new QuotaFrameVariable
             {
                 DefinitionId = varId,
                 Id = Guid.NewGuid()
@@ -588,7 +686,7 @@ namespace Nfield.Quota.Tests
 
             quotaFrame.VariableDefinitions.Add(variable);
 
-            var frameVariable = new QuotaFrameVariable()
+            var frameVariable = new QuotaFrameVariable
             {
                 DefinitionId = varId,
                 Id = varReferenceId
@@ -650,7 +748,7 @@ namespace Nfield.Quota.Tests
 
             quotaFrame.VariableDefinitions.Add(variable);
 
-            var frameVariable = new QuotaFrameVariable()
+            var frameVariable = new QuotaFrameVariable
             {
                 DefinitionId = varId,
                 Id = Guid.NewGuid()
@@ -814,13 +912,13 @@ namespace Nfield.Quota.Tests
 
             quotaFrame.VariableDefinitions.AddRange(new[] {variable1, variable2});
              
-            var frameVariable = new QuotaFrameVariable()
+            var frameVariable = new QuotaFrameVariable
             {
                 DefinitionId = var1Id,
                 Id = Guid.NewGuid()
             };
 
-            var frameVariable2 = new QuotaFrameVariable()
+            var frameVariable2 = new QuotaFrameVariable
             {
                 DefinitionId = var2Id,
                 Id = Guid.NewGuid()
@@ -840,7 +938,7 @@ namespace Nfield.Quota.Tests
                 }
             });
 
-            var frameLevel1Var1 = new QuotaFrameLevel()
+            var frameLevel1Var1 = new QuotaFrameLevel
             {
                 DefinitionId = var1Level1Id,
                 Id = Guid.NewGuid()
@@ -849,13 +947,13 @@ namespace Nfield.Quota.Tests
 
             frameVariable.Levels.Add(frameLevel1Var1);
 
-            var frameLevel2Var1 = new QuotaFrameLevel()
+            var frameLevel2Var1 = new QuotaFrameLevel
             {
                 DefinitionId = var1Level2Id,
                 Id = Guid.NewGuid()
             };
 
-            var frameVariable3 = new QuotaFrameVariable()
+            var frameVariable3 = new QuotaFrameVariable
             {
                 DefinitionId = var2Id,
                 Id = Guid.NewGuid()
@@ -951,13 +1049,13 @@ namespace Nfield.Quota.Tests
 
             quotaFrame.VariableDefinitions.AddRange(new[] { variable1, variable2 });
 
-            var frameVariable = new QuotaFrameVariable()
+            var frameVariable = new QuotaFrameVariable
             {
                 DefinitionId = var1Id,
                 Id = frameVar1Id
             };
 
-            var frameVariable2 = new QuotaFrameVariable()
+            var frameVariable2 = new QuotaFrameVariable
             {
                 DefinitionId = var2Id,
                 Id = Guid.NewGuid()
@@ -978,7 +1076,7 @@ namespace Nfield.Quota.Tests
             });
 
 
-            var frameLevel1Var1 = new QuotaFrameLevel()
+            var frameLevel1Var1 = new QuotaFrameLevel
             {
                 DefinitionId = var1Level1Id,
                 Id = Guid.NewGuid()                
@@ -987,7 +1085,7 @@ namespace Nfield.Quota.Tests
 
             frameVariable.Levels.Add(frameLevel1Var1);
 
-            var frameLevel2Var1 = new QuotaFrameLevel()
+            var frameLevel2Var1 = new QuotaFrameLevel
             {
                 DefinitionId = var1Level2Id,
                 Id = frameLvl4Id
