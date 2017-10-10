@@ -137,7 +137,9 @@ namespace Nfield.Quota
             ICollection<QuotaVariableDefinition> varDefinitions,
             PropertyValidatorContext context)
         {
-            var expression = new Regex("^[a-zA-Z][a-zA-Z0-9_]*$");
+            // don't allow unicode whitespace or special characters
+            var expression = new Regex(
+                @"^[^ \u00A0\u1680​\u180e\u2000-\u2009\u200a​\u200b​\u202f\u205f​\u3000.,\/#!$%\^&\*;:{}=\-`~()@<>|'""\+\\\[\]]+$");
 
             foreach (var quotaVariableDefinition in varDefinitions)
             {
