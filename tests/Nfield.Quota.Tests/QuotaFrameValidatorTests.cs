@@ -1222,5 +1222,99 @@ namespace Nfield.Quota.Tests
                            "has an invalid Odin Variable Name ''"));
         }
 
+        [TestCase("")]
+        [TestCase("_")]
+        [TestCase("_t")]
+        [TestCase("_T")]
+        [TestCase("2")]
+        [TestCase("2t")]
+        [TestCase("2T")]
+        [TestCase("2_")]
+        [TestCase("_2")]
+        [TestCase("t!")]
+        [TestCase("t@")]
+        [TestCase("t#")]
+        [TestCase("t$")]
+        [TestCase("t%")]
+        [TestCase("t^")]
+        [TestCase("t&")]
+        [TestCase("t*")]
+        [TestCase("t(")]
+        [TestCase("t)")]
+        [TestCase("t+")]
+        [TestCase("t{")]
+        [TestCase("t}")]
+        [TestCase("t[")]
+        [TestCase("t]")]
+        [TestCase("t|")]
+        [TestCase(@"t\")]
+        [TestCase("t'")]
+        [TestCase("t?")]
+        [TestCase("t/")]
+        [TestCase("t<")]
+        [TestCase("t>")]
+        [TestCase("t,")]
+        [TestCase("t.")]
+        [TestCase("t:")]
+        [TestCase("t;")]
+        public void OdinVariable_NotValid(string odinVariable)
+        {
+            var result = CreateQuotaFrameResult(odinVariable);
+            Assert.That(result, Is.False);
+        }
+
+        [TestCase("天")]
+        [TestCase("T_")]
+        [TestCase("t_")]
+        [TestCase("t2")]
+        [TestCase("T2")]
+        [TestCase("t2_adCF")]
+        [TestCase("T2_C_dE")]
+        public void OdinVariable_Valid(string odinVariable)
+        {
+            var result = CreateQuotaFrameResult(odinVariable);
+            Assert.That(result, Is.True);
+        }
+
+        private static bool CreateQuotaFrameResult(string odinVariable)
+        {
+            var var1Id = Guid.NewGuid();
+            var levelId = Guid.NewGuid();
+
+            var levelDefinitions = new[]
+            {
+                new QuotaLevelDefinition
+                {
+                    Id = levelId,
+                    Name = "Level 1"
+                }
+            };
+
+            var definitions = new[]
+            {
+                new QuotaVariableDefinition(levelDefinitions)
+                {
+                    Id = var1Id,
+                    Name = "var 1",
+                    OdinVariableName = odinVariable 
+                }
+            };
+
+            var level = new QuotaFrameLevel {DefinitionId = levelId};
+
+            var frame = new[]
+            {
+                new QuotaFrameVariable(new List<QuotaFrameLevel> {level})
+                {
+                    Id = Guid.NewGuid(),
+                    DefinitionId = var1Id
+                }
+            };
+
+            var quotaFrame = new QuotaFrame(definitions, frame);
+            var validator = new QuotaFrameValidator();
+
+            return validator.Validate(quotaFrame).IsValid;
+        }
     }
 }
