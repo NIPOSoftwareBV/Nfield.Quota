@@ -3,7 +3,9 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>NIPO</Authors>
     <Company>NIPO</Company>
-    <Copyright>Copyright © NIPO 2017</Copyright>
+    <Copyright>Copyright © NIPO 2016</Copyright>
+    <Description>Quota Manipulation</Description>
+    <Product>Nfield</Product>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="8.0.100" />

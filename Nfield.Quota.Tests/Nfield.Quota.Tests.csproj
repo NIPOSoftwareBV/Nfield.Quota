@@ -4,6 +4,8 @@
     <RootNamespace>Nfield.Quota</RootNamespace>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+    <Company>NIPO</Company>
+    <Authors>NIPO</Authors>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="8.0.100" />
