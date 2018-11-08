@@ -4,6 +4,7 @@ branches:
     - development
     - /ci-.+/
 
+image: Visual Studio 2017
 version: 1.0.{build}
 
 install:
