@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net462</TargetFramework>
+    <Authors>NIPO</Authors>
+    <Company>NIPO</Company>
+    <Copyright>Copyright © NIPO 2017</Copyright>
+    </PropertyGroup>
+    <ItemGroup>
+      <PackageReference Include="FluentValidation" Version="6.2.1" />
+      <PackageReference Include="Newtonsoft.Json" Version="7.0.1" />      
+    </ItemGroup>
+</Project>
