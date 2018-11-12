@@ -10,14 +10,12 @@ version: 1.0.{build}
 install:
   - ps: ./prerelease.ps1
  
-dotnet_csproj:
+assembly_info:
   patch: true
-  file: '**\*.csproj'
-  version: '{version}'
-  package_version: '{version}'
+  file: '**\AssemblyInfo.*'
   assembly_version: '{version}'
-  file_version: '{version}'
-  informational_version: '{version}'
+  assembly_file_version: '{version}'
+  assembly_informational_version: '$(assembly_informational_version)'
 
 before_build:
   - nuget restore
