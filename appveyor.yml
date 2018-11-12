@@ -14,10 +14,10 @@ dotnet_csproj:
   patch: true
   file: '**\*.csproj'
   version: '{version}'
-  package_version: '{version}'
+  package_version: '$(package_version)'
   assembly_version: '{version}'
   file_version: '{version}'
-  informational_version: '$(informational_version)'
+  informational_version: '$(package_version)'
 
 before_build:
   - nuget restore
