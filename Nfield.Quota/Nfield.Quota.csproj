@@ -8,7 +8,6 @@
     <Product>Nfield</Product>
     <Version>1.0.0.0</Version>
     <PackageVersion>$(Version)</PackageVersion>
-    <InformationalVersion>$(Version)</InformationalVersion>
     <PackageLicenseUrl>https://github.com/NIPOSoftware/Nfield.Quota/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/NIPOSoftware/Nfield.Quota</PackageProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/NIPOSoftware/Nfield.Quota/master/src/Nfield.Quota/icon-nfield.png</PackageIconUrl>
