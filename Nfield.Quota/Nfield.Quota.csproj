@@ -6,6 +6,7 @@
     <Copyright>Copyright © NIPO 2016</Copyright>
     <Description>Quota Manipulation</Description>
     <Product>Nfield</Product>
+    <Version>1.0.0</Version>
     <NuspecProperties>version=$(Version)</NuspecProperties>
   </PropertyGroup>
   <ItemGroup>
