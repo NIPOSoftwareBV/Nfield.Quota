@@ -1,12 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Version>1.0.0</Version>
+    <PackageVersion>$(Version)</PackageVersion>
+    <Title>$title$</Title>
     <Authors>NIPO</Authors>
     <Company>NIPO</Company>
     <Copyright>Copyright © NIPO 2016</Copyright>
     <Description>Quota Manipulation</Description>
     <Product>Nfield</Product>
-    <Version>1.0.0</Version>
+    <PackageLicenseUrl>https://github.com/NIPOSoftware/Nfield.Quota/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/NIPOSoftware/Nfield.Quota</PackageProjectUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/NIPOSoftware/Nfield.Quota/master/src/Nfield.Quota/icon-nfield.png</PackageIconUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageReleaseNotes>-</PackageReleaseNotes>
+    <PackageTags>nfield marketresearch capi cawi online</PackageTags>
     <NuspecProperties>version=$(Version)</NuspecProperties>
   </PropertyGroup>
   <ItemGroup>
