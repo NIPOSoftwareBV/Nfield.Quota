@@ -6,6 +6,9 @@
     <Copyright>Copyright © NIPO 2016</Copyright>
     <Description>Quota Manipulation</Description>
     <Product>Nfield</Product>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <InformationalVersion>1.0.0.0</InformationalVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="8.0.100" />
