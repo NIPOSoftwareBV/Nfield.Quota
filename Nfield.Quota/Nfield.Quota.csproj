@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>Nfield.Quota.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\Nfield.Quota.snk</AssemblyOriginatorKeyFile>
     <Authors>NIPO</Authors>
     <Company>NIPO</Company>
     <Copyright>Copyright © NIPO 2016</Copyright>
