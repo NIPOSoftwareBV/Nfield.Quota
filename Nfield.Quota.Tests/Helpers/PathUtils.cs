@@ -14,7 +14,7 @@ namespace Nfield.Quota.Tests.Helpers
         {
             var projectDir = GetTestProjectDirectory();
 
-            // assume test project dir is place one level higher than solution dir
+            // Assume test project dir is place one level higher than solution dir
             return new DirectoryInfo(projectDir).Parent?.FullName;
         }
     }
