@@ -8,7 +8,7 @@
     <Authors>NIPO</Authors>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="FluentValidation-Signed" Version="6.2.1" />
+    <PackageReference Include="FluentValidation" Version="8.0.100" />
     <PackageReference Include="NUnit" Version="3.2.1" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.11.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
