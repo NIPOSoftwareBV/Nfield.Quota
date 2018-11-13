@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net462</TargetFramework>
+    <RootNamespace>Nfield.Quota</RootNamespace>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+    <Company>NIPO</Company>
+    <Authors>NIPO</Authors>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="FluentValidation-Signed" Version="6.2.1" />
+    <PackageReference Include="NUnit" Version="3.2.1" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.11.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Nfield.Quota\Nfield.Quota.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- This tells VS that this is a test project -->
+    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Assets\glu-quota-format-v1-common.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\glu-quota-format-v2-common-AddedIsHidden.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+</Project>
