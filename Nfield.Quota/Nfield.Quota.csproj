@@ -1,10 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\Nfield.Quota.snk</AssemblyOriginatorKeyFile>
     <Authors>NIPO</Authors>
     <Company>NIPO</Company>
     <Copyright>Copyright © NIPO 2016</Copyright>
-    <Description>Quota Manipulation</Description>
+    <Description>Package for quota manipulation</Description>
     <Product>Nfield</Product>
     <Version>1.0.0.0</Version>
     <PackageVersion>$(Version)</PackageVersion>
