@@ -1,7 +1,9 @@
 # Prerequisites
 In order to use this library you will need the following:
-
-- .Net Framework 4.0 or later
+- A compatible framework:
+  - .Net Framework 4.6.1 or later
+  - .Net Standard 2.0 or later
+  - .Net Core 2.0 or later
 - An account for [Nfield] with access to the API
 
 # Installation
