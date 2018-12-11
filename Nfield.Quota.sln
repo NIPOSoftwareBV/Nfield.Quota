@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nfield.Quota", "src\Nfield.Quota\Nfield.Quota.csproj", "{E13203D0-10C1-468E-87CD-637FC730D66A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nfield.Quota", "Nfield.Quota\Nfield.Quota.csproj", "{E13203D0-10C1-468E-87CD-637FC730D66A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nfield.Quota.Tests", "tests\Nfield.Quota.Tests\Nfield.Quota.Tests.csproj", "{B9FBED05-55CD-44D2-BA38-AD6A420263F8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nfield.Quota.Tests", "Nfield.Quota.Tests\Nfield.Quota.Tests.csproj", "{B9FBED05-55CD-44D2-BA38-AD6A420263F8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CI", "CI", "{1050C460-9431-42AF-A022-176D847ACA25}"
 	ProjectSection(SolutionItems) = preProject
