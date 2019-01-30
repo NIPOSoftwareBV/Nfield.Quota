@@ -9,7 +9,7 @@ if (-not $env:releaseId)
 }
 
 $organization = "NIPOSoftware"
-$repository = "Nfield-Quota"
+$repository = "Nfield.Quota"
 
 $Headers = @{
     Authorization = 'Basic {0}' -f [System.Convert]::ToBase64String([char[]]($AccessToken));
