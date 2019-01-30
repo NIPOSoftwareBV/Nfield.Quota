@@ -1,4 +1,5 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/4008w686pk2b5ghm/branch/master?svg=true)](https://ci.appveyor.com/project/NIPOSoftware/nfield-quota/branch/master) [![NuGet version](https://badge.fury.io/nu/Nfield.Quota.svg)](https://badge.fury.io/nu/Nfield.Quota)
+[![Build status](https://niposoftware.visualstudio.com/_apis/public/build/definitions/15ce0e91-931d-4fbf-9169-8c3dde412b54/269/badge)](https://niposoftware.visualstudio.com/Nfield/_build/index?definitionId=269) [![NuGet version](https://badge.fury.io/nu/Nfield.Quota.svg)](https://badge.fury.io/nu/Nfield.Quota)
+
 # Nfield.Quota
 
 ## Introduction
