@@ -15,6 +15,17 @@ The recommended way to consume this project is to reference the NuGet package. Y
 PM> Install-Package Nfield.Quota
 ```
 
+## Versioning
+There is a file `version.txt` in the root of the repository containing the `major.minor` version.
+The build server will append an incrementing third digit.
+The number in this file should be increased in a sensible way every time the SDK is changed,
+using [semantic versioning](https://semver.org/).
+
+The suffixes that will be appended to the nuget package versions will be the following: 
+- no suffix for release versions
+- `-beta` for builds from master
+- `-alpha` for builds on other branches
+
 ## Release procedure
 This project uses [AppVeyor] for continuous integration. Commits to the development branch result in a prerelease package on [NuGet]. Commits into the master branch will publish a new release on [NuGet] and also a [draft release] on [GitHub]. This release can then be amended with information on what's new before being published.
 
