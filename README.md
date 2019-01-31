@@ -18,7 +18,7 @@ PM> Install-Package Nfield.Quota
 ## Versioning
 There is a file `version.txt` in the root of the repository containing the `major.minor` version.
 The build server will append an incrementing third digit.
-The number in this file should be increased in a sensible way every time the SDK is changed,
+The number in this file should be increased in a sensible way every time the package is changed,
 using [semantic versioning](https://semver.org/).
 
 The suffixes that will be appended to the nuget package versions will be the following: 
