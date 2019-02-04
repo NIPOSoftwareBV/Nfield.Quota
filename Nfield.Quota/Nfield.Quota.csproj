@@ -18,7 +18,7 @@
     <PackageTags>nfield marketresearch capi cawi online</PackageTags>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="FluentValidation-Signed" Version="6.2.1" />
+    <PackageReference Include="FluentValidation" Version="8.1.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
   </ItemGroup>
   <ItemGroup>
