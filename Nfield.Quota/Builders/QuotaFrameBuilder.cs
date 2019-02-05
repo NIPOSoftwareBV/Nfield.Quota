@@ -49,13 +49,15 @@ namespace Nfield.Quota.Builders
         public QuotaFrameBuilder VariableDefinition(
             string variableName,
             string odinVariableName,
-            IEnumerable<string> levelNames)
+            IEnumerable<string> levelNames,
+            bool? isSelectionOptional = null)
         {
             var variableDefinitionBuilder = new QuotaVariableDefinitionBuilder(
                 Guid.NewGuid(),
                 variableName,
                 odinVariableName,
-                levelNames
+                levelNames,
+                isSelectionOptional
                 );
             Add(variableDefinitionBuilder);
             return this;
@@ -63,9 +65,10 @@ namespace Nfield.Quota.Builders
 
         public QuotaFrameBuilder VariableDefinition(
             string variableName,
-            IEnumerable<string> levelNames)
+            IEnumerable<string> levelNames,
+            bool? isSelectionOptional = null)
         {
-            return VariableDefinition(variableName, variableName.ToLowerInvariant(), levelNames);
+            return VariableDefinition(variableName, variableName.ToLowerInvariant(), levelNames, isSelectionOptional);
         }
 
 

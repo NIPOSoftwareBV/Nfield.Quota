@@ -9,14 +9,16 @@ namespace Nfield.Quota.Builders
         private readonly string _name;
         private readonly string _odinVariableName;
         private readonly IEnumerable<string> _levelNames;
+        private readonly bool? _isSelectionOptional;
 
         public QuotaVariableDefinitionBuilder(
-            Guid id, string name, string odinVariableName, IEnumerable<string> levelNames)
+            Guid id, string name, string odinVariableName, IEnumerable<string> levelNames, bool? isSelectionOptional = null)
         {
             _id = id;
             _name = name;
             _odinVariableName = odinVariableName;
             _levelNames = levelNames;
+            _isSelectionOptional = isSelectionOptional;
         }
 
         public void Build(QuotaFrame quotaFrame)
@@ -25,7 +27,8 @@ namespace Nfield.Quota.Builders
             {
                 Id = _id,
                 Name = _name,
-                OdinVariableName = _odinVariableName
+                OdinVariableName = _odinVariableName,
+                IsSelectionOptional = _isSelectionOptional
             };
 
             foreach (var levelName in _levelNames)

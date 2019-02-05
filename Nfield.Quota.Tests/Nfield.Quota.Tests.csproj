@@ -24,6 +24,9 @@
     <None Update="Assets\glu-quota-format-v1-common.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Assets\glu-quota-format-v3-common-AddedIsSelectionOptional.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Assets\glu-quota-format-v2-common-AddedIsHidden.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

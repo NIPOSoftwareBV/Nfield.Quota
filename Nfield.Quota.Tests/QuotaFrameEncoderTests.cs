@@ -94,5 +94,18 @@ namespace Nfield.Quota.Tests
             Assert.That(Regex.Matches(json, @"""isHidden"": true").Count, Is.EqualTo(2));
         }
 
+
+        [Test]
+        public void IsSelectionOptionalIsSerialized()
+        {
+            var frame = new QuotaFrameBuilder()
+                .VariableDefinition("var", new List<string> { "level" }, true)
+                .Structure(sb => sb.Variable("var"))
+                .Build();
+
+            var json = QuotaFrameEncoder.Encode(frame);
+
+            Assert.That(Regex.Matches(json, @"""isSelectionOptional"": true").Count, Is.EqualTo(1));
+        }
     }
 }
