@@ -328,22 +328,26 @@ namespace Nfield.Quota.Tests
             var quotaFrameLevelId2 = Guid.NewGuid();
 
 
-            var quotaFrame1 = BuildQuotaFrame(varId1, level11Id, level12Id, quotaFrameVariableId, quotaFrameLevelId1, quotaFrameLevelId2);
-            var quotaFrame2 = BuildQuotaFrame(varId2, level21Id, level22Id, quotaFrameVariableId, quotaFrameLevelId1, quotaFrameLevelId2);
+            var quotaFrame1 = BuildQuotaFrame(varId1, level11Id, level12Id, quotaFrameVariableId, 
+                quotaFrameLevelId1, quotaFrameLevelId2, true);
+            var quotaFrame2 = BuildQuotaFrame(varId2, level21Id, level22Id, quotaFrameVariableId, 
+                quotaFrameLevelId1, quotaFrameLevelId2);
 
             var resultVariableDefinitions = quotaFrame1.VariableDefinitions != quotaFrame2.VariableDefinitions;
 
             Assert.That(resultVariableDefinitions, Is.True);
         }
         private static QuotaFrame BuildQuotaFrame(Guid varId, Guid level1Id, Guid level2Id,
-           Guid quotaFrameVariableId, Guid quotaFrameLevelId1, Guid quotaFrameLevelId2)
+           Guid quotaFrameVariableId, Guid quotaFrameLevelId1, Guid quotaFrameLevelId2,
+           bool? isSelectionOptional = null)
         {
             var quotaFrame = new QuotaFrame();
             var variable = new QuotaVariableDefinition
             {
                 Id = varId,
                 Name = "varName",
-                OdinVariableName = "odinVarName"
+                OdinVariableName = "odinVarName",
+                IsSelectionOptional = isSelectionOptional
             };
 
             variable.Levels.AddRange(new[]

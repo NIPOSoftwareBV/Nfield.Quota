@@ -1,0 +1,30 @@
+﻿{
+  "id": "frameId",
+  "variableDefinitions": [
+    {
+      "id": "234F6E29-A43B-41C7-A99C-6C8FFD177998",
+      "name": "Region",
+      "odinVariableName": "regionOdin",
+      "isSelectionOptional": true, 
+      "levels": [
+        {
+          "id": "BAD227D2-4DBD-47BA-B8B7-B03B89B42B47",
+          "name": "Haarlem"
+        }
+      ]
+    }
+  ],
+  "frameVariables": [
+    {
+      "id": "5B7BCBB5-CF2B-4FE1-B5C3-42D440438268",
+      "definitionId": "234F6E29-A43B-41C7-A99C-6C8FFD177998",
+      "levels": [
+        {
+          "id": "002CA83D-7768-4C12-8B74-4C20C165AA32",
+          "definitionId": "BAD227D2-4DBD-47BA-B8B7-B03B89B42B47",
+          "variables": []
+        }
+      ]
+    }
+  ]
+}

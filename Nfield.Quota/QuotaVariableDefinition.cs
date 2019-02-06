@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Nfield.Quota.Helpers;
 
 namespace Nfield.Quota
@@ -18,9 +17,12 @@ namespace Nfield.Quota
         }
 
         public Guid Id { get; set; }
+
         public string Name { get; set; }
 
         public string OdinVariableName { get; set; }
+
+        public bool? IsSelectionOptional { get; set; }
 
         public ICollection<QuotaLevelDefinition> Levels { get; }
 
@@ -51,9 +53,10 @@ namespace Nfield.Quota
             if (ReferenceEquals(this, other)) return true;
             if (ReferenceEquals(other, null)) return false;
 
-            return (Id == other.Id)
-                   && (Name == other.Name)
-                   && (OdinVariableName == other.OdinVariableName)
+            return Id == other.Id
+                   && Name == other.Name
+                   && OdinVariableName == other.OdinVariableName
+                   && IsSelectionOptional == other.IsSelectionOptional
                    && Levels.ScrambledDefinitionsEquals(other.Levels);
         }
     }
