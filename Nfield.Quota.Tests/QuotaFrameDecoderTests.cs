@@ -89,7 +89,6 @@ namespace Nfield.Quota.Tests
             Assert.That(level.IsHidden, Is.True);
         }
 
-
         [Test]
         public void CanDeserializeACommonV3StructureWithIsSelectionOptional()
         {

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using Nfield.Quota.Builders;
 using NUnit.Framework;
 using System.Linq;
@@ -106,7 +105,6 @@ namespace Nfield.Quota.Tests
             Assert.That(quotaFrame.FrameVariables.First().Levels.First().Variables.First().Levels.Count, Is.EqualTo(2));
             Assert.That(quotaFrame.FrameVariables.First().Levels.First().Variables.First().Levels.First().Target, Is.EqualTo(3));
             Assert.That(quotaFrame.FrameVariables.First().Levels.First().Variables.First().Levels.ElementAt(1).Target, Is.EqualTo(3));
-
 
             Assert.That(quotaFrame.FrameVariables.First().Levels.ElementAt(1).Target, Is.EqualTo(4));
             Assert.That(quotaFrame.FrameVariables.First().Levels.ElementAt(1).Variables.Count, Is.EqualTo(1));

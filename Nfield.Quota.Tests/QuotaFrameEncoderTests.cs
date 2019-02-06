@@ -94,7 +94,6 @@ namespace Nfield.Quota.Tests
             Assert.That(Regex.Matches(json, @"""isHidden"": true").Count, Is.EqualTo(2));
         }
 
-
         [Test]
         public void IsSelectionOptionalIsSerialized()
         {
