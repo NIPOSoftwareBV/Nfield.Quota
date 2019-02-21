@@ -1,8 +1,8 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using Nfield.Quota.Builders;
 using NUnit.Framework;
 using System.Linq;
+using Nfield.Quota.Models;
 
 namespace Nfield.Quota.Tests
 {
@@ -14,7 +14,7 @@ namespace Nfield.Quota.Tests
         {
             var quotaFrame = new QuotaFrameBuilder()
                 .Target(10)
-                .VariableDefinition("varName", "odinVarName", new[] { "level1Name", "level2Name" })
+                .VariableDefinition("varName", "odinVarName", new[] { "level1Name", "level2Name" }, VariableSelection.Optional)
                 .Structure(sb =>
                 {
                     sb.Variable("varName");
@@ -33,6 +33,7 @@ namespace Nfield.Quota.Tests
             Assert.That(variable.Id, Is.Not.Null);
             Assert.That(variable.Name, Is.EqualTo("varName"));
             Assert.That(variable.OdinVariableName, Is.EqualTo("odinVarName"));
+            Assert.That(variable.IsSelectionOptional, Is.EqualTo(true));
             Assert.That(variable.Levels.Count, Is.EqualTo(2));
             Assert.That(variable.Levels.First().Name, Is.EqualTo("level1Name"));
             Assert.That(variable.Levels.ElementAt(1).Name, Is.EqualTo("level2Name"));
@@ -52,7 +53,7 @@ namespace Nfield.Quota.Tests
                 .VariableDefinition("gender", new[]
                 {
                    "Male", "Female"
-                })
+                }, VariableSelection.Optional)
                 .VariableDefinition("region", new []
                 {
                      "North", "South"
@@ -80,6 +81,7 @@ namespace Nfield.Quota.Tests
             Assert.That(genderVariable.Id, Is.Not.Null);
             Assert.That(genderVariable.Name, Is.EqualTo("gender"));
             Assert.That(genderVariable.OdinVariableName, Is.EqualTo("gender"));
+            Assert.That(genderVariable.IsSelectionOptional, Is.EqualTo(true));
             Assert.That(genderVariable.Levels.Count, Is.EqualTo(2));
             Assert.That(genderVariable.Levels.First().Name, Is.EqualTo("Male"));
             Assert.That(genderVariable.Levels.ElementAt(1).Name, Is.EqualTo("Female"));
@@ -88,6 +90,7 @@ namespace Nfield.Quota.Tests
             Assert.That(regionVariable.Id, Is.Not.Null);
             Assert.That(regionVariable.Name, Is.EqualTo("region"));
             Assert.That(regionVariable.OdinVariableName, Is.EqualTo("region"));
+            Assert.That(regionVariable.IsSelectionOptional, Is.EqualTo(null));
             Assert.That(regionVariable.Levels.Count, Is.EqualTo(2));
             Assert.That(regionVariable.Levels.First().Name, Is.EqualTo("North"));
             Assert.That(regionVariable.Levels.ElementAt(1).Name, Is.EqualTo("South"));
@@ -103,7 +106,6 @@ namespace Nfield.Quota.Tests
             Assert.That(quotaFrame.FrameVariables.First().Levels.First().Variables.First().Levels.Count, Is.EqualTo(2));
             Assert.That(quotaFrame.FrameVariables.First().Levels.First().Variables.First().Levels.First().Target, Is.EqualTo(3));
             Assert.That(quotaFrame.FrameVariables.First().Levels.First().Variables.First().Levels.ElementAt(1).Target, Is.EqualTo(3));
-
 
             Assert.That(quotaFrame.FrameVariables.First().Levels.ElementAt(1).Target, Is.EqualTo(4));
             Assert.That(quotaFrame.FrameVariables.First().Levels.ElementAt(1).Variables.Count, Is.EqualTo(1));

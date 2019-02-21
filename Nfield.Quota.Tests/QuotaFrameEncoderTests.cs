@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Nfield.Quota.Builders;
+using Nfield.Quota.Models;
 using Nfield.Quota.Persistence;
 using NUnit.Framework;
 
@@ -94,5 +95,17 @@ namespace Nfield.Quota.Tests
             Assert.That(Regex.Matches(json, @"""isHidden"": true").Count, Is.EqualTo(2));
         }
 
+        [Test]
+        public void IsSelectionOptionalIsSerialized()
+        {
+            var frame = new QuotaFrameBuilder()
+                .VariableDefinition("var", new List<string> { "level" }, VariableSelection.Optional)
+                .Structure(sb => sb.Variable("var"))
+                .Build();
+
+            var json = QuotaFrameEncoder.Encode(frame);
+
+            Assert.That(Regex.Matches(json, @"""isSelectionOptional"": true").Count, Is.EqualTo(1));
+        }
     }
 }
