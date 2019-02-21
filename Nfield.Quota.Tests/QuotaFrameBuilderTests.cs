@@ -2,6 +2,7 @@
 using Nfield.Quota.Builders;
 using NUnit.Framework;
 using System.Linq;
+using Nfield.Quota.Models;
 
 namespace Nfield.Quota.Tests
 {
@@ -13,7 +14,7 @@ namespace Nfield.Quota.Tests
         {
             var quotaFrame = new QuotaFrameBuilder()
                 .Target(10)
-                .VariableDefinition("varName", "odinVarName", new[] { "level1Name", "level2Name" }, true)
+                .VariableDefinition("varName", "odinVarName", new[] { "level1Name", "level2Name" }, VariableSelection.Optional)
                 .Structure(sb =>
                 {
                     sb.Variable("varName");
@@ -52,7 +53,7 @@ namespace Nfield.Quota.Tests
                 .VariableDefinition("gender", new[]
                 {
                    "Male", "Female"
-                }, true)
+                }, VariableSelection.Optional)
                 .VariableDefinition("region", new []
                 {
                      "North", "South"

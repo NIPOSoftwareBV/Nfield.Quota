@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Nfield.Quota.Builders;
+using Nfield.Quota.Models;
 using Nfield.Quota.Persistence;
 using NUnit.Framework;
 
@@ -98,7 +99,7 @@ namespace Nfield.Quota.Tests
         public void IsSelectionOptionalIsSerialized()
         {
             var frame = new QuotaFrameBuilder()
-                .VariableDefinition("var", new List<string> { "level" }, true)
+                .VariableDefinition("var", new List<string> { "level" }, VariableSelection.Optional)
                 .Structure(sb => sb.Variable("var"))
                 .Build();
 
