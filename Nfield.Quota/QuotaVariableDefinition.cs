@@ -24,6 +24,11 @@ namespace Nfield.Quota
 
         public bool? IsSelectionOptional { get; set; }
 
+        /// <summary>
+        /// Indication more then one selected level allowed
+        /// </summary>
+        public bool IsMulti { get; set; }
+
         public ICollection<QuotaLevelDefinition> Levels { get; }
 
         public static bool operator ==(QuotaVariableDefinition left, QuotaVariableDefinition right)

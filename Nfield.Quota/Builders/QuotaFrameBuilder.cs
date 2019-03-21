@@ -6,7 +6,6 @@ namespace Nfield.Quota.Builders
 {
     public class QuotaFrameBuilder
     {
-        private string _id;
         private int? _target;
         private readonly IList<QuotaVariableDefinitionBuilder> _variableDefinitionBuilders;
         private readonly QuotaFrameStructureBuilder _structureBuilder;
@@ -51,8 +50,8 @@ namespace Nfield.Quota.Builders
             string variableName,
             string odinVariableName,
             IEnumerable<string> levelNames,
-            VariableSelection selection = VariableSelection.NotApplicable
-            )
+            VariableSelection selection = VariableSelection.NotApplicable,
+            bool isMulti = false)
         {
             bool? isSelectionOptional = null;
             switch (selection)
@@ -70,7 +69,8 @@ namespace Nfield.Quota.Builders
                 variableName,
                 odinVariableName,
                 levelNames,
-                isSelectionOptional
+                isSelectionOptional,
+                isMulti
                 );
             Add(variableDefinitionBuilder);
             return this;
@@ -79,12 +79,11 @@ namespace Nfield.Quota.Builders
         public QuotaFrameBuilder VariableDefinition(
             string variableName,
             IEnumerable<string> levelNames,
-            VariableSelection selection = VariableSelection.NotApplicable)
+            VariableSelection selection = VariableSelection.NotApplicable,
+            bool isMulti = false)
         {
-
-            return VariableDefinition(variableName, variableName.ToLowerInvariant(), levelNames, selection);
+            return VariableDefinition(variableName, variableName.ToLowerInvariant(), levelNames, selection, isMulti);
         }
-
 
         public QuotaFrameBuilder Structure(
             Action<QuotaFrameStructureBuilder> buildAction)

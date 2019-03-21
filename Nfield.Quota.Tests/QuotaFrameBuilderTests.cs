@@ -34,6 +34,7 @@ namespace Nfield.Quota.Tests
             Assert.That(variable.Name, Is.EqualTo("varName"));
             Assert.That(variable.OdinVariableName, Is.EqualTo("odinVarName"));
             Assert.That(variable.IsSelectionOptional, Is.EqualTo(true));
+            Assert.That(variable.IsMulti, Is.False);
             Assert.That(variable.Levels.Count, Is.EqualTo(2));
             Assert.That(variable.Levels.First().Name, Is.EqualTo("level1Name"));
             Assert.That(variable.Levels.ElementAt(1).Name, Is.EqualTo("level2Name"));
@@ -57,7 +58,7 @@ namespace Nfield.Quota.Tests
                 .VariableDefinition("region", new []
                 {
                      "North", "South"
-                })
+                }, isMulti: true)
                 .Structure(root =>
                     root.Variable("gender",
                         gender => gender.Variable("region")))
@@ -91,6 +92,7 @@ namespace Nfield.Quota.Tests
             Assert.That(regionVariable.Name, Is.EqualTo("region"));
             Assert.That(regionVariable.OdinVariableName, Is.EqualTo("region"));
             Assert.That(regionVariable.IsSelectionOptional, Is.EqualTo(null));
+            Assert.That(regionVariable.IsMulti);
             Assert.That(regionVariable.Levels.Count, Is.EqualTo(2));
             Assert.That(regionVariable.Levels.First().Name, Is.EqualTo("North"));
             Assert.That(regionVariable.Levels.ElementAt(1).Name, Is.EqualTo("South"));

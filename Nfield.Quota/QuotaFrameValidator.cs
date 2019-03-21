@@ -45,9 +45,12 @@ namespace Nfield.Quota
                 .Must(HaveValidLevelTargets)
                 .WithMessage(
                     "Target invalid. All Targets must be of a positive value. Frame level Id '{LevelId}' with name '{LevelName}' has an invalid negative target '{InvalidTarget}'")
-                .Must(HaveVariablesWithAtLeastOneVisibileLevel)
+                .Must(HaveVariablesWithAtLeastOneVisibleLevel)
                 .WithMessage(
-                    "Quota frame invalid. Frame has variables with no visible levels. Affected variable name: '{VariableName}'. If you don't care about any levels under variable '{VariableName}', consider hiding that variable instead.");
+                    "Quota frame invalid. Frame has variables with no visible levels. Affected variable name: '{VariableName}'. If you don't care about any levels under variable '{VariableName}', consider hiding that variable instead.")
+                .Must(MultiVariablesHaveLevelsWithoutVariables)
+                .WithMessage(
+                    "Quota frame invalid. Multi variable '{VariableName}', level Id '{LevelId}' with name '{LevelName}' has variables");
         }
 
         private static bool HaveUniqueIds(
@@ -322,7 +325,7 @@ namespace Nfield.Quota
             return !inValidTarget;
         }
 
-        private static bool HaveVariablesWithAtLeastOneVisibileLevel(
+        private static bool HaveVariablesWithAtLeastOneVisibleLevel(
             QuotaFrame frame,
             IEnumerable<QuotaFrameVariable> variables,
             PropertyValidatorContext context)
@@ -342,6 +345,36 @@ namespace Nfield.Quota
                         isValid = false;
                     }
                 });
+
+            return isValid;
+        }
+
+        private static bool MultiVariablesHaveLevelsWithoutVariables(
+            QuotaFrame frame,
+            IEnumerable<QuotaFrameVariable> variables,
+            PropertyValidatorContext context)
+        {
+            var isValid = true;
+            QuotaVariableDefinition currentVariable = null;
+
+            var traverser = new PreOrderQuotaFrameTraverser();
+            traverser.Traverse( // always walks whole tree, might want to change this
+                frame,
+                variable =>
+                {
+                    currentVariable = frame.VariableDefinitions.First(vd => vd.Id == variable.DefinitionId);
+                },
+                level =>
+                {
+                    if (currentVariable.IsMulti && level.Variables.Count > 0)
+                    {
+                        context.MessageFormatter.AppendArgument("VariableName", currentVariable.Name);
+                        context.MessageFormatter.AppendArgument("LevelId", level.Id);
+                        context.MessageFormatter.AppendArgument("LevelName", level.Name);
+                        isValid = false;
+                    }
+                });
+
 
             return isValid;
         }
