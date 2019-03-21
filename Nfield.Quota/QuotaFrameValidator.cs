@@ -182,7 +182,7 @@ namespace Nfield.Quota
                         hasDuplicate = true;
                     }
                 },
-                level =>
+                (variable, level) =>
                 {
                     if (IsDuplicateValue(context, usedIds, level.Id))
                     {
@@ -215,7 +215,7 @@ namespace Nfield.Quota
                         hasInvalidReference = true;
                     }
                 },
-                level =>
+                (variable, level) =>
                 {
                     if (!levelIds.Contains(level.DefinitionId))
                     {
@@ -313,7 +313,7 @@ namespace Nfield.Quota
             var traverser = new PreOrderQuotaFrameTraverser();
             traverser.Traverse( // always walks whole tree, might want to change this
                 frame,
-                level =>
+                (variable, level) =>
                 {
                     if (!(level.Target < 0)) return;
                     context.MessageFormatter.AppendArgument("LevelId", level.Id);
@@ -355,17 +355,13 @@ namespace Nfield.Quota
             PropertyValidatorContext context)
         {
             var isValid = true;
-            QuotaVariableDefinition currentVariable = null;
 
             var traverser = new PreOrderQuotaFrameTraverser();
             traverser.Traverse( // always walks whole tree, might want to change this
                 frame,
-                variable =>
+                (variable, level) =>
                 {
-                    currentVariable = frame.VariableDefinitions.First(vd => vd.Id == variable.DefinitionId);
-                },
-                level =>
-                {
+                    var currentVariable = frame.VariableDefinitions.First(vd => vd.Id == variable.DefinitionId);
                     if (currentVariable.IsMulti && level.Variables.Count > 0)
                     {
                         context.MessageFormatter.AppendArgument("VariableName", currentVariable.Name);
@@ -374,7 +370,6 @@ namespace Nfield.Quota
                         isValid = false;
                     }
                 });
-
 
             return isValid;
         }
