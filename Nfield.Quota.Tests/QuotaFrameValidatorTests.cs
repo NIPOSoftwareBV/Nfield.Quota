@@ -228,6 +228,34 @@ namespace Nfield.Quota.Tests
         }
 
         [Test]
+        public void MultiVariable_LevelsCannotHaveVariables()
+        {
+            const string multiVariableName = "varMulti";
+            const string variableName = "varName";
+            const string levelName = "levelName";
+
+            var quotaFrame = new QuotaFrameBuilder()
+                .VariableDefinition(
+                    variableName, new[] { levelName })
+                .VariableDefinition(
+                    multiVariableName, new[] { levelName }, isMulti: true)
+                .Structure(root =>
+                    root.Variable(multiVariableName,
+                        builder => builder.Variable(variableName)))
+                .Build();
+
+            var id = quotaFrame.FrameVariables.First().Levels.First().Id;
+            var expectedErrorMessage =
+                $"Quota frame invalid. Multi variable '{multiVariableName}', level Id '{id}' with name '{levelName}' has variables";
+
+            var validator = new QuotaFrameValidator();
+            var result = validator.Validate(quotaFrame);
+
+            Assert.That(result.Errors.Single().ErrorMessage,
+                Is.EqualTo(expectedErrorMessage));
+        }
+
+        [Test]
         public void Frame_HappyPath()
         {
             var varId = Guid.NewGuid();

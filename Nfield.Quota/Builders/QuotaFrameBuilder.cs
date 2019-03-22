@@ -34,9 +34,6 @@ namespace Nfield.Quota.Builders
 
             _structureBuilder.Build(frame);
 
-            var validator = new QuotaFrameValidator();
-            validator.Validate(frame);
-
             return frame;
         }
 

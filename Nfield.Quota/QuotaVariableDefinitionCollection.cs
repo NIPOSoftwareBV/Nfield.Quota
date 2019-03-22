@@ -31,8 +31,12 @@ namespace Nfield.Quota
 
         public override int GetHashCode()
         {
-            // we can't do better than this
-            return base.GetHashCode();
+            var result = 0;
+            foreach (var variableDefinition in this)
+            {
+                result ^= variableDefinition.GetHashCode();
+            }
+            return result;
         }
 
         public bool Equals(ICollection<QuotaVariableDefinition> other)

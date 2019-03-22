@@ -49,8 +49,7 @@ namespace Nfield.Quota
 
         public override int GetHashCode()
         {
-            // we can't do better than this
-            return base.GetHashCode();
+            return Id.GetHashCode() ^ Name.GetHashCode() ^ OdinVariableName.GetHashCode();
         }
 
         public bool Equals(QuotaVariableDefinition other)
