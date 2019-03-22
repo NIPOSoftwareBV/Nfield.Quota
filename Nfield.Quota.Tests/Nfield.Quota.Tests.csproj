@@ -30,6 +30,9 @@
     <None Update="Assets\glu-quota-format-v2-common-AddedIsHidden.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Assets\glu-quota-format-v4-common-AddedIsMulti.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
