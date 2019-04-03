@@ -24,9 +24,8 @@ namespace Nfield.Quota
         }
 
         public override int GetHashCode()
-        { 
-            // we can't do better than this
-            return base.GetHashCode();
+        {
+            return Id.GetHashCode() ^ Name.GetHashCode();
         }
 
         public bool Equals(QuotaLevelDefinition other)
