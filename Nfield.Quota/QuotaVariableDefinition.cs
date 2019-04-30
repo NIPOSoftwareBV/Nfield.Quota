@@ -33,15 +33,13 @@ namespace Nfield.Quota
 
         public static bool operator ==(QuotaVariableDefinition left, QuotaVariableDefinition right)
         {
-            // If both are null, or both are same instance, return true.
-            if (ReferenceEquals(left, right))
+            if (ReferenceEquals(left, null))
             {
-                return true;
-            }
+                if (ReferenceEquals(right, null))
+                {
+                    return true;
+                }
 
-            // If one is null, but not both, return false.
-            if (((object)left == null) || ((object)right == null))
-            {
                 return false;
             }
 
