@@ -33,7 +33,17 @@ namespace Nfield.Quota
 
         public static bool operator ==(QuotaVariableDefinition left, QuotaVariableDefinition right)
         {
-            return left?.Equals(right) ?? false;
+            if (ReferenceEquals(left, null))
+            {
+                if (ReferenceEquals(right, null))
+                {
+                    return true;
+                }
+
+                return false;
+            }
+
+            return left.Equals(right);
         }
 
         public static bool operator !=(QuotaVariableDefinition left, QuotaVariableDefinition right)
@@ -54,13 +64,16 @@ namespace Nfield.Quota
 
         public bool Equals(QuotaVariableDefinition other)
         {
-            if (ReferenceEquals(this, other)) return true;
-            if (ReferenceEquals(other, null)) return false;
-
+            if (ReferenceEquals(other, null))
+            {
+                return false;
+            }
+            
             return Id == other.Id
                    && Name == other.Name
                    && OdinVariableName == other.OdinVariableName
                    && IsSelectionOptional == other.IsSelectionOptional
+                   && IsMulti == other.IsMulti
                    && Levels.ScrambledDefinitionsEquals(other.Levels);
         }
     }
