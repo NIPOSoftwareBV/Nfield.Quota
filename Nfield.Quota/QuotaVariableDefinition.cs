@@ -33,17 +33,7 @@ namespace Nfield.Quota
 
         public static bool operator ==(QuotaVariableDefinition left, QuotaVariableDefinition right)
         {
-            if (ReferenceEquals(left, null))
-            {
-                if (ReferenceEquals(right, null))
-                {
-                    return true;
-                }
-
-                return false;
-            }
-
-            return left.Equals(right);
+            return ReferenceEquals(left, null) ? ReferenceEquals(right, null) : left.Equals(right);
         }
 
         public static bool operator !=(QuotaVariableDefinition left, QuotaVariableDefinition right)
