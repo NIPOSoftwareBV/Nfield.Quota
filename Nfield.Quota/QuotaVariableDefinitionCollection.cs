@@ -15,7 +15,7 @@ namespace Nfield.Quota
 
         public static bool operator ==(QuotaVariableDefinitionCollection left, QuotaVariableDefinitionCollection right)
         {
-            return ReferenceEquals(left, null) ? ReferenceEquals(right, null) : left.Equals(right);
+            return left?.Equals(right) ?? ReferenceEquals(right, null);
         }
 
         public static bool operator !=(QuotaVariableDefinitionCollection left, QuotaVariableDefinitionCollection right)
