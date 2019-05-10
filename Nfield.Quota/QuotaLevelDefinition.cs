@@ -9,7 +9,7 @@ namespace Nfield.Quota
 
         public static bool operator ==(QuotaLevelDefinition left, QuotaLevelDefinition right)
         {
-            return left?.Equals(right) ?? false;
+            return left?.Equals(right) ?? ReferenceEquals(right, null);
         }
 
         public static bool operator !=(QuotaLevelDefinition left, QuotaLevelDefinition right)
