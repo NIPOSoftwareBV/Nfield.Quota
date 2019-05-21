@@ -11,11 +11,6 @@ jobs:
   displayName: Build project
   pool:
     name: Hosted VS2017
-    demands:
-    - msbuild
-    - visualstudio
-    - vstest
-    - DotNetFramework
   steps:
   - task: NuGetToolInstaller@0
     displayName: 'Use NuGet 4.4.1'
