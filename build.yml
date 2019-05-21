@@ -1,9 +1,9 @@
 variables:
   BuildConfiguration: Release
 
-trigger: 
+# trigger: 
 
-pr:
+# pr:
 
 jobs:
 - job: BuildProject
