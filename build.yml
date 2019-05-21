@@ -24,13 +24,13 @@ jobs:
   - task: NuGetCommand@2
     displayName: 'NuGet restore'
     inputs:
-      restoreSolution: '$(Parameters.solution)'
+      restoreSolution: 'Nfield.Quota.sln'
       vstsFeed: 'e4b9b306-e6e3-47e2-b840-ef9089528984'
   
   - task: VSBuild@1
     displayName: 'Build solution Nfield.Quota.sln'
     inputs:
-      solution: '$(Parameters.solution)'
+      solution: Nfield.Quota.sln
       vsVersion: 15.0
       platform: '$(BuildPlatform)'
       configuration: '$(BuildConfiguration)'
