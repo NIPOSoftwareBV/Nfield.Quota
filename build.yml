@@ -12,6 +12,7 @@ jobs:
   pool:
     name: Hosted VS2017
   steps:
+  # Install and restore Nuget
   - task: NuGetToolInstaller@0
     displayName: 'Use NuGet 4.4.1'
     inputs:
@@ -23,6 +24,7 @@ jobs:
       restoreSolution: 'Nfield.Quota.sln'
       vstsFeed: 'e4b9b306-e6e3-47e2-b840-ef9089528984'
   
+  # Build projects
   - task: VSBuild@1
     displayName: 'Build solution Nfield.Quota.sln'
     inputs:
@@ -31,6 +33,7 @@ jobs:
       platform: '$(BuildPlatform)'
       configuration: '$(BuildConfiguration)'
   
+  # Run tests
   - task: VSTest@2
     displayName: 'VsTest - testAssemblies'
     inputs:
@@ -40,6 +43,7 @@ jobs:
       platform: '$(BuildPlatform)'
       configuration: '$(BuildConfiguration)'
 
+ # Publish build artifacts
   - task: PublishSymbols@2
     displayName: 'Publish symbols path'
     inputs:
@@ -63,7 +67,8 @@ jobs:
     displayName: 'Create NuGet Version'
     inputs:
       scriptName: createnugetversion.ps1
-  
+ 
+  # Create NuGet Package  
   - task: DotNetCoreCLI@2
     displayName: '(when not pull): dotnet pack'
     inputs:
@@ -74,6 +79,7 @@ jobs:
       versionEnvVar: Version
     condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
 
+  # Publish NuGet package
   - task: NuGetCommand@2
     displayName: '(when not pull): NuGet push'
     inputs:
@@ -82,6 +88,7 @@ jobs:
       publishFeedCredentials: 'NuGet (Publish Packages)'
     condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
 
+  # Publish release
   - task: PowerShell@2
     displayName: 'Publish Github release (if needed)'
     inputs:
