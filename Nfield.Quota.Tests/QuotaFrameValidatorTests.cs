@@ -844,6 +844,35 @@ namespace Nfield.Quota.Tests
         }
 
         [Test]
+        public void Frame_CannotHaveLevelMaxTargetWithNegativeValue()
+        {
+            const int invalidTarget = -10;
+            const string lvl2Name = "level2Name";
+
+            var quotaFrame = new QuotaFrameBuilder()
+                .VariableDefinition("varName", "odinVarName", new[] { "level1Name", lvl2Name })
+                .Structure(sb =>
+                {
+                    sb.Variable("varName");
+                })
+                .Build();
+
+            quotaFrame["varName", lvl2Name].MaxTarget = invalidTarget;
+            var lvl2Id = quotaFrame["varName", lvl2Name].Id;
+
+            var expectedErrorMessage = string.Format(CultureInfo.InvariantCulture,
+                "Target invalid. All Targets must be of a positive value. Frame level Id '{0}' with name '{1}' has an invalid negative maximum target '{2}'",
+                lvl2Id, lvl2Name, invalidTarget);
+
+            var validator = new QuotaFrameValidator();
+            var result = validator.Validate(quotaFrame);
+
+
+            Assert.That(result.Errors.Single().ErrorMessage,
+                Is.EqualTo(expectedErrorMessage));
+        }
+
+        [Test]
         public void Frame_CannotHaveTotalTargetWithNegativeValue()
         {
             const int invalidTotalTarget = -100;

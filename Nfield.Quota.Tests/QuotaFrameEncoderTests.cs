@@ -48,10 +48,12 @@ namespace Nfield.Quota.Tests
                 .Build();
 
             frame["varName", "level"].Target = 60;
+            frame["varName", "level"].MaxTarget = 65;
 
             var json = QuotaFrameEncoder.Encode(frame);
 
             Assert.That(json, Does.Not.Contain("target"));
+            Assert.That(json, Does.Not.Contain("maxTarget"));
             // Assert.That(json, Is.Not.StringContaining("100")); TODO Test properly (level id can contain this)
         }
 
@@ -66,6 +68,7 @@ namespace Nfield.Quota.Tests
             var json = QuotaFrameEncoder.Encode(frame);
 
             Assert.That(json, Does.Not.Contain("target"));
+            Assert.That(json, Does.Not.Contain("maxTarget"));
         }
 
         [Test]

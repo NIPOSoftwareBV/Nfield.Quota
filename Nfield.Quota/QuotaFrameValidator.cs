@@ -45,6 +45,9 @@ namespace Nfield.Quota
                 .Must(HaveValidLevelTargets)
                 .WithMessage(
                     "Target invalid. All Targets must be of a positive value. Frame level Id '{LevelId}' with name '{LevelName}' has an invalid negative target '{InvalidTarget}'")
+                .Must(HaveValidLevelMaxTargets)
+                .WithMessage(
+                    "Target invalid. All Targets must be of a positive value. Frame level Id '{LevelId}' with name '{LevelName}' has an invalid negative maximum target '{InvalidTarget}'")
                 .Must(HaveVariablesWithAtLeastOneVisibleLevel)
                 .WithMessage(
                     "Quota frame invalid. Frame has variables with no visible levels. Affected variable name: '{VariableName}'. If you don't care about any levels under variable '{VariableName}', consider hiding that variable instead.")
@@ -319,6 +322,28 @@ namespace Nfield.Quota
                     context.MessageFormatter.AppendArgument("LevelId", level.Id);
                     context.MessageFormatter.AppendArgument("LevelName", level.Name);
                     context.MessageFormatter.AppendArgument("InvalidTarget", level.Target);
+                    inValidTarget = true;
+                });
+
+            return !inValidTarget;
+        }
+
+        private static bool HaveValidLevelMaxTargets(
+            QuotaFrame frame,
+            ICollection<QuotaFrameVariable> frameVariables,
+            PropertyValidatorContext context)
+        {
+            var inValidTarget = false;
+
+            var traverser = new PreOrderQuotaFrameTraverser();
+            traverser.Traverse( // always walks whole tree, might want to change this
+                frame,
+                (variable, level) =>
+                {
+                    if (!(level.MaxTarget < 0)) return;
+                    context.MessageFormatter.AppendArgument("LevelId", level.Id);
+                    context.MessageFormatter.AppendArgument("LevelName", level.Name);
+                    context.MessageFormatter.AppendArgument("InvalidTarget", level.MaxTarget);
                     inValidTarget = true;
                 });
 
