@@ -3,8 +3,21 @@ variables:
   BuildPlatform: 'Any CPU'
 
 # trigger: 
+# - master
+# - 'blue/ci-*'
+# - 'red/ci-*'
+# - 'yellow/ci-*'
+# - 'orange/ci-*'
+# - 'white/ci-*'
+# - 'purple/ci-*'  
 
 # pr:
+# - 'blue/ci-*'
+# - 'red/ci-*'
+# - 'yellow/ci-*'
+# - 'orange/ci-*'
+# - 'white/ci-*'
+# - 'purple/ci-*' 
 
 jobs:
 - job: BuildProject
