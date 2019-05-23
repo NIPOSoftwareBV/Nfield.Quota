@@ -48,6 +48,7 @@ namespace Nfield.Quota.Tests
             Assert.That(level.Id, Is.EqualTo(Guid.Parse("002CA83D-7768-4C12-8B74-4C20C165AA32")));
             Assert.That(level.DefinitionId, Is.EqualTo(Guid.Parse("BAD227D2-4DBD-47BA-B8B7-B03B89B42B47")));
             Assert.That(level.Target, Is.Null);
+            Assert.That(level.MaxTarget, Is.Null);
             Assert.That(level.Variables, Has.Count.EqualTo(0));
             Assert.That(level.IsHidden, Is.False); //v1 doesnt have it defined, should be false
         }
@@ -85,6 +86,7 @@ namespace Nfield.Quota.Tests
             Assert.That(level.Id, Is.EqualTo(Guid.Parse("002CA83D-7768-4C12-8B74-4C20C165AA32")));
             Assert.That(level.DefinitionId, Is.EqualTo(Guid.Parse("BAD227D2-4DBD-47BA-B8B7-B03B89B42B47")));
             Assert.That(level.Target, Is.Null);
+            Assert.That(level.MaxTarget, Is.Null);
             Assert.That(level.Variables, Has.Count.EqualTo(0));
             Assert.That(level.IsHidden, Is.True);
         }
@@ -122,6 +124,7 @@ namespace Nfield.Quota.Tests
             Assert.That(level.Id, Is.EqualTo(Guid.Parse("002CA83D-7768-4C12-8B74-4C20C165AA32")));
             Assert.That(level.DefinitionId, Is.EqualTo(Guid.Parse("BAD227D2-4DBD-47BA-B8B7-B03B89B42B47")));
             Assert.That(level.Target, Is.Null);
+            Assert.That(level.MaxTarget, Is.Null);
             Assert.That(level.Variables, Has.Count.EqualTo(0));
         }
 
@@ -159,6 +162,7 @@ namespace Nfield.Quota.Tests
             Assert.That(level.Id, Is.EqualTo(Guid.Parse("002CA83D-7768-4C12-8B74-4C20C165AA32")));
             Assert.That(level.DefinitionId, Is.EqualTo(Guid.Parse("BAD227D2-4DBD-47BA-B8B7-B03B89B42B47")));
             Assert.That(level.Target, Is.Null);
+            Assert.That(level.MaxTarget, Is.Null);
             Assert.That(level.Variables, Has.Count.EqualTo(0));
         }
     }

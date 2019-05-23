@@ -26,6 +26,8 @@ namespace Nfield.Quota
 
         public int? Target { get; set; }
 
+        public int? MaxTarget { get; set; }
+
         public bool IsHidden { get; set; } = false;
 
         public QuotaFrameVariable this[string variableName]

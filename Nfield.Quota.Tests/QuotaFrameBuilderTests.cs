@@ -22,7 +22,9 @@ namespace Nfield.Quota.Tests
                 .Build();
 
             quotaFrame["varName", "level1Name"].Target = 6;
+            quotaFrame["varName", "level1Name"].MaxTarget = 7;
             quotaFrame["varName", "level2Name"].Target = 4;
+            quotaFrame["varName", "level2Name"].MaxTarget = 5;
 
             Assert.That(quotaFrame.Target.HasValue, Is.True);
             Debug.Assert(quotaFrame.Target != null, "quotaFrame.Target != null");
@@ -43,7 +45,9 @@ namespace Nfield.Quota.Tests
             Assert.That(quotaFrame.FrameVariables.First().DefinitionId, Is.EqualTo(variable.Id));
             Assert.That(quotaFrame.FrameVariables.First().Levels.Count, Is.EqualTo(2));
             Assert.That(quotaFrame.FrameVariables.First().Levels.First().Target, Is.EqualTo(6));
+            Assert.That(quotaFrame.FrameVariables.First().Levels.First().MaxTarget, Is.EqualTo(7));
             Assert.That(quotaFrame.FrameVariables.First().Levels.ElementAt(1).Target, Is.EqualTo(4));
+            Assert.That(quotaFrame.FrameVariables.First().Levels.ElementAt(1).MaxTarget, Is.EqualTo(5));
         }
 
         [Test]
@@ -70,7 +74,9 @@ namespace Nfield.Quota.Tests
 
             quotaFrame["gender", "Female"].Target = 4;
             quotaFrame["gender", "Female"]["region", "North"].Target = 2;
+            quotaFrame["gender", "Female"]["region", "North"].MaxTarget = 5;
             quotaFrame["gender", "Female"]["region", "South"].Target = 2;
+            quotaFrame["gender", "Female"]["region", "South"].MaxTarget = 3;
 
             Assert.That(quotaFrame.Target.HasValue, Is.True);
             Debug.Assert(quotaFrame.Target != null, "quotaFrame.Target != null");
@@ -114,7 +120,9 @@ namespace Nfield.Quota.Tests
             Assert.That(quotaFrame.FrameVariables.First().Levels.ElementAt(1).Variables.First().DefinitionId, Is.EqualTo(regionVariable.Id));
             Assert.That(quotaFrame.FrameVariables.First().Levels.ElementAt(1).Variables.First().Levels.Count, Is.EqualTo(2));
             Assert.That(quotaFrame.FrameVariables.First().Levels.ElementAt(1).Variables.First().Levels.First().Target, Is.EqualTo(2));
+            Assert.That(quotaFrame.FrameVariables.First().Levels.ElementAt(1).Variables.First().Levels.First().MaxTarget, Is.EqualTo(5));
             Assert.That(quotaFrame.FrameVariables.First().Levels.ElementAt(1).Variables.First().Levels.ElementAt(1).Target, Is.EqualTo(2));
+            Assert.That(quotaFrame.FrameVariables.First().Levels.ElementAt(1).Variables.First().Levels.ElementAt(1).MaxTarget, Is.EqualTo(3));
         }
     }
 }
