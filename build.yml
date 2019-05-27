@@ -1,23 +1,17 @@
 variables:
   BuildConfiguration: Release
   BuildPlatform: 'Any CPU'
+  System.Debug: true
 
-# trigger: 
-# - master
-# - 'blue/ci-*'
-# - 'red/ci-*'
-# - 'yellow/ci-*'
-# - 'orange/ci-*'
-# - 'white/ci-*'
-# - 'purple/ci-*'  
+# trigger:
+#   batch: false
+#   branches:
+#     include: ['master', '*/ci-*']
 
 # pr:
-# - 'blue/ci-*'
-# - 'red/ci-*'
-# - 'yellow/ci-*'
-# - 'orange/ci-*'
-# - 'white/ci-*'
-# - 'purple/ci-*' 
+#   autoCancel: true
+#   branches:
+#     include: ['master', '*/ci-*'] 
 
 jobs:
 - job: BuildProject
