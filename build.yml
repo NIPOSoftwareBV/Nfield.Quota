@@ -23,7 +23,7 @@ jobs:
 - job: BuildProject
   displayName: Build project
   pool:
-    name: Hosted VS2017
+    vmImage: 'vs2017-win2016'
   variables:
   - group: Nfield-Variables
   steps:
