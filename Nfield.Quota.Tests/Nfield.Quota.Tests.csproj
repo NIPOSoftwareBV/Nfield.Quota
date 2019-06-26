@@ -4,6 +4,7 @@
     <RootNamespace>Nfield.Quota</RootNamespace>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <Company>NIPO</Company>
     <Authors>NIPO</Authors>
   </PropertyGroup>
