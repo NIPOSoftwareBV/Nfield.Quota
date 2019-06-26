@@ -18,7 +18,8 @@ namespace Nfield.Quota.Persistence
 
             resolver.Ignore(
                 typeof(QuotaFrameLevel),
-                nameof(QuotaFrameLevel.Target));
+                nameof(QuotaFrameLevel.Target),
+                nameof(QuotaFrameLevel.MaxTarget));
 
             var settings = new JsonSerializerSettings
             {
