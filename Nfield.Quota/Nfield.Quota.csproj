@@ -16,7 +16,6 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageReleaseNotes>-</PackageReleaseNotes>
     <PackageTags>nfield marketresearch capi cawi online</PackageTags>
-    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="8.1.0" />
