@@ -59,7 +59,7 @@ namespace Nfield.Quota.Tests
                 {
                    "Male", "Female"
                 }, VariableSelection.Optional)
-                .VariableDefinition("region", new []
+                .VariableDefinition("region", new[]
                 {
                      "North", "South"
                 }, isMulti: true)

@@ -58,7 +58,7 @@ namespace Nfield.Quota
             {
                 return false;
             }
-            
+
             return Id == other.Id
                    && Name == other.Name
                    && OdinVariableName == other.OdinVariableName
