@@ -16,7 +16,7 @@ namespace Nfield.Quota.Tests
         {
             var quotaFrame = new QuotaFrameBuilder()
                 .VariableDefinition(
-                    "varName",new [] {"level1Name", "level2Name"})
+                    "varName", new[] { "level1Name", "level2Name" })
                 .Structure(sb => { })
                 .Build();
 
@@ -26,7 +26,7 @@ namespace Nfield.Quota.Tests
             Assert.That(result.IsValid, Is.True);
         }
 
-       [Test]
+        [Test]
         public void Definitions_EveryVariableNeedsAtLeastOneLevel()
         {
             var variableId = Guid.NewGuid();
@@ -67,7 +67,7 @@ namespace Nfield.Quota.Tests
                 OdinVariableName = "odinVarName"
             };
 
-            variable.Levels.AddRange(new []
+            variable.Levels.AddRange(new[]
             {
                 new QuotaLevelDefinition
                 {
@@ -109,7 +109,7 @@ namespace Nfield.Quota.Tests
                 Name = nonUniqueName
             };
 
-            quotaFrame.VariableDefinitions.AddRange(new []{variable1, variable2});
+            quotaFrame.VariableDefinitions.AddRange(new[] { variable1, variable2 });
 
             var validator = new QuotaFrameValidator();
             var result = validator.Validate(quotaFrame);
@@ -133,7 +133,7 @@ namespace Nfield.Quota.Tests
                 OdinVariableName = "odinVarName"
             };
 
-            variable.Levels.AddRange(new []
+            variable.Levels.AddRange(new[]
             {
                 new QuotaLevelDefinition
                 {
@@ -273,7 +273,7 @@ namespace Nfield.Quota.Tests
 
             Assert.That(result.IsValid, Is.True);
         }
-       
+
         [Test]
         public void Compare_Definitions_Are_Equal()
         {
@@ -337,10 +337,10 @@ namespace Nfield.Quota.Tests
             var quotaFrame2 = BuildQuotaFrame(varId, level1Id, level2Id, quotaFrameVariableId, quotaFrameLevelId1, quotaFrameLevelId2);
 
             var resultCollectionVariableDefinitions = quotaFrame1.VariableDefinitions == quotaFrame2.VariableDefinitions;
-           
+
 
             Assert.That(resultCollectionVariableDefinitions, Is.True);
-            
+
         }
         [Test]
         public void Compare_Collection_Definitions_Are_Not_Equal()
@@ -356,9 +356,9 @@ namespace Nfield.Quota.Tests
             var quotaFrameLevelId2 = Guid.NewGuid();
 
 
-            var quotaFrame1 = BuildQuotaFrame(varId1, level11Id, level12Id, quotaFrameVariableId, 
+            var quotaFrame1 = BuildQuotaFrame(varId1, level11Id, level12Id, quotaFrameVariableId,
                 quotaFrameLevelId1, quotaFrameLevelId2, true);
-            var quotaFrame2 = BuildQuotaFrame(varId2, level21Id, level22Id, quotaFrameVariableId, 
+            var quotaFrame2 = BuildQuotaFrame(varId2, level21Id, level22Id, quotaFrameVariableId,
                 quotaFrameLevelId1, quotaFrameLevelId2);
 
             var resultVariableDefinitions = quotaFrame1.VariableDefinitions != quotaFrame2.VariableDefinitions;
@@ -821,7 +821,7 @@ namespace Nfield.Quota.Tests
             const string lvl2Name = "level2Name";
 
             var quotaFrame = new QuotaFrameBuilder()
-                .VariableDefinition("varName", "odinVarName", new[] {"level1Name", lvl2Name})
+                .VariableDefinition("varName", "odinVarName", new[] { "level1Name", lvl2Name })
                 .Structure(sb =>
                 {
                     sb.Variable("varName");
@@ -971,8 +971,8 @@ namespace Nfield.Quota.Tests
                 }
             });
 
-            quotaFrame.VariableDefinitions.AddRange(new[] {variable1, variable2});
-             
+            quotaFrame.VariableDefinitions.AddRange(new[] { variable1, variable2 });
+
             var frameVariable = new QuotaFrameVariable
             {
                 DefinitionId = var1Id,
@@ -1121,7 +1121,7 @@ namespace Nfield.Quota.Tests
                 DefinitionId = var2Id,
                 Id = Guid.NewGuid()
             };
-            
+
             frameVariable2.Levels.AddRange(new[]
             {
                 new QuotaFrameLevel
@@ -1140,7 +1140,7 @@ namespace Nfield.Quota.Tests
             var frameLevel1Var1 = new QuotaFrameLevel
             {
                 DefinitionId = var1Level1Id,
-                Id = Guid.NewGuid()                
+                Id = Guid.NewGuid()
             };
             frameLevel1Var1.Variables.Add(frameVariable2);
 
@@ -1208,7 +1208,7 @@ namespace Nfield.Quota.Tests
                 }
             };
 
-            var level = new QuotaFrameLevel {DefinitionId = levelId};
+            var level = new QuotaFrameLevel { DefinitionId = levelId };
 
             var frame = new[]
             {
@@ -1357,11 +1357,11 @@ namespace Nfield.Quota.Tests
                 {
                     Id = var1Id,
                     Name = "var 1",
-                    OdinVariableName = odinVariable 
+                    OdinVariableName = odinVariable
                 }
             };
 
-            var level = new QuotaFrameLevel {DefinitionId = levelId};
+            var level = new QuotaFrameLevel { DefinitionId = levelId };
 
             var frame = new[]
             {

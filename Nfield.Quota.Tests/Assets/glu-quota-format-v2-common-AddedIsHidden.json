@@ -2,15 +2,15 @@
   "id": "frameId",
   "variableDefinitions": [
     {
-        "id": "234F6E29-A43B-41C7-A99C-6C8FFD177998",
-        "name": "Region",
-        "odinVariableName": "regionOdin",
-        "levels": [
-            {
-                "id": "BAD227D2-4DBD-47BA-B8B7-B03B89B42B47",
-                "name": "Haarlem"
-            }
-        ]
+      "id": "234F6E29-A43B-41C7-A99C-6C8FFD177998",
+      "name": "Region",
+      "odinVariableName": "regionOdin",
+      "levels": [
+        {
+          "id": "BAD227D2-4DBD-47BA-B8B7-B03B89B42B47",
+          "name": "Haarlem"
+        }
+      ]
     }
   ],
   "frameVariables": [

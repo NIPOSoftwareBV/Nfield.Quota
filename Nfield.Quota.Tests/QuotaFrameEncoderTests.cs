@@ -61,7 +61,7 @@ namespace Nfield.Quota.Tests
         public void OutputDoesNotContainTargetWhenTargetIsLeftEmpty()
         {
             var frame = new QuotaFrameBuilder()
-                .VariableDefinition("var", new List<string>() { "level" }) 
+                .VariableDefinition("var", new List<string>() { "level" })
                 .Structure(sb => sb.Variable("var"))
                 .Build();
 

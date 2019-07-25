@@ -277,7 +277,7 @@ namespace Nfield.Quota
                     foreach (var level in variable.Levels.Skip(1)) // Skip first
                     {
                         var levelDirectVarDefIds = level.Variables.Select(v => v.DefinitionId);
-                        
+
                         if (!requiredDirectVarDefIds.SequenceEqual(levelDirectVarDefIds))
                         {
                             context.MessageFormatter.AppendArgument("AffectedFrameVariableId", variable.Id);
@@ -303,7 +303,7 @@ namespace Nfield.Quota
                 inValidTarget = true;
             }
 
-           return !inValidTarget;
+            return !inValidTarget;
         }
 
         private static bool HaveValidLevelTargets(
