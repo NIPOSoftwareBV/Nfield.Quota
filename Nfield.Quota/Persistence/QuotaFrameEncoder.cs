@@ -14,7 +14,7 @@ namespace Nfield.Quota.Persistence
         {
             // We can't configure our QuotaFrameContractResolver as it is just used as a blueprint
             // to generate a (cached) JsonContract which will then be used going forward to serialize a type
-            // This caching is a the contract resolver type level. So we need two distinct type, hence the usage
+            // This caching is at the contract resolver type level. So we need two distinct types, hence the usage
             // of the CamelCasePropertyNamesContractResolver below when we do want our targets serialized.
             var resolver = options.IncludeTargets ? new CamelCasePropertyNamesContractResolver() : CreateQuotaFrameContractResolver();
 
