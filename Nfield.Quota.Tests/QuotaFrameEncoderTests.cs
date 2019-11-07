@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using Nfield.Quota.Builders;
+﻿using Nfield.Quota.Builders;
 using Nfield.Quota.Models;
 using Nfield.Quota.Persistence;
 using NUnit.Framework;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace Nfield.Quota.Tests
 {
@@ -23,20 +23,6 @@ namespace Nfield.Quota.Tests
             Assert.That(json, Does.Contain("id"));
             Assert.That(json, Does.Contain("variableDefinitions"));
             Assert.That(json, Does.Contain("frameVariables"));
-        }
-
-        [Test]
-        public void OutputDoesNotContainSuccessful()
-        {
-            var frame = new QuotaFrameBuilder()
-                .VariableDefinition("var", new List<string>() { "level" })
-                .Structure(sb => sb.Variable("var"))
-                .Build();
-
-            var json = QuotaFrameEncoder.Encode(frame);
-
-            Assert.That(json, Does.Not.Contain("successful"));
-            // Assert.That(json, Is.Not.StringContaining("50")); TODO Test properly (level id can contain this)
         }
 
         [Test]
