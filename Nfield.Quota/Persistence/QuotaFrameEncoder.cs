@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Nfield.Quota.Persistence
 {
@@ -10,16 +7,16 @@ namespace Nfield.Quota.Persistence
     {
         public static string Encode(QuotaFrame frame)
         {
-            var resolver = new QuotaFrameContractResolver();
+            return Encode(frame, QuotaFrameEncoderOptions.Default);
+        }
 
-            resolver.Ignore(
-                typeof(QuotaFrame),
-                nameof(QuotaFrame.Target));
-
-            resolver.Ignore(
-                typeof(QuotaFrameLevel),
-                nameof(QuotaFrameLevel.Target),
-                nameof(QuotaFrameLevel.MaxTarget));
+        public static string Encode(QuotaFrame frame, QuotaFrameEncoderOptions options)
+        {
+            // We can't configure our QuotaFrameContractResolver as it is just used as a blueprint
+            // to generate a (cached) JsonContract which will then be used going forward to serialize a type
+            // This caching is at the contract resolver type level. So we need two distinct types, hence the usage
+            // of the CamelCasePropertyNamesContractResolver below when we do want our targets serialized.
+            var resolver = options.IncludeTargets ? new CamelCasePropertyNamesContractResolver() : CreateQuotaFrameContractResolver();
 
             var settings = new JsonSerializerSettings
             {
@@ -32,5 +29,24 @@ namespace Nfield.Quota.Persistence
             return JsonConvert.SerializeObject(frame, settings);
         }
 
+        private static QuotaFrameContractResolver CreateQuotaFrameContractResolver()
+        {
+            // We really should have done this setup in the constructor, but as the type
+            // public in this package we don't want to change the default resolver that gets
+            // created using the constructor
+            var resolver = new QuotaFrameContractResolver();
+            resolver.Ignore(
+                typeof(QuotaFrame),
+                nameof(QuotaFrame.Target)
+                );
+
+            resolver.Ignore(
+                typeof(QuotaFrameLevel),
+                nameof(QuotaFrameLevel.Target),
+                nameof(QuotaFrameLevel.MaxTarget)
+                );
+
+            return resolver;
+        }
     }
 }

@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using Nfield.Quota.Builders;
+﻿using Nfield.Quota.Builders;
 using Nfield.Quota.Models;
 using Nfield.Quota.Persistence;
 using NUnit.Framework;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace Nfield.Quota.Tests
 {
@@ -26,35 +26,41 @@ namespace Nfield.Quota.Tests
         }
 
         [Test]
-        public void OutputDoesNotContainSuccessful()
+        public void OutputDoesNotContainTargetsWhenTargetShouldNotBeIncluded()
         {
             var frame = new QuotaFrameBuilder()
-                .VariableDefinition("var", new List<string>() { "level" })
-                .Structure(sb => sb.Variable("var"))
-                .Build();
-
-            var json = QuotaFrameEncoder.Encode(frame);
-
-            Assert.That(json, Does.Not.Contain("successful"));
-            // Assert.That(json, Is.Not.StringContaining("50")); TODO Test properly (level id can contain this)
-        }
-
-        [Test]
-        public void OutputDoesNotContainTargetWhenTargetIsSet()
-        {
-            var frame = new QuotaFrameBuilder()
-                .VariableDefinition("varName", new List<string>() { "level" })
+                .Target(100)
+                .VariableDefinition("varName", new List<string>() { "level1", "level2" })
                 .Structure(sb => sb.Variable("varName"))
                 .Build();
 
-            frame["varName", "level"].Target = 60;
-            frame["varName", "level"].MaxTarget = 65;
+            frame["varName", "level1"].Target = 60;
+            frame["varName", "level1"].MaxTarget = 65;
 
+            // The default does not include targets.
             var json = QuotaFrameEncoder.Encode(frame);
 
             Assert.That(json, Does.Not.Contain("target"));
             Assert.That(json, Does.Not.Contain("maxTarget"));
-            // Assert.That(json, Is.Not.StringContaining("100")); TODO Test properly (level id can contain this)
+        }
+
+        [Test]
+        public void OutputContainsTargetsWhenTargetShouldBeIncluded()
+        {
+            var frame = new QuotaFrameBuilder()
+                .Target(100)
+                .VariableDefinition("varName", new List<string>() { "level1", "level2" })
+                .Structure(sb => sb.Variable("varName"))
+                .Build();
+
+            frame["varName", "level1"].Target = 60;
+            frame["varName", "level1"].MaxTarget = 65;
+
+            var json = QuotaFrameEncoder.Encode(frame, new QuotaFrameEncoderOptions() { IncludeTargets = true });
+
+            Assert.That(json, Does.Contain("\"target\": 100"));
+            Assert.That(json, Does.Contain("\"target\": 60"));
+            Assert.That(json, Does.Contain("\"maxTarget\": 65"));
         }
 
         [Test]
