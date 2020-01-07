@@ -294,7 +294,7 @@ namespace Nfield.Quota.Tests
         [TestCase(10, 10, true)]
         [TestCase(9, 10, true)]
         [TestCase(11, 10, false)]
-        public void Frame_MaxTargetsMustBeGreaterThanOrEqualToMinTargest(int minTarget, int maxTarget, bool isValid)
+        public void Frame_MaxTargetsMustBeGreaterThanOrEqualToMinTargets(int minTarget, int maxTarget, bool isValid)
         {
             var quotaFrame = new QuotaFrameBuilder()
                 .VariableDefinition("var1", new[] { "a", "b" })
