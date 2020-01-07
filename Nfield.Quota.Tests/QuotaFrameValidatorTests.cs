@@ -91,6 +91,22 @@ namespace Nfield.Quota.Tests
         }
 
         [Test]
+        public void Definitions_CanContainDuplicateOdinVariableNamesAcrossVariables()
+        {
+            const string odinVariableName = "my_var";
+
+            var quotaFrame = new QuotaFrameBuilder()
+                .VariableDefinition("varName1", odinVariableName, new[] { "level1Name", "level2Name" })
+                .VariableDefinition("varName2", odinVariableName, new[] { "level1Name", "level2Name" })
+                .Build();
+
+            var validator = new QuotaFrameValidator();
+            var result = validator.Validate(quotaFrame);
+
+            Assert.That(result.IsValid, Is.True);
+        }
+
+        [Test]
         public void Definitions_CannotContainDuplicateNamesAcrossVariables()
         {
             const string nonUniqueName = "non-unique";
