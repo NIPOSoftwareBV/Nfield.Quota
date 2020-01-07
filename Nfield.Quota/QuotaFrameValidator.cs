@@ -58,7 +58,10 @@ namespace Nfield.Quota
                     .WithErrorCode("no-visible-levels")
                 .Must(MultiVariablesHaveLevelsWithoutVariables)
                     .WithMessage("Quota frame invalid. Multi variable '{VariableName}', level Id '{LevelId}' with name '{LevelName}' has variables")
-                    .WithErrorCode("nested-under-multi");
+                    .WithErrorCode("nested-under-multi")
+                .Must(HaveConsistentMinAndMaxTargetsForEachLevel)
+                    .WithMessage("Quota frame is invalid. Minimum target for level '{LevelName}' under '{VariableName}' (Id '{LevelId}') is greater than the maximum target for that level.")
+                    .WithErrorCode("inconsistent-targets");
         }
 
         private static bool HaveUniqueIds(
@@ -372,6 +375,30 @@ namespace Nfield.Quota
                     if (variable.IsHidden == false && variable.Levels.Count(l => !l.IsHidden) < 1)
                     {
                         context.MessageFormatter.AppendArgument("VariableName", variable.Name);
+                        isValid = false;
+                    }
+                });
+
+            return isValid;
+        }
+
+        private static bool HaveConsistentMinAndMaxTargetsForEachLevel(
+            QuotaFrame frame,
+            IEnumerable<QuotaFrameVariable> variables,
+            PropertyValidatorContext context)
+        {
+            var isValid = true;
+
+            var traverser = new PreOrderQuotaFrameTraverser();
+            traverser.Traverse(
+                frame,
+                (variable, level) =>
+                {
+                    if (level.Target > level.MaxTarget)
+                    {
+                        context.MessageFormatter.AppendArgument("VariableName", variable.Name);
+                        context.MessageFormatter.AppendArgument("LevelName", level.Name);
+                        context.MessageFormatter.AppendArgument("LevelId", level.Id);
                         isValid = false;
                     }
                 });
