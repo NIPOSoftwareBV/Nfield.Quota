@@ -16,44 +16,49 @@ namespace Nfield.Quota
 
             RuleFor(qf => qf.VariableDefinitions)
                 .Must(HaveUniqueIds)
-                .WithMessage("Quota frame definitions contain a duplicate id. Duplicate id: '{DuplicateValue}'")
+                    .WithMessage("Quota frame definitions contain a duplicate id. Duplicate id: '{DuplicateValue}'")
+                    .WithErrorCode("duplicate-definition-id")
                 .Must(HaveUniqueVariableNames)
-                .WithMessage("Quota frame definitions contain a duplicate variable name. Duplicate name: '{DuplicateValue}'")
+                    .WithMessage("Quota frame definitions contain a duplicate variable name. Duplicate name: '{DuplicateValue}'")
+                    .WithErrorCode("duplicate-variable-name")
                 .Must(HaveUniqueLevelNamesPerVariable)
-                .WithMessage("Quota frame definitions contain a duplicate level name. Duplicate name: '{DuplicateValue}'")
+                    .WithMessage("Quota frame definitions contain a duplicate level name. Duplicate name: '{DuplicateValue}'")
+                    .WithErrorCode("duplicate-level-name")
                 .Must(HaveVariablesWithAtLeastOneLevel)
-                .WithMessage("Quota frame definitions has variables with no levels. Affected variable definition id: '{VariableDefinitionId}'")
+                    .WithMessage("Quota frame definitions has variables with no levels. Affected variable definition id: '{VariableDefinitionId}'")
+                    .WithErrorCode("no-levels")
                 .Must(HaveValidOdinVariableName)
-                .WithMessage(
-                    "Odin variable name invalid. Odin variable names can only contain numbers, letters and '_' and cannot be empty. They can only ​start with​ a letter. First character cannot be '_' or a number. Variable definition Id '{DefId}' with name '{DefName}' has an invalid Odin Variable Name '{InvalidOdin}'");
+                    .WithMessage("Odin variable name invalid. Odin variable names can only contain numbers, letters and '_' and cannot be empty. They can only ​start with​ a letter. First character cannot be '_' or a number. Variable definition Id '{DefId}' with name '{DefName}' has an invalid Odin Variable Name '{InvalidOdin}'")
+                    .WithErrorCode("invalid-odin-variable-name");
 
             RuleFor(qf => qf.FrameVariables)
                 .Must(HaveUniqueIds)
-                .WithMessage("Quota frame contains a duplicate id. Duplicate id: '{DuplicateValue}'")
+                    .WithMessage("Quota frame contains a duplicate id. Duplicate id: '{DuplicateValue}'")
+                    .WithErrorCode("duplicate-frame-id")
                 .Must(ReferenceDefinitions)
-                .WithMessage(
-                    "Quota frame contains a reference to a non-existing definition. Definition id: '{DefinitionId}'")
+                    .WithMessage("Quota frame contains a reference to a non-existing definition. Definition id: '{DefinitionId}'")
+                    .WithErrorCode("missing-definition")
                 .Must(HaveTheSameLevelsUnderAVariableAsTheLinkedVariableDefinition)
-                .WithMessage(
-                    "Quota frame contains a variable that doesnt have all the defined levels associated. Affected frame variable id: '{AffectedFrameVariableId}', missing level definition id: '{MissingLevelDefinitionId}'")
+                    .WithMessage("Quota frame contains a variable that doesnt have all the defined levels associated. Affected frame variable id: '{AffectedFrameVariableId}', missing level definition id: '{MissingLevelDefinitionId}'")
+                    .WithErrorCode("missing-level")
                 .Must(HaveVariablesWithTheSameVariablesUnderEveryLevel)
-                .WithMessage(
-                    "Quota frame invalid. All levels of a variable should have the same variables underneath. Frame variable id '{AffectedFrameVariableId}' has a mismatch for level '{MismatchLevelId}'")
+                    .WithMessage("Quota frame invalid. All levels of a variable should have the same variables underneath. Frame variable id '{AffectedFrameVariableId}' has a mismatch for level '{MismatchLevelId}'")
+                    .WithErrorCode("inconsistent-nested-variables")
                 .Must(HaveValidTotalTarget)
-                .WithMessage(
-                    "Target invalid. All Targets must be of a positive value. Quota frame total target has a negative value '{InvalidTarget}'")
+                    .WithMessage("Target invalid. All Targets must be of a positive value. Quota frame total target has a negative value '{InvalidTarget}'")
+                    .WithErrorCode("negative-gross-target")
                 .Must(HaveValidLevelTargets)
-                .WithMessage(
-                    "Target invalid. All Targets must be of a positive value. Frame level Id '{LevelId}' with name '{LevelName}' has an invalid negative target '{InvalidTarget}'")
+                    .WithMessage("Target invalid. All Targets must be of a positive value. Frame level Id '{LevelId}' with name '{LevelName}' has an invalid negative target '{InvalidTarget}'")
+                    .WithErrorCode("negative-min-target")
                 .Must(HaveValidLevelMaxTargets)
-                .WithMessage(
-                    "Target invalid. All Targets must be of a positive value. Frame level Id '{LevelId}' with name '{LevelName}' has an invalid negative maximum target '{InvalidTarget}'")
+                    .WithMessage("Target invalid. All Targets must be of a positive value. Frame level Id '{LevelId}' with name '{LevelName}' has an invalid negative maximum target '{InvalidTarget}'")
+                    .WithErrorCode("negative-max-target")
                 .Must(HaveVariablesWithAtLeastOneVisibleLevel)
-                .WithMessage(
-                    "Quota frame invalid. Frame has variables with no visible levels. Affected variable name: '{VariableName}'. If you don't care about any levels under variable '{VariableName}', consider hiding that variable instead.")
+                    .WithMessage("Quota frame invalid. Frame has variables with no visible levels. Affected variable name: '{VariableName}'. If you don't care about any levels under variable '{VariableName}', consider hiding that variable instead.")
+                    .WithErrorCode("no-visible-levels")
                 .Must(MultiVariablesHaveLevelsWithoutVariables)
-                .WithMessage(
-                    "Quota frame invalid. Multi variable '{VariableName}', level Id '{LevelId}' with name '{LevelName}' has variables");
+                    .WithMessage("Quota frame invalid. Multi variable '{VariableName}', level Id '{LevelId}' with name '{LevelName}' has variables")
+                    .WithErrorCode("nested-under-multi");
         }
 
         private static bool HaveUniqueIds(
@@ -406,6 +411,7 @@ namespace Nfield.Quota
             if (!couldAdd)
             {
                 context.MessageFormatter.AppendArgument("DuplicateValue", entry);
+                
                 return true;
             }
 
