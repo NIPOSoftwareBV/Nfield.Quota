@@ -61,7 +61,10 @@ namespace Nfield.Quota
                     .WithErrorCode("nested-under-multi")
                 .Must(HaveConsistentMinAndMaxTargetsForEachLevel)
                     .WithMessage("Quota frame is invalid. Minimum target for level '{LevelName}' under '{VariableName}' (Id '{LevelId}') is greater than the maximum target for that level.")
-                    .WithErrorCode("inconsistent-targets");
+                    .WithErrorCode("inconsistent-targets")
+                .Must(HaveNestedMinLevelsSumToLessThanMaxTargetForEachLevel)
+                    .WithMessage("Quota frame is invalid. Minimum targets for nested levels under variable '{VariableName}' with id '{VariableId}' sum to more than the maximum target for parent level '{LevelName}' with id '{LevelId}'. Expected at least {Sum}, but was {MaxTarget}.")
+                    .WithErrorCode("nested-levels-exceed-parent-max");
         }
 
         private static bool HaveUniqueIds(
@@ -429,6 +432,54 @@ namespace Nfield.Quota
                 });
 
             return isValid;
+        }
+
+        private static bool HaveNestedMinLevelsSumToLessThanMaxTargetForEachLevel(
+            QuotaFrame frame,
+            IEnumerable<QuotaFrameVariable> variables,
+            PropertyValidatorContext context)
+        {
+            bool ProcessLevel(QuotaFrameVariable variable, IEnumerable<QuotaFrameLevel> parents)
+            {
+                // sum of targets, ignoring null values
+                var sum = variable.Levels.Aggregate(0, (total, level) => total + (level.Target ?? 0));
+
+                var isValid = true;
+                foreach (var parent in parents)
+                {
+                    if (parent.MaxTarget < sum)
+                    {
+                        context.MessageFormatter.AppendArgument("VariableName", variable.Name);
+                        context.MessageFormatter.AppendArgument("VariableId", variable.Id);
+                        context.MessageFormatter.AppendArgument("LevelId", parent.Id);
+                        context.MessageFormatter.AppendArgument("LevelName", parent.Name);
+                        context.MessageFormatter.AppendArgument("Sum", sum);
+                        context.MessageFormatter.AppendArgument("MaxTarget", parent.MaxTarget);
+
+                        isValid = false;
+                    }
+                }
+
+                foreach (var level in variable.Levels)
+                {
+                    var newParents = parents.Concat(new[] { level });
+
+                    foreach (var nestedVariable in level.Variables)
+                    {
+                        isValid &= ProcessLevel(nestedVariable, newParents);
+                    }
+                }
+                
+                return isValid;
+            }
+
+            var isTreeValid = true;
+            foreach (var variable in variables)
+            {
+                isTreeValid &= ProcessLevel(variable, new QuotaFrameLevel[0]);
+            }
+
+            return isTreeValid;
         }
 
         // Assumes set.Add returns false if value already in collection
