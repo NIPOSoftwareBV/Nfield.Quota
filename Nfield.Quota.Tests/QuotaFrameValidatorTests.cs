@@ -291,6 +291,36 @@ namespace Nfield.Quota.Tests
         }
 
         [Test]
+        [TestCase(10, 10, true)]
+        [TestCase(9, 10, true)]
+        [TestCase(11, 10, false)]
+        public void Frame_MaxTargetsMustBeGreaterThanOrEqualToMinTargets(int minTarget, int maxTarget, bool isValid)
+        {
+            var quotaFrame = new QuotaFrameBuilder()
+                .VariableDefinition("var1", new[] { "a", "b" })
+                .Structure(f => f.Variable("var1"))
+                .Build();
+
+            var level = quotaFrame["var1", "a"];
+
+            level.Target = minTarget;
+            level.MaxTarget = maxTarget;
+
+            var validator = new QuotaFrameValidator();
+            var result = validator.Validate(quotaFrame);
+
+            Assert.That(result.IsValid, Is.EqualTo(isValid));
+
+            if (!isValid)
+            {
+                var id = level.Id;
+
+                Assert.That(result.Errors.Single().ErrorMessage,
+                    Is.EqualTo($"Quota frame is invalid. Minimum target for level 'a' under 'var1' (Id '{id}') is greater than the maximum target for that level."));
+            }
+        }
+
+        [Test]
         public void Compare_Definitions_Are_Equal()
         {
             var varId = Guid.NewGuid();
