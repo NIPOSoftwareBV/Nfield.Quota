@@ -64,7 +64,10 @@ namespace Nfield.Quota
                     .WithErrorCode("inconsistent-targets")
                 .Must(HaveNestedMinLevelsSumToLessThanMaxTargetForEachLevel)
                     .WithMessage("Quota frame is invalid. Minimum targets for nested levels under variable '{VariableName}' with id '{VariableId}' sum to more than the maximum target for parent level '{LevelName}' with id '{LevelId}'. Expected at least {Sum}, but was {MaxTarget}.")
-                    .WithErrorCode("nested-levels-exceed-parent-max");
+                    .WithErrorCode("nested-levels-exceed-parent-max")
+                .Must(HaveNestedMaxLevelsSumToMoreThanMinTargetForEachLevel)
+                    .WithMessage("Quota frame is invalid. Maximum targets for nested levels under variable '{VariableName}' with id '{VariableId}' sum to less than the minimum target for parent level '{LevelName}' with id '{LevelId}'. Expected at least {MinTarget}, but was {Sum}.")
+                    .WithErrorCode("nested-levels-less-than-parent-min");
         }
 
         private static bool HaveUniqueIds(
@@ -447,7 +450,7 @@ namespace Nfield.Quota
                 var isValid = true;
                 foreach (var parent in parents)
                 {
-                    if (parent.MaxTarget < sum)
+                    if (parent.MaxTarget != null && parent.MaxTarget < sum)
                     {
                         context.MessageFormatter.AppendArgument("VariableName", variable.Name);
                         context.MessageFormatter.AppendArgument("VariableId", variable.Id);
@@ -457,6 +460,70 @@ namespace Nfield.Quota
                         context.MessageFormatter.AppendArgument("MaxTarget", parent.MaxTarget);
 
                         isValid = false;
+                    }
+                }
+
+                foreach (var level in variable.Levels)
+                {
+                    var newParents = parents.Concat(new[] { level });
+
+                    foreach (var nestedVariable in level.Variables)
+                    {
+                        isValid &= ProcessLevel(nestedVariable, newParents);
+                    }
+                }
+                
+                return isValid;
+            }
+
+            var isTreeValid = true;
+            foreach (var variable in variables)
+            {
+                isTreeValid &= ProcessLevel(variable, new QuotaFrameLevel[0]);
+            }
+
+            return isTreeValid;
+        }
+
+        private static bool HaveNestedMaxLevelsSumToMoreThanMinTargetForEachLevel(
+            QuotaFrame frame,
+            IEnumerable<QuotaFrameVariable> variables,
+            PropertyValidatorContext context)
+        {
+            bool ProcessLevel(QuotaFrameVariable variable, IEnumerable<QuotaFrameLevel> parents)
+            {
+                // we need the sum of the max targets for this variable,
+                // ignoring null values. if *all* values are null, this
+                // validation does not apply (because null means "don't care")
+                var sum = 0;
+                var allTargetsNull = true;
+
+                foreach (var level in variable.Levels)
+                {
+                    if (level.MaxTarget != null)
+                    {
+                        allTargetsNull = false;
+                        sum += level.MaxTarget.Value;
+                    }
+                }
+
+                var isValid = true;
+
+                if (!allTargetsNull)
+                {
+                    foreach (var parent in parents)
+                    {
+                        if (parent.Target != null && parent.Target > sum)
+                        {
+                            context.MessageFormatter.AppendArgument("VariableName", variable.Name);
+                            context.MessageFormatter.AppendArgument("VariableId", variable.Id);
+                            context.MessageFormatter.AppendArgument("LevelId", parent.Id);
+                            context.MessageFormatter.AppendArgument("LevelName", parent.Name);
+                            context.MessageFormatter.AppendArgument("Sum", sum);
+                            context.MessageFormatter.AppendArgument("MinTarget", parent.Target);
+
+                            isValid = false;
+                        }
                     }
                 }
 
