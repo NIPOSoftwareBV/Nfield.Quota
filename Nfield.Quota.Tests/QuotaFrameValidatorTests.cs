@@ -349,6 +349,12 @@ namespace Nfield.Quota.Tests
             Assert.That(result.IsValid, Is.False);
             Assert.That(result.Errors.Single().ErrorMessage,
                 Is.EqualTo($"Quota frame is invalid. Minimum targets for nested levels under variable 'nested' with id '{nestedVariable.Id}' sum to more than the maximum target for parent level 'a' with id '{topLevel.Id}'. Expected at least 22, but was 20."));
+
+            // make sure that if all is good, we don't return an error
+            topLevel.MaxTarget = 22;
+            result = validator.Validate(quotaFrame);
+
+            Assert.That(result.IsValid, Is.True);
         }
 
         [Test]
@@ -385,6 +391,12 @@ namespace Nfield.Quota.Tests
             Assert.That(result.IsValid, Is.False);
             Assert.That(result.Errors.Single().ErrorMessage,
                 Is.EqualTo($"Quota frame is invalid. Minimum targets for nested levels under variable 'DoubleNested' with id '{doubleNestedVariable.Id}' sum to more than the maximum target for parent level 'a' with id '{topLevel.Id}'. Expected at least 22, but was 20."));
+
+            // make sure that if all is good, we don't return an error
+            topLevel.MaxTarget = 22;
+            result = validator.Validate(quotaFrame);
+
+            Assert.That(result.IsValid, Is.True);
         }
 
         [Test]
