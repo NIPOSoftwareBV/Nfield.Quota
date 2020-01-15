@@ -46,13 +46,16 @@ namespace Nfield.Quota
                     .WithErrorCode("inconsistent-nested-variables")
                 .Must(HaveValidTotalTarget)
                     .WithMessage("Target invalid. All Targets must be of a positive value. Quota frame total target has a negative value '{InvalidTarget}'")
-                    .WithErrorCode("negative-gross-target")
+                    .WithErrorCode("negative-gross-target")                
                 .Must(HaveValidLevelTargets)
                     .WithMessage("Target invalid. All Targets must be of a positive value. Frame level Id '{LevelId}' with name '{LevelName}' has an invalid negative target '{InvalidTarget}'")
                     .WithErrorCode("negative-min-target")
                 .Must(HaveValidLevelMaxTargets)
                     .WithMessage("Target invalid. All Targets must be of a positive value. Frame level Id '{LevelId}' with name '{LevelName}' has an invalid negative maximum target '{InvalidTarget}'")
                     .WithErrorCode("negative-max-target")
+                .Must(HaveTotalTargetThatIsNotLowerThanAnyOfTheMaxTargetInTheLowerLevels)
+                    .WithMessage("The target is lower than any of the maximum targets in the lower levels")
+                    .WithErrorCode("gross-target-lower-than-level-max-target")
                 .Must(HaveVariablesWithAtLeastOneVisibleLevel)
                     .WithMessage("Quota frame invalid. Frame has variables with no visible levels. Affected variable name: '{VariableName}'. If you don't care about any levels under variable '{VariableName}', consider hiding that variable instead.")
                     .WithErrorCode("no-visible-levels")
@@ -318,6 +321,27 @@ namespace Nfield.Quota
             }
 
             return !inValidTarget;
+        }
+
+        private static bool HaveTotalTargetThatIsNotLowerThanAnyOfTheMaxTargetInTheLowerLevels(
+            QuotaFrame frame,
+            ICollection<QuotaFrameVariable> frameVariables,
+            PropertyValidatorContext context)
+        {
+            var invalidTarget = false;
+
+            var traverser = new PreOrderQuotaFrameTraverser();
+            traverser.Traverse( 
+                frame,
+                (variable, level) =>
+                {                    
+                    if (frame.Target < level.MaxTarget)
+                    {
+                        invalidTarget = true;
+                    }
+                });
+
+            return !invalidTarget;
         }
 
         private static bool HaveValidLevelTargets(

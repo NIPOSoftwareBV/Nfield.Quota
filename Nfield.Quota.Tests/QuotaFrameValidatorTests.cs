@@ -1100,6 +1100,34 @@ namespace Nfield.Quota.Tests
         }
 
         [Test]
+        public void Frame_TotalTargetShouldNotBeLowerThanAnyLevelMaxTarget()
+        {
+            var quotaFrame = new QuotaFrameBuilder()
+                .VariableDefinition("var1", new[] { "a", "b" })
+                .Structure(f => f.Variable("var1"))
+                .Build();
+
+            var levelA = quotaFrame["var1", "a"];
+            var levelB = quotaFrame["var1", "b"];
+
+            quotaFrame.Target = 11;
+
+            levelA.Target = 5;
+            levelA.MaxTarget = 6;
+
+            levelB.Target = 5;
+            levelB.MaxTarget = 15;
+
+            var validator = new QuotaFrameValidator();
+            var result = validator.Validate(quotaFrame);
+
+            Assert.That(result.IsValid, Is.False);
+
+            Assert.That(result.Errors.Single().ErrorMessage,
+                    Is.EqualTo($"The target is lower than any of the maximum targets in the lower levels"));
+        }
+
+        [Test]
         public void Frame_VariablesShouldHaveAtLeastOneVisibleLevel()
         {
             var quotaFrame = new QuotaFrameBuilder()
