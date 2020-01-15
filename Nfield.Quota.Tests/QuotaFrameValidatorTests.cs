@@ -1124,7 +1124,7 @@ namespace Nfield.Quota.Tests
             Assert.That(result.IsValid, Is.False);
 
             Assert.That(result.Errors.Single().ErrorMessage,
-                    Is.EqualTo($"The target is lower than any of the maximum targets in the lower levels"));
+                    Is.EqualTo($"The target ({quotaFrame.Target}) is lower than the highest target ({levelB.MaxTarget}) in the lower levels. (Level Id: {levelB.Id})"));
         }
 
         [Test]
