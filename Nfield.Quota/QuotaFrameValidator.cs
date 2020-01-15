@@ -358,14 +358,6 @@ namespace Nfield.Quota
                 context.MessageFormatter.AppendArgument("grossTarget", frame.Target);
             }
 
-            /*
-                .Must(HaveValidLevelMaxTargets)
-                    .WithMessage("Target invalid. All Targets must be of a positive value. Frame level Id '{LevelId}' with name '{LevelName}' has an invalid negative maximum target '{InvalidTarget}'")
-                    .WithErrorCode("negative-max-target")
-                .Must(HaveTotalTargetThatIsNotLowerThanHighestMaxTargetInTheLowerLevels)
-                    .WithMessage("The target ({grossTarget}) is lower than the highest target ({highestTarget}) in the lower levels. (Level Id: {levelId})")
-                    .WithErrorCode("gross-target-lower-than-level-max-target")
-             */
             return !invalidTarget;
         }
 
