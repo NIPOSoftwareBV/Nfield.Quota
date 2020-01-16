@@ -437,6 +437,34 @@ namespace Nfield.Quota.Tests
         }
 
         [Test]
+        public void Frame_SumOfMaxTargetsIsInfiniteIfAnyAreNull()
+        {
+            var quotaFrame = new QuotaFrameBuilder()
+                .VariableDefinition("top", new[] { "a", "b" })
+                .VariableDefinition("nested", new[] { "c", "d" })
+                .Structure(f =>
+                    f.Variable("top", (top) =>
+                        top.Variable("nested")))
+                .Build();
+
+            var topLevel = quotaFrame["top", "a"];
+            var nestedVariable = topLevel["nested"];
+            var nestedLevel1 = topLevel["nested", "c"];
+            var nestedLevel2 = topLevel["nested", "d"];
+
+            // max target for "d" is null, so the sum should be counted as infinite
+            nestedLevel1.MaxTarget = 10;
+            nestedLevel2.MaxTarget = null;
+
+            topLevel.Target = 20;
+
+            var validator = new QuotaFrameValidator();
+            var result = validator.Validate(quotaFrame);
+
+            Assert.That(result.IsValid, Is.True);
+        }
+
+        [Test]
         public void Frame_SumOfMaxTargetsMustExceedAncestorMinTarget()
         {
             var quotaFrame = new QuotaFrameBuilder()

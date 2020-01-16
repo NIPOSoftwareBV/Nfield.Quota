@@ -492,24 +492,28 @@ namespace Nfield.Quota
         {
             bool ProcessLevel(QuotaFrameVariable variable, IEnumerable<QuotaFrameLevel> parents)
             {
-                // we need the sum of the max targets for this variable,
-                // ignoring null values. if *all* values are null, this
-                // validation does not apply (because null means "don't care")
+                // we need the sum of the max targets for this variable.
+                // if any values are null, this validation does not apply
+                // (because null means "don't care" i.e. "infinite")
                 var sum = 0;
-                var allTargetsNull = true;
+                var anyTargetsNull = false;
 
                 foreach (var level in variable.Levels)
                 {
-                    if (level.MaxTarget != null)
+                    if (level.MaxTarget == null)
                     {
-                        allTargetsNull = false;
+                        anyTargetsNull = true;
+                        break;
+                    }
+                    else
+                    {
                         sum += level.MaxTarget.Value;
                     }
                 }
 
                 var isValid = true;
 
-                if (!allTargetsNull)
+                if (!anyTargetsNull)
                 {
                     foreach (var parent in parents)
                     {
