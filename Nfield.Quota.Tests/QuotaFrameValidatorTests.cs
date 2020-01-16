@@ -579,6 +579,60 @@ namespace Nfield.Quota.Tests
         }
 
         [Test]
+        public void Frame_SumOfMaxTargetsOfNestedLevelsCannotExceedTopLevelTarget()
+        {
+            var quotaFrame = new QuotaFrameBuilder()
+                .VariableDefinition("Top", new[] { "a", "b" })
+                .VariableDefinition("Nested", new[] { "c", "d" })
+                .VariableDefinition("DoubleNested", new[] { "e", "f" })
+                .Structure(f =>
+                    f.Variable("Top", top =>
+                        top.Variable("Nested", nested =>
+                            nested.Variable("DoubleNested"))))
+                .Build();
+
+            var topLevel = quotaFrame["Top", "a"];
+            var nestedLevelC = topLevel["Nested", "c"];
+            var nestedLevelD = topLevel["Nested", "d"];
+
+            var doubleNestedVariableC = nestedLevelC["DoubleNested"];
+            var doubleNestedLevelC1 = nestedLevelC["DoubleNested", "e"];
+            var doubleNestedLevelC2 = nestedLevelC["DoubleNested", "f"];
+
+            var doubleNestedVariableD = nestedLevelD["DoubleNested"];
+            var doubleNestedLevelD1 = nestedLevelD["DoubleNested", "e"];
+            var doubleNestedLevelD2 = nestedLevelD["DoubleNested", "f"];
+
+            // top level target should not exceed sum of targets double nested levels
+            doubleNestedLevelC1.MaxTarget = 5;
+            doubleNestedLevelC2.MaxTarget = 5;
+            doubleNestedLevelD1.MaxTarget = 1;
+            doubleNestedLevelD2.MaxTarget = 1;
+
+            topLevel.Target = 13; 
+
+            var validator = new QuotaFrameValidator();
+            var result = validator.Validate(quotaFrame);
+
+            Assert.That(result.IsValid, Is.False);
+
+            // make sure that if all is good, we don't return an error
+            topLevel.Target = 12;
+
+            result = validator.Validate(quotaFrame);
+
+            Assert.That(result.IsValid, Is.True);
+
+            // However, if any of the nested levels contain a null target then any top level target is possible again
+            doubleNestedLevelD2.MaxTarget = null;
+            topLevel.Target = 13;
+
+            result = validator.Validate(quotaFrame);
+
+            Assert.That(result.IsValid, Is.True);
+        }
+
+        [Test]
         public void Compare_Definitions_Are_Equal()
         {
             var varId = Guid.NewGuid();
