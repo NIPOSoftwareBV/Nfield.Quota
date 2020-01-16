@@ -46,7 +46,7 @@ namespace Nfield.Quota
                     .WithErrorCode("inconsistent-nested-variables")
                 .Must(HaveValidTotalTarget)
                     .WithMessage("Target invalid. All Targets must be of a positive value. Quota frame total target has a negative value '{InvalidTarget}'")
-                    .WithErrorCode("negative-gross-target")                
+                    .WithErrorCode("negative-gross-target")
                 .Must(HaveValidLevelTargets)
                     .WithMessage("Target invalid. All Targets must be of a positive value. Frame level Id '{LevelId}' with name '{LevelName}' has an invalid negative target '{InvalidTarget}'")
                     .WithErrorCode("negative-min-target")
@@ -66,10 +66,10 @@ namespace Nfield.Quota
                     .WithMessage("Quota frame is invalid. Minimum target for level '{LevelName}' under '{VariableName}' (Id '{LevelId}') is greater than the maximum target for that level.")
                     .WithErrorCode("inconsistent-targets")
                 .Must(HaveNestedMinLevelsSumToLessThanMaxTargetForEachLevel)
-                    .WithMessage("Quota frame is invalid. Minimum targets for nested levels under variable '{VariableName}' with id '{VariableId}' sum to more than the maximum target for parent level '{LevelName}' with id '{LevelId}'. Expected at least {Sum}, but was {MaxTarget}.")
+                    .WithMessage("Quota frame is invalid. Minimum targets for nested levels under variable '{VariableName}' with id '{VariableId}' require more completes than the maximum target for parent level '{LevelName}' with id '{LevelId}'. Expected at least {Sum}, but was {MaxTarget}.")
                     .WithErrorCode("nested-levels-exceed-parent-max")
                 .Must(HaveNestedMaxLevelsSumToMoreThanMinTargetForEachLevel)
-                    .WithMessage("Quota frame is invalid. Maximum targets for nested levels under variable '{VariableName}' with id '{VariableId}' sum to less than the minimum target for parent level '{LevelName}' with id '{LevelId}'. Expected at least {MinTarget}, but was {Sum}.")
+                    .WithMessage("Quota frame is invalid. Maximum targets for nested levels under variable '{VariableName}' with id '{VariableId}' restrict completes to less than the minimum target for parent level '{LevelName}' with id '{LevelId}'. Expected at most {Sum}, but was {MinTarget}.")
                     .WithErrorCode("nested-levels-less-than-parent-min");
         }
 
@@ -333,7 +333,7 @@ namespace Nfield.Quota
             Guid invalidLevelId;
 
             var traverser = new PreOrderQuotaFrameTraverser();
-            traverser.Traverse( 
+            traverser.Traverse(
                 frame,
                 (variable, level) =>
                 {
@@ -485,19 +485,34 @@ namespace Nfield.Quota
         {
             bool ProcessLevel(QuotaFrameVariable variable, IEnumerable<QuotaFrameLevel> parents)
             {
+                var definition = frame.VariableDefinitions.Single(d => d.Id == variable.DefinitionId);
+
                 // sum of targets, ignoring null values
-                var sum = variable.Levels.Aggregate(0, (total, level) => total + (level.Target ?? 0));
+                var minimumCompletesForChildren = 0;
+
+                if (definition.IsMulti)
+                {
+                    // for multi variables, each level can be selected at the same time, so
+                    // must take the maximum of the targets
+                    minimumCompletesForChildren = variable.Levels.Aggregate(0, (total, level) => Math.Max(total, (level.Target ?? 0)));
+                }
+                else
+                {
+                    // for normal non-multi variables, each level must be achieved, so
+                    // we must take the sum of the targets
+                    minimumCompletesForChildren = variable.Levels.Aggregate(0, (total, level) => total + (level.Target ?? 0));
+                }
 
                 var isValid = true;
                 foreach (var parent in parents)
                 {
-                    if (parent.MaxTarget != null && parent.MaxTarget < sum)
+                    if (parent.MaxTarget != null && parent.MaxTarget < minimumCompletesForChildren)
                     {
                         context.MessageFormatter.AppendArgument("VariableName", variable.Name);
                         context.MessageFormatter.AppendArgument("VariableId", variable.Id);
                         context.MessageFormatter.AppendArgument("LevelId", parent.Id);
                         context.MessageFormatter.AppendArgument("LevelName", parent.Name);
-                        context.MessageFormatter.AppendArgument("Sum", sum);
+                        context.MessageFormatter.AppendArgument("Sum", minimumCompletesForChildren);
                         context.MessageFormatter.AppendArgument("MaxTarget", parent.MaxTarget);
 
                         isValid = false;
@@ -513,7 +528,7 @@ namespace Nfield.Quota
                         isValid &= ProcessLevel(nestedVariable, newParents);
                     }
                 }
-                
+
                 return isValid;
             }
 
@@ -536,7 +551,7 @@ namespace Nfield.Quota
                 // we need the sum of the max targets for this variable.
                 // if any values are null, this validation does not apply
                 // (because null means "don't care" i.e. "infinite")
-                var sum = 0;
+                var maximumCompletesFromChildren = 0;
                 var anyTargetsNull = false;
 
                 foreach (var level in variable.Levels)
@@ -548,7 +563,7 @@ namespace Nfield.Quota
                     }
                     else
                     {
-                        sum += level.MaxTarget.Value;
+                        maximumCompletesFromChildren += level.MaxTarget.Value;
                     }
                 }
 
@@ -558,13 +573,13 @@ namespace Nfield.Quota
                 {
                     foreach (var parent in parents)
                     {
-                        if (parent.Target != null && parent.Target > sum)
+                        if (parent.Target != null && parent.Target > maximumCompletesFromChildren)
                         {
                             context.MessageFormatter.AppendArgument("VariableName", variable.Name);
                             context.MessageFormatter.AppendArgument("VariableId", variable.Id);
                             context.MessageFormatter.AppendArgument("LevelId", parent.Id);
                             context.MessageFormatter.AppendArgument("LevelName", parent.Name);
-                            context.MessageFormatter.AppendArgument("Sum", sum);
+                            context.MessageFormatter.AppendArgument("Sum", maximumCompletesFromChildren);
                             context.MessageFormatter.AppendArgument("MinTarget", parent.Target);
 
                             isValid = false;
@@ -581,7 +596,7 @@ namespace Nfield.Quota
                         isValid &= ProcessLevel(nestedVariable, newParents);
                     }
                 }
-                
+
                 return isValid;
             }
 
@@ -601,7 +616,7 @@ namespace Nfield.Quota
             if (!couldAdd)
             {
                 context.MessageFormatter.AppendArgument("DuplicateValue", entry);
-                
+
                 return true;
             }
 
