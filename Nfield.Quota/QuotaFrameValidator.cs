@@ -53,6 +53,9 @@ namespace Nfield.Quota
                 .Must(HaveValidLevelMaxTargets)
                     .WithMessage("Target invalid. All Targets must be of a positive value. Frame level Id '{LevelId}' with name '{LevelName}' has an invalid negative maximum target '{InvalidTarget}'")
                     .WithErrorCode("negative-max-target")
+                .Must(HaveTotalTargetThatIsNotLowerThanHighestMaxTargetInTheLowerLevels)
+                    .WithMessage("The target ({grossTarget}) is lower than the highest target ({highestTarget}) in the lower levels. (Level Id: {levelId})")
+                    .WithErrorCode("gross-target-lower-than-level-max-target")
                 .Must(HaveVariablesWithAtLeastOneVisibleLevel)
                     .WithMessage("Quota frame invalid. Frame has variables with no visible levels. Affected variable name: '{VariableName}'. If you don't care about any levels under variable '{VariableName}', consider hiding that variable instead.")
                     .WithErrorCode("no-visible-levels")
@@ -320,6 +323,44 @@ namespace Nfield.Quota
             return !inValidTarget;
         }
 
+        private static bool HaveTotalTargetThatIsNotLowerThanHighestMaxTargetInTheLowerLevels(
+            QuotaFrame frame,
+            ICollection<QuotaFrameVariable> frameVariables,
+            PropertyValidatorContext context)
+        {
+            var invalidTarget = false;
+            var highestLevelTarget = 0;
+            Guid invalidLevelId;
+
+            var traverser = new PreOrderQuotaFrameTraverser();
+            traverser.Traverse(
+                frame,
+                (variable, level) =>
+                {
+                    if (level.MaxTarget != null)
+                    {
+                        if (frame.Target < level.MaxTarget)
+                        {
+                            invalidTarget = true;
+                            if (level.MaxTarget > highestLevelTarget)
+                            {
+                                highestLevelTarget = (int)level.MaxTarget;
+                                invalidLevelId = level.Id;
+                            }
+                        }
+                    }
+                });
+
+            if (invalidTarget)
+            {
+                context.MessageFormatter.AppendArgument("levelId", invalidLevelId);
+                context.MessageFormatter.AppendArgument("highestTarget", highestLevelTarget);
+                context.MessageFormatter.AppendArgument("grossTarget", frame.Target);
+            }
+
+            return !invalidTarget;
+        }
+
         private static bool HaveValidLevelTargets(
             QuotaFrame frame,
             ICollection<QuotaFrameVariable> frameVariables,
@@ -445,7 +486,7 @@ namespace Nfield.Quota
             bool ProcessLevel(QuotaFrameVariable variable, IEnumerable<QuotaFrameLevel> parents)
             {
                 var definition = frame.VariableDefinitions.Single(d => d.Id == variable.DefinitionId);
-                    
+
                 // sum of targets, ignoring null values
                 var minimumCompletesForChildren = 0;
 
@@ -487,7 +528,7 @@ namespace Nfield.Quota
                         isValid &= ProcessLevel(nestedVariable, newParents);
                     }
                 }
-                
+
                 return isValid;
             }
 
@@ -509,27 +550,29 @@ namespace Nfield.Quota
             {
                 var definition = frame.VariableDefinitions.Single(d => d.Id == variable.DefinitionId);
 
-                // TODO fix this comment
-                // we need the sum of the max targets for this variable,
-                // ignoring null values. if *all* values are null, this
-                // validation does not apply (because null means "don't care")
-                var maximumCompletesFromChildren = definition.IsMulti ? int.MaxValue : 0;
-                var allTargetsNull = true;
+                // we need the sum/max of the max targets for this variable.
+                // if any values are null, this validation does not apply
+                // (because null means "don't care" i.e. "infinite")
+                var maximumCompletesFromChildren = 0;
+                var anyTargetsNull = false;
 
                 foreach (var level in variable.Levels)
                 {
-                    if (level.MaxTarget != null)
+                    if (level.MaxTarget == null)
                     {
-                        allTargetsNull = false;
-
+                        anyTargetsNull = true;
+                        break;
+                    }
+                    else
+                    {
                         if (definition.IsMulti)
                         {
                             // for multi variables, multiple levels can be selected, so
                             // we must take the minimum of the lower level max targets
-                            maximumCompletesFromChildren = Math.Min(maximumCompletesFromChildren, level.MaxTarget.Value);
+                            maximumCompletesFromChildren = Math.Max(maximumCompletesFromChildren, level.MaxTarget.Value);
                         }
                         else
-                        { 
+                        {
                             // for normal non-multi variables, each level is independently
                             // achieved, so we must take the sum of the lower level max
                             // targets
@@ -540,7 +583,7 @@ namespace Nfield.Quota
 
                 var isValid = true;
 
-                if (!allTargetsNull)
+                if (!anyTargetsNull)
                 {
                     foreach (var parent in parents)
                     {
@@ -567,7 +610,7 @@ namespace Nfield.Quota
                         isValid &= ProcessLevel(nestedVariable, newParents);
                     }
                 }
-                
+
                 return isValid;
             }
 
@@ -587,7 +630,7 @@ namespace Nfield.Quota
             if (!couldAdd)
             {
                 context.MessageFormatter.AppendArgument("DuplicateValue", entry);
-                
+
                 return true;
             }
 
