@@ -548,8 +548,6 @@ namespace Nfield.Quota
         {
             bool ProcessLevel(QuotaFrameVariable variable, IEnumerable<QuotaFrameLevel> parents)
             {
-                var definition = frame.VariableDefinitions.Single(d => d.Id == variable.DefinitionId);
-
                 // we need the sum of the max targets for this variable.
                 // if any values are null, this validation does not apply
                 // (because null means "don't care" i.e. "infinite")
