@@ -486,7 +486,7 @@ namespace Nfield.Quota
             IEnumerable<QuotaFrameVariable> variables,
             PropertyValidatorContext context)
         {
-            bool ProcessLevel(QuotaFrameVariable variable, IEnumerable<QuotaFrameLevel> parents)
+            bool ProcessLevel(QuotaFrameVariable variable, IEnumerable<IQuotaCell> parents)
             {
                 var definition = frame.VariableDefinitions.Single(d => d.Id == variable.DefinitionId);
 
@@ -538,7 +538,7 @@ namespace Nfield.Quota
             var isTreeValid = true;
             foreach (var variable in variables)
             {
-                isTreeValid &= ProcessLevel(variable, new QuotaFrameLevel[0]);
+                isTreeValid &= ProcessLevel(variable, new [] { frame });
             }
 
             return isTreeValid;
@@ -549,7 +549,7 @@ namespace Nfield.Quota
             IEnumerable<QuotaFrameVariable> variables,
             PropertyValidatorContext context)
         {
-            bool ProcessLevel(QuotaFrameVariable variable, IEnumerable<QuotaFrameLevel> parents)
+            bool ProcessLevel(QuotaFrameVariable variable, IEnumerable<IQuotaCell> parents)
             {
                 // we need the sum of the max targets for this variable.
                 // if any values are null, this validation does not apply
@@ -606,7 +606,7 @@ namespace Nfield.Quota
             var isTreeValid = true;
             foreach (var variable in variables)
             {
-                isTreeValid &= ProcessLevel(variable, new QuotaFrameLevel[0]);
+                isTreeValid &= ProcessLevel(variable, new [] { frame });
             }
 
             return isTreeValid;

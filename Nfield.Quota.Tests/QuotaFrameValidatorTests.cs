@@ -357,6 +357,40 @@ namespace Nfield.Quota.Tests
         }
 
         [Test]
+        public void Frame_SumOfMinTargetsCannotExceedOverallTarget()
+        {
+            var quotaFrame = new QuotaFrameBuilder()
+                .VariableDefinition("top", new[] { "a", "b" })
+                .Structure(f => f.Variable("top"))
+                .Build();
+
+            var variable = quotaFrame["top"];
+
+            var level1 = quotaFrame["top", "a"];
+            var level2 = quotaFrame["top", "b"];
+
+            // nested level min targets sum to 22
+            level1.Target = 10;
+            level2.Target = 12;
+
+            // parent max target is less than the sum of the nested targets
+            quotaFrame.Target = 21;
+
+            var validator = new QuotaFrameValidator();
+            var result = validator.Validate(quotaFrame);
+
+            Assert.That(result.IsValid, Is.False);
+            Assert.That(result.Errors.Single().ErrorMessage,
+                Is.EqualTo($"Quota frame is invalid. Minimum targets for nested levels under variable 'top' with id '{variable.Id}' require more completes than the maximum target for parent level 'root level' with id '00000000-0000-0000-0000-000000000000'. Expected at least 22, but was 21."));
+
+            // make sure that if all is good, we don't return an error
+            quotaFrame.Target = 22;
+            result = validator.Validate(quotaFrame);
+
+            Assert.That(result.IsValid, Is.True);
+        }
+
+        [Test]
         public void Frame_SumOfMinTargetsCannotExceedParentMaxTarget()
         {
             var quotaFrame = new QuotaFrameBuilder()
@@ -377,14 +411,14 @@ namespace Nfield.Quota.Tests
             nestedLevel2.Target = 12;
 
             // parent max target is less than the sum of the nested targets
-            topLevel.MaxTarget = 20;
+            topLevel.MaxTarget = 21;
 
             var validator = new QuotaFrameValidator();
             var result = validator.Validate(quotaFrame);
 
             Assert.That(result.IsValid, Is.False);
             Assert.That(result.Errors.Single().ErrorMessage,
-                Is.EqualTo($"Quota frame is invalid. Minimum targets for nested levels under variable 'nested' with id '{nestedVariable.Id}' require more completes than the maximum target for parent level 'a' with id '{topLevel.Id}'. Expected at least 22, but was 20."));
+                Is.EqualTo($"Quota frame is invalid. Minimum targets for nested levels under variable 'nested' with id '{nestedVariable.Id}' require more completes than the maximum target for parent level 'a' with id '{topLevel.Id}'. Expected at least 22, but was 21."));
 
             // make sure that if all is good, we don't return an error
             topLevel.MaxTarget = 22;
@@ -419,14 +453,14 @@ namespace Nfield.Quota.Tests
 
             // ancestor max target is less than the sum of the nested targets
             // note: targets for directly nested levels are all null
-            topLevel.MaxTarget = 20;
+            topLevel.MaxTarget = 21;
 
             var validator = new QuotaFrameValidator();
             var result = validator.Validate(quotaFrame);
 
             Assert.That(result.IsValid, Is.False);
             Assert.That(result.Errors.Single().ErrorMessage,
-                Is.EqualTo($"Quota frame is invalid. Minimum targets for nested levels under variable 'DoubleNested' with id '{doubleNestedVariable.Id}' require more completes than the maximum target for parent level 'a' with id '{topLevel.Id}'. Expected at least 22, but was 20."));
+                Is.EqualTo($"Quota frame is invalid. Minimum targets for nested levels under variable 'DoubleNested' with id '{doubleNestedVariable.Id}' require more completes than the maximum target for parent level 'a' with id '{topLevel.Id}'. Expected at least 22, but was 21."));
 
             // make sure that if all is good, we don't return an error
             topLevel.MaxTarget = 22;

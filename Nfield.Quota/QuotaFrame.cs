@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Nfield.Quota
 {
-    public class QuotaFrame
+    public class QuotaFrame : IQuotaCell
     {
         public QuotaFrame()
         {
@@ -21,6 +21,12 @@ namespace Nfield.Quota
         }
 
         public int? Target { get; set; }
+
+        // implementation of IQuotaCell is for internal use only
+        int? IQuotaCell.Target => null; // the target on the quota frame acts as a max target
+        int? IQuotaCell.MaxTarget => Target;
+        string IQuotaCell.Name => "root level";
+        Guid IQuotaCell.Id => default;
 
         public QuotaVariableDefinitionCollection VariableDefinitions { get; }
 
