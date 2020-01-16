@@ -1160,7 +1160,7 @@ namespace Nfield.Quota.Tests
             Assert.That(result.Errors.Single().ErrorMessage,
                     Is.EqualTo($"The target ({quotaFrame.Target}) cannot be achieved, it is higher than maximum targets (totaling {expectedTotalingSumInErrorMessage}) of the lower levels. (Variable Id: {variable.Id} ; Variable Name: {variable.Name})"));
 
-            // Make sure validation passes id target is correct
+            // Make sure validation passes if target is correct
             quotaFrame.Target = 21;
             result = validator.Validate(quotaFrame);
 
@@ -1215,7 +1215,7 @@ namespace Nfield.Quota.Tests
             Assert.That(result.Errors.Single().ErrorMessage,
                     Is.EqualTo($"The target ({quotaFrame.Target}) cannot be achieved, it is higher than maximum targets (totaling {expectedTotalingSumInErrorMessage}) of the lower levels. (Variable Id: {frameVariable2.Id} ; Variable Name: {frameVariable2.Name})"));
 
-            // Make sure validation passes id target is correct
+            // Make sure validation passes if target is correct
             quotaFrame.Target = 40;
             result = validator.Validate(quotaFrame);
 
@@ -1275,7 +1275,7 @@ namespace Nfield.Quota.Tests
             Assert.That(result.Errors.Single().ErrorMessage,
                     Is.EqualTo($"The target ({quotaFrame.Target}) cannot be achieved, it is higher than maximum targets (totaling {expectedTotalingSumInErrorMessage}) of the lower levels. (Variable Id: {variable.Id} ; Variable Name: {variable.Name})"));
 
-            // Make sure validation passes id target is correct
+            // Make sure validation passes if target is correct
             quotaFrame.Target = 40;
             result = validator.Validate(quotaFrame);
 
