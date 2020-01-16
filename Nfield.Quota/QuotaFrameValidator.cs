@@ -606,20 +606,24 @@ namespace Nfield.Quota
             bool ProcessLevel(QuotaFrameVariable variable)
             {
                 var sum = 0;
-                var allTargetsNull = true;
+                var anyTargetsNull = false;
 
                 foreach (var level in variable.Levels)
                 {
                     if (level.MaxTarget != null)
                     {
-                        allTargetsNull = false;
                         sum += level.MaxTarget.Value;
+                    }
+                    else
+                    {
+                        anyTargetsNull = true;
+                        break;
                     }
                 }
 
                 var isValid = true;
 
-                if (!allTargetsNull && frame.Target != null)
+                if (!anyTargetsNull && frame.Target != null)
                 {
                     if (frame.Target > sum)
                     {
