@@ -550,7 +550,7 @@ namespace Nfield.Quota
             {
                 var definition = frame.VariableDefinitions.Single(d => d.Id == variable.DefinitionId);
 
-                // we need the sum/max of the max targets for this variable.
+                // we need the sum of the max targets for this variable.
                 // if any values are null, this validation does not apply
                 // (because null means "don't care" i.e. "infinite")
                 var maximumCompletesFromChildren = 0;
@@ -565,19 +565,7 @@ namespace Nfield.Quota
                     }
                     else
                     {
-                        if (definition.IsMulti)
-                        {
-                            // for multi variables, multiple levels can be selected, so
-                            // we must take the minimum of the lower level max targets
-                            maximumCompletesFromChildren = Math.Max(maximumCompletesFromChildren, level.MaxTarget.Value);
-                        }
-                        else
-                        {
-                            // for normal non-multi variables, each level is independently
-                            // achieved, so we must take the sum of the lower level max
-                            // targets
-                            maximumCompletesFromChildren += level.MaxTarget.Value;
-                        }
+                        maximumCompletesFromChildren += level.MaxTarget.Value;
                     }
                 }
 
