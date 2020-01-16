@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Nfield.Quota
 {
-    public class QuotaFrameLevel
+    public class QuotaFrameLevel : IQuotaCell
     {
         public QuotaFrameLevel()
         {
