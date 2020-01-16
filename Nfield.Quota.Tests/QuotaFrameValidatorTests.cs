@@ -1159,98 +1159,30 @@ namespace Nfield.Quota.Tests
         [Test]
         public void Frame_HaveLevelsSumToMoreThanGrossTargetForLowestSumLevel_2Variables()
         {
-            var quotaFrame = new QuotaFrame();
+            var quotaFrame = new QuotaFrameBuilder()
+                .VariableDefinition("var1", new[] { "level1", "level2" })
+                .VariableDefinition("var2", new[] { "level1", "level2" })
+                .Structure(f => f.Variable("var1").Variable("var2"))
+                .Build();
 
-            var variable1 = new QuotaVariableDefinition
-            {
-                Id = Guid.NewGuid(),
-                Name = "var1",
-                OdinVariableName = "odinVarName1"
-            };
-            var var1Level1Id = Guid.NewGuid();
-            var var1Level2Id = Guid.NewGuid();
-            variable1.Levels.Add(new QuotaLevelDefinition
-            {
-                Id = var1Level1Id,
-                Name = "level1"
-            });
-            variable1.Levels.Add(new QuotaLevelDefinition
-            {
-                Id = var1Level2Id,
-                Name = "level2"
-            });
-            quotaFrame.VariableDefinitions.Add(variable1);
-            
-            var variable2 = new QuotaVariableDefinition
-            {
-                Id = Guid.NewGuid(),
-                Name = "var2",
-                OdinVariableName = "odinVarName2"
-            };
-            var var2Level1Id = Guid.NewGuid();
-            var var2Level2Id = Guid.NewGuid();
-            variable2.Levels.Add(new QuotaLevelDefinition
-            {
-                Id = var2Level1Id,
-                Name = "level1"
-            });
-            variable2.Levels.Add(new QuotaLevelDefinition
-            {
-                Id = var2Level2Id,
-                Name = "level2"
-            });
-            quotaFrame.VariableDefinitions.Add(variable2);
+            var frameVariable2 = quotaFrame["var2"];
 
-            var frameVariable1 = new QuotaFrameVariable
-            {
-                DefinitionId = variable1.Id,
-                Id = Guid.NewGuid()
-            };
+            var var1Level1 = quotaFrame["var1", "level1"];
+            var1Level1.Target = 6;
+            var1Level1.MaxTarget = 50;
 
-            frameVariable1.Levels.AddRange(new[]
-            {
-                new QuotaFrameLevel
-                {
-                    DefinitionId = var1Level1Id,
-                    Id = Guid.NewGuid(),
-                    Target = 6,
-                    MaxTarget = 50,
-                },
-                new QuotaFrameLevel
-                {
-                    DefinitionId = var1Level2Id,
-                    Id = Guid.NewGuid(),
-                    Target = 6,
-                    MaxTarget = 50
-                }
-            });
-            quotaFrame.FrameVariables.Add(frameVariable1);
-            
-            var frameVariable2 = new QuotaFrameVariable
-            {
-                DefinitionId = variable2.Id,
-                Id = Guid.NewGuid()
-            };
+            var var1Level2 = quotaFrame["var1", "level2"];
+            var1Level2.Target = 6;
+            var1Level2.MaxTarget = 50;
 
-            frameVariable2.Levels.AddRange(new[]
-            {
-                new QuotaFrameLevel
-                {
-                    DefinitionId = var2Level1Id,
-                    Id = Guid.NewGuid(),
-                    Target = 5,
-                    MaxTarget = 20,
-                },
-                new QuotaFrameLevel
-                {
-                    DefinitionId = var2Level2Id,
-                    Id = Guid.NewGuid(),
-                    Target = 5,
-                    MaxTarget = 20
-                }
-            });
-            quotaFrame.FrameVariables.Add(frameVariable2);
-            
+            var var2Level1 = quotaFrame["var2", "level1"];
+            var2Level1.Target = 5;
+            var2Level1.MaxTarget = 20;
+
+            var var2Level2 = quotaFrame["var2", "level2"];
+            var2Level2.Target = 5;
+            var2Level2.MaxTarget = 20;
+
             quotaFrame.Target = 120;
 
             var validator = new QuotaFrameValidator();
@@ -1260,6 +1192,8 @@ namespace Nfield.Quota.Tests
 
             // the error message should state the lowest level sum, in this case var1 has 50+50=100, var 2 has 20+20=40,
             // so it should reference totaling of 40 and variable2
+            // This is because the maximum number of answers that can be given is the lowest level sum, so you would like your error message
+            // to indicate that target should be at least that number
             Assert.That(result.Errors.Single().ErrorMessage,
                     Is.EqualTo($"The target ({quotaFrame.Target}) cannot be achieved, it is higher than maximum targets (totaling 40) of the lower levels. (Variable Id: {frameVariable2.Id} ; Variable Name: {frameVariable2.Name})"));
         }

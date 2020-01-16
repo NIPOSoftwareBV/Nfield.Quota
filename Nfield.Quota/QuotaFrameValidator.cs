@@ -634,14 +634,6 @@ namespace Nfield.Quota
                     }
                 }
 
-                if (!isValid)
-                {
-                    context.MessageFormatter.AppendArgument("VariableName", invalidVariableName);
-                    context.MessageFormatter.AppendArgument("VariableId", invalidVariableId);
-                    context.MessageFormatter.AppendArgument("Sum", lowestSum);
-                    context.MessageFormatter.AppendArgument("GrossTarget", frame.Target);
-                }
-
                 return isValid;
             }
 
@@ -650,6 +642,14 @@ namespace Nfield.Quota
             foreach (var variable in variables)
             {
                 isTreeValid &= ProcessLevel(variable, new QuotaFrameLevel[0]);
+            }
+
+            if (!isTreeValid)
+            {
+                context.MessageFormatter.AppendArgument("VariableName", invalidVariableName);
+                context.MessageFormatter.AppendArgument("VariableId", invalidVariableId);
+                context.MessageFormatter.AppendArgument("Sum", lowestSum);
+                context.MessageFormatter.AppendArgument("GrossTarget", frame.Target);
             }
 
             return isTreeValid;
