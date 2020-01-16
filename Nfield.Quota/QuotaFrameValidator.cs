@@ -323,6 +323,44 @@ namespace Nfield.Quota
             return !inValidTarget;
         }
 
+        private static bool HaveTotalTargetThatIsNotLowerThanHighestMaxTargetInTheLowerLevels(
+            QuotaFrame frame,
+            ICollection<QuotaFrameVariable> frameVariables,
+            PropertyValidatorContext context)
+        {
+            var invalidTarget = false;
+            var highestLevelTarget = 0;
+            Guid invalidLevelId;
+
+            var traverser = new PreOrderQuotaFrameTraverser();
+            traverser.Traverse( 
+                frame,
+                (variable, level) =>
+                {
+                    if (level.MaxTarget != null)
+                    {
+                        if (frame.Target < level.MaxTarget)
+                        {
+                            invalidTarget = true;
+                            if (level.MaxTarget > highestLevelTarget)
+                            {
+                                highestLevelTarget = (int)level.MaxTarget;
+                                invalidLevelId = level.Id;
+                            }
+                        }
+                    }
+                });
+
+            if (invalidTarget)
+            {
+                context.MessageFormatter.AppendArgument("levelId", invalidLevelId);
+                context.MessageFormatter.AppendArgument("highestTarget", highestLevelTarget);
+                context.MessageFormatter.AppendArgument("grossTarget", frame.Target);
+            }
+
+            return !invalidTarget;
+        }
+
         private static bool HaveValidLevelTargets(
             QuotaFrame frame,
             ICollection<QuotaFrameVariable> frameVariables,
