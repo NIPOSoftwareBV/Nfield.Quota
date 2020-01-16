@@ -1139,6 +1139,9 @@ namespace Nfield.Quota.Tests
             var levelA = quotaFrame["var1", "a"];
             var levelB = quotaFrame["var1", "b"];
 
+            // Set all the targets: The minimum targets don't matter
+            // The gross target should not exceed the sum of the maximum targets of all the levels.
+
             quotaFrame.Target = 25;
 
             levelA.Target = 5;
@@ -1147,13 +1150,21 @@ namespace Nfield.Quota.Tests
             levelB.Target = 5;
             levelB.MaxTarget = 15;
 
+            var expectedTotalingSumInErrorMessage = levelA.MaxTarget + levelB.MaxTarget;
+
             var validator = new QuotaFrameValidator();
             var result = validator.Validate(quotaFrame);
 
             Assert.That(result.IsValid, Is.False);
 
             Assert.That(result.Errors.Single().ErrorMessage,
-                    Is.EqualTo($"The target ({quotaFrame.Target}) cannot be achieved, it is higher than maximum targets (totaling 21) of the lower levels. (Variable Id: {variable.Id} ; Variable Name: {variable.Name})"));
+                    Is.EqualTo($"The target ({quotaFrame.Target}) cannot be achieved, it is higher than maximum targets (totaling {expectedTotalingSumInErrorMessage}) of the lower levels. (Variable Id: {variable.Id} ; Variable Name: {variable.Name})"));
+
+            // Make sure validation passes id target is correct
+            quotaFrame.Target = 21;
+            result = validator.Validate(quotaFrame);
+
+            Assert.That(result.IsValid, Is.True);
         }
 
         [Test]
@@ -1168,22 +1179,29 @@ namespace Nfield.Quota.Tests
             var frameVariable2 = quotaFrame["var2"];
 
             var var1Level1 = quotaFrame["var1", "level1"];
+            var var1Level2 = quotaFrame["var1", "level2"];
+            var var2Level1 = quotaFrame["var2", "level1"];
+            var var2Level2 = quotaFrame["var2", "level2"];
+
+            // Set all the targets: The minimum targets don't matter
+            // The gross target should not exceed the sum of the maximum targets of all the levels of the variable with the lowest sum
+
             var1Level1.Target = 6;
             var1Level1.MaxTarget = 50;
 
-            var var1Level2 = quotaFrame["var1", "level2"];
             var1Level2.Target = 6;
             var1Level2.MaxTarget = 50;
 
-            var var2Level1 = quotaFrame["var2", "level1"];
             var2Level1.Target = 5;
             var2Level1.MaxTarget = 20;
 
-            var var2Level2 = quotaFrame["var2", "level2"];
             var2Level2.Target = 5;
             var2Level2.MaxTarget = 20;
 
             quotaFrame.Target = 120;
+
+            // variable with the lowest sum is variable 2
+            var expectedTotalingSumInErrorMessage = var2Level1.MaxTarget + var2Level2.MaxTarget;
 
             var validator = new QuotaFrameValidator();
             var result = validator.Validate(quotaFrame);
@@ -1195,7 +1213,13 @@ namespace Nfield.Quota.Tests
             // This is because the maximum number of answers that can be given is the lowest level sum, so you would like your error message
             // to indicate that target should be at least that number
             Assert.That(result.Errors.Single().ErrorMessage,
-                    Is.EqualTo($"The target ({quotaFrame.Target}) cannot be achieved, it is higher than maximum targets (totaling 40) of the lower levels. (Variable Id: {frameVariable2.Id} ; Variable Name: {frameVariable2.Name})"));
+                    Is.EqualTo($"The target ({quotaFrame.Target}) cannot be achieved, it is higher than maximum targets (totaling {expectedTotalingSumInErrorMessage}) of the lower levels. (Variable Id: {frameVariable2.Id} ; Variable Name: {frameVariable2.Name})"));
+
+            // Make sure validation passes id target is correct
+            quotaFrame.Target = 40;
+            result = validator.Validate(quotaFrame);
+
+            Assert.That(result.IsValid, Is.True);
         }
 
         [Test]
@@ -1219,6 +1243,10 @@ namespace Nfield.Quota.Tests
             var nestedVarBLevel1 = topLevelB["nested", "c"];
             var nestedVarBLevel2 = topLevelB["nested", "d"];
 
+            // Set all the targets: The minimum targets don't matter
+            // The gross target should not exceed the sum of the maximum targets of all the top levels.
+            // nested variables can be ignored.
+
             topLevelA.Target = 6;
             topLevelA.MaxTarget = 20;
             topLevelB.Target = 6;
@@ -1236,6 +1264,8 @@ namespace Nfield.Quota.Tests
 
             quotaFrame.Target = 50;
 
+            var expectedTotalingSumInErrorMessage = topLevelA.MaxTarget + topLevelB.MaxTarget;
+
             var validator = new QuotaFrameValidator();
             var result = validator.Validate(quotaFrame);
 
@@ -1243,7 +1273,13 @@ namespace Nfield.Quota.Tests
 
             // It should only care about the top level
             Assert.That(result.Errors.Single().ErrorMessage,
-                    Is.EqualTo($"The target ({quotaFrame.Target}) cannot be achieved, it is higher than maximum targets (totaling 40) of the lower levels. (Variable Id: {variable.Id} ; Variable Name: {variable.Name})"));
+                    Is.EqualTo($"The target ({quotaFrame.Target}) cannot be achieved, it is higher than maximum targets (totaling {expectedTotalingSumInErrorMessage}) of the lower levels. (Variable Id: {variable.Id} ; Variable Name: {variable.Name})"));
+
+            // Make sure validation passes id target is correct
+            quotaFrame.Target = 40;
+            result = validator.Validate(quotaFrame);
+
+            Assert.That(result.IsValid, Is.True);
         }
 
         [Test]

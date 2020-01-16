@@ -603,7 +603,7 @@ namespace Nfield.Quota
             var invalidVariableName = string.Empty;
             Guid invalidVariableId;
 
-            bool ProcessLevel(QuotaFrameVariable variable, IEnumerable<QuotaFrameLevel> parents)
+            bool ProcessLevel(QuotaFrameVariable variable)
             {
                 var sum = 0;
                 var allTargetsNull = true;
@@ -641,7 +641,7 @@ namespace Nfield.Quota
 
             foreach (var variable in variables)
             {
-                isTreeValid &= ProcessLevel(variable, new QuotaFrameLevel[0]);
+                isTreeValid &= ProcessLevel(variable);
             }
 
             if (!isTreeValid)
