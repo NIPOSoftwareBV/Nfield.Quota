@@ -1211,7 +1211,9 @@ namespace Nfield.Quota.Tests
             var quotaFrame = new QuotaFrameBuilder()
                 .VariableDefinition("var1", new[] { "level1", "level2" })
                 .VariableDefinition("var2", new[] { "level1", "level2" })
-                .Structure(f => f.Variable("var1").Variable("var2"))
+                .Structure(f =>
+                    f.Variable("var1")
+                     .Variable("var2"))
                 .Build();
 
             var frameVariable2 = quotaFrame["var2"];
@@ -1221,22 +1223,17 @@ namespace Nfield.Quota.Tests
             var var2Level1 = quotaFrame["var2", "level1"];
             var var2Level2 = quotaFrame["var2", "level2"];
 
-            // Set all the targets: The minimum targets don't matter
             // The gross target should not exceed the sum of the maximum targets of all the levels of the variable with the lowest sum
 
-            var1Level1.Target = 6;
-            var1Level1.MaxTarget = 50;
+            var1Level1.MaxTarget = 21;
+            var1Level2.MaxTarget = 22;
+            var2Level1.MaxTarget = 13;
+            var2Level2.MaxTarget = 14;
 
-            var1Level2.Target = 6;
-            var1Level2.MaxTarget = 50;
-
-            var2Level1.Target = 5;
-            var2Level1.MaxTarget = 20;
-
-            var2Level2.Target = 5;
-            var2Level2.MaxTarget = 20;
-
-            quotaFrame.Target = 120;
+            // if target is greater than the lowest sum (13+14 = 27), it cannot be achieved.
+            // This is because the maximum number of answers that can be given is the lowest level sum, so you would like your error message
+            // to indicate that target should be at least that number
+            quotaFrame.Target = 28;
 
             // variable with the lowest sum is variable 2
             var expectedTotalingSumInErrorMessage = var2Level1.MaxTarget + var2Level2.MaxTarget;
@@ -1246,15 +1243,11 @@ namespace Nfield.Quota.Tests
 
             Assert.That(result.IsValid, Is.False);
 
-            // the error message should state the lowest level sum, in this case var1 has 50+50=100, var 2 has 20+20=40,
-            // so it should reference totaling of 40 and variable2
-            // This is because the maximum number of answers that can be given is the lowest level sum, so you would like your error message
-            // to indicate that target should be at least that number
             Assert.That(result.Errors.Single().ErrorMessage,
                     Is.EqualTo($"The target ({quotaFrame.Target}) cannot be achieved, it is higher than maximum targets (totaling {expectedTotalingSumInErrorMessage}) of the lower levels. (Variable Id: {frameVariable2.Id} ; Variable Name: {frameVariable2.Name})"));
 
             // Make sure validation passes if target is correct
-            quotaFrame.Target = 40;
+            quotaFrame.Target = 27;
             result = validator.Validate(quotaFrame);
 
             Assert.That(result.IsValid, Is.True);
@@ -1281,26 +1274,19 @@ namespace Nfield.Quota.Tests
             var nestedVarBLevel1 = topLevelB["nested", "c"];
             var nestedVarBLevel2 = topLevelB["nested", "d"];
 
-            // Set all the targets: The minimum targets don't matter
             // The gross target should not exceed the sum of the maximum targets of all the top levels.
             // nested variables can be ignored.
 
-            topLevelA.Target = 6;
             topLevelA.MaxTarget = 20;
-            topLevelB.Target = 6;
             topLevelB.MaxTarget = 20;
 
-            nestedVarALevel1.Target = 3;
             nestedVarALevel1.MaxTarget = 5;
-            nestedVarALevel2.Target = 3;
             nestedVarALevel2.MaxTarget = 5;
 
-            nestedVarBLevel1.Target = 3;
             nestedVarBLevel1.MaxTarget = 5;
-            nestedVarBLevel2.Target = 3;
             nestedVarBLevel2.MaxTarget = 5;
 
-            quotaFrame.Target = 50;
+            quotaFrame.Target = 41;
 
             var expectedTotalingSumInErrorMessage = topLevelA.MaxTarget + topLevelB.MaxTarget;
 
