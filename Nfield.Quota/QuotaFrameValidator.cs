@@ -62,9 +62,6 @@ namespace Nfield.Quota
                 .Must(HaveConsistentMinAndMaxTargetsForEachLevel)
                     .WithMessage("Quota frame is invalid. Minimum target for level '{LevelName}' under '{VariableName}' (Id '{LevelId}') is greater than the maximum target for that level.")
                     .WithErrorCode("inconsistent-targets")
-                 .Must(HaveNestedMaxLevelsSumToMoreThanGrossTargetForEachLevel)
-                    .WithMessage("The target ({GrossTarget}) cannot be achieved, it is higher than maximum targets (totaling {Sum}) of the lower levels. (Variable Id: {VariableId} ; Variable Name: {VariableName})")
-                    .WithErrorCode("target-exceeds-sum-level")
                 .Must(HaveNestedMinLevelsSumToLessThanMaxTargetForEachLevel)
                     .WithMessage("Quota frame is invalid. Minimum targets for nested levels under variable '{VariableName}' with id '{VariableId}' require more completes than the maximum target for parent level '{LevelName}' with id '{LevelId}'. Expected at least {Sum}, but was {MaxTarget}.")
                     .WithErrorCode("nested-levels-exceed-parent-max")
@@ -566,71 +563,6 @@ namespace Nfield.Quota
             foreach (var variable in variables)
             {
                 isTreeValid &= ProcessLevel(variable, new [] { frame });
-            }
-
-            return isTreeValid;
-        }
-
-        private static bool HaveNestedMaxLevelsSumToMoreThanGrossTargetForEachLevel(
-            QuotaFrame frame,
-            IEnumerable<QuotaFrameVariable> variables,
-            PropertyValidatorContext context)
-        {
-            var lowestSum = 0;
-            var invalidVariableName = string.Empty;
-            Guid invalidVariableId;
-
-            bool ProcessLevel(QuotaFrameVariable variable)
-            {
-                var sum = 0;
-                var anyTargetsNull = false;
-
-                foreach (var level in variable.Levels)
-                {
-                    if (level.MaxTarget != null)
-                    {
-                        sum += level.MaxTarget.Value;
-                    }
-                    else
-                    {
-                        anyTargetsNull = true;
-                        break;
-                    }
-                }
-
-                var isValid = true;
-
-                if (!anyTargetsNull && frame.Target != null)
-                {
-                    if (frame.Target > sum)
-                    {
-                        if ((sum < lowestSum) || lowestSum == 0)
-                        {
-                            lowestSum = sum;
-                            invalidVariableId = variable.Id;
-                            invalidVariableName = variable.Name;
-
-                            isValid = false;
-                        }
-                    }
-                }
-
-                return isValid;
-            }
-
-            var isTreeValid = true;
-
-            foreach (var variable in variables)
-            {
-                isTreeValid &= ProcessLevel(variable);
-            }
-
-            if (!isTreeValid)
-            {
-                context.MessageFormatter.AppendArgument("VariableName", invalidVariableName);
-                context.MessageFormatter.AppendArgument("VariableId", invalidVariableId);
-                context.MessageFormatter.AppendArgument("Sum", lowestSum);
-                context.MessageFormatter.AppendArgument("GrossTarget", frame.Target);
             }
 
             return isTreeValid;
