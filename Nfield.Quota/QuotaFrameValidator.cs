@@ -53,9 +53,6 @@ namespace Nfield.Quota
                 .Must(HaveValidLevelMaxTargets)
                     .WithMessage("Target invalid. All Targets must be of a positive value. Frame level Id '{LevelId}' with name '{LevelName}' has an invalid negative maximum target '{InvalidTarget}'")
                     .WithErrorCode("negative-max-target")
-                .Must(HaveTotalTargetThatIsNotLowerThanHighestMaxTargetInTheLowerLevels)
-                    .WithMessage("The target ({grossTarget}) is lower than the highest target ({highestTarget}) in the lower levels. (Level Id: {levelId})")
-                    .WithErrorCode("gross-target-lower-than-level-max-target")
                 .Must(HaveVariablesWithAtLeastOneVisibleLevel)
                     .WithMessage("Quota frame invalid. Frame has variables with no visible levels. Affected variable name: '{VariableName}'. If you don't care about any levels under variable '{VariableName}', consider hiding that variable instead.")
                     .WithErrorCode("no-visible-levels")
@@ -65,9 +62,6 @@ namespace Nfield.Quota
                 .Must(HaveConsistentMinAndMaxTargetsForEachLevel)
                     .WithMessage("Quota frame is invalid. Minimum target for level '{LevelName}' under '{VariableName}' (Id '{LevelId}') is greater than the maximum target for that level.")
                     .WithErrorCode("inconsistent-targets")
-                 .Must(HaveNestedMaxLevelsSumToMoreThanGrossTargetForEachLevel)
-                    .WithMessage("The target ({GrossTarget}) cannot be achieved, it is higher than maximum targets (totaling {Sum}) of the lower levels. (Variable Id: {VariableId} ; Variable Name: {VariableName})")
-                    .WithErrorCode("target-exceeds-sum-level")
                 .Must(HaveNestedMinLevelsSumToLessThanMaxTargetForEachLevel)
                     .WithMessage("Quota frame is invalid. Minimum targets for nested levels under variable '{VariableName}' with id '{VariableId}' require more completes than the maximum target for parent level '{LevelName}' with id '{LevelId}'. Expected at least {Sum}, but was {MaxTarget}.")
                     .WithErrorCode("nested-levels-exceed-parent-max")
@@ -326,44 +320,6 @@ namespace Nfield.Quota
             return !inValidTarget;
         }
 
-        private static bool HaveTotalTargetThatIsNotLowerThanHighestMaxTargetInTheLowerLevels(
-            QuotaFrame frame,
-            ICollection<QuotaFrameVariable> frameVariables,
-            PropertyValidatorContext context)
-        {
-            var invalidTarget = false;
-            var highestLevelTarget = 0;
-            Guid invalidLevelId;
-
-            var traverser = new PreOrderQuotaFrameTraverser();
-            traverser.Traverse(
-                frame,
-                (variable, level) =>
-                {
-                    if (level.MaxTarget != null)
-                    {
-                        if (frame.Target < level.MaxTarget)
-                        {
-                            invalidTarget = true;
-                            if (level.MaxTarget > highestLevelTarget)
-                            {
-                                highestLevelTarget = (int)level.MaxTarget;
-                                invalidLevelId = level.Id;
-                            }
-                        }
-                    }
-                });
-
-            if (invalidTarget)
-            {
-                context.MessageFormatter.AppendArgument("levelId", invalidLevelId);
-                context.MessageFormatter.AppendArgument("highestTarget", highestLevelTarget);
-                context.MessageFormatter.AppendArgument("grossTarget", frame.Target);
-            }
-
-            return !invalidTarget;
-        }
-
         private static bool HaveValidLevelTargets(
             QuotaFrame frame,
             ICollection<QuotaFrameVariable> frameVariables,
@@ -607,71 +563,6 @@ namespace Nfield.Quota
             foreach (var variable in variables)
             {
                 isTreeValid &= ProcessLevel(variable, new [] { frame });
-            }
-
-            return isTreeValid;
-        }
-
-        private static bool HaveNestedMaxLevelsSumToMoreThanGrossTargetForEachLevel(
-            QuotaFrame frame,
-            IEnumerable<QuotaFrameVariable> variables,
-            PropertyValidatorContext context)
-        {
-            var lowestSum = 0;
-            var invalidVariableName = string.Empty;
-            Guid invalidVariableId;
-
-            bool ProcessLevel(QuotaFrameVariable variable)
-            {
-                var sum = 0;
-                var anyTargetsNull = false;
-
-                foreach (var level in variable.Levels)
-                {
-                    if (level.MaxTarget != null)
-                    {
-                        sum += level.MaxTarget.Value;
-                    }
-                    else
-                    {
-                        anyTargetsNull = true;
-                        break;
-                    }
-                }
-
-                var isValid = true;
-
-                if (!anyTargetsNull && frame.Target != null)
-                {
-                    if (frame.Target > sum)
-                    {
-                        if ((sum < lowestSum) || lowestSum == 0)
-                        {
-                            lowestSum = sum;
-                            invalidVariableId = variable.Id;
-                            invalidVariableName = variable.Name;
-
-                            isValid = false;
-                        }
-                    }
-                }
-
-                return isValid;
-            }
-
-            var isTreeValid = true;
-
-            foreach (var variable in variables)
-            {
-                isTreeValid &= ProcessLevel(variable);
-            }
-
-            if (!isTreeValid)
-            {
-                context.MessageFormatter.AppendArgument("VariableName", invalidVariableName);
-                context.MessageFormatter.AppendArgument("VariableId", invalidVariableId);
-                context.MessageFormatter.AppendArgument("Sum", lowestSum);
-                context.MessageFormatter.AppendArgument("GrossTarget", frame.Target);
             }
 
             return isTreeValid;
