@@ -483,7 +483,6 @@ namespace Nfield.Quota.Tests
                 .Build();
 
             var topLevel = quotaFrame["top", "a"];
-            var nestedVariable = topLevel["nested"];
             var nestedLevel1 = topLevel["nested", "c"];
             var nestedLevel2 = topLevel["nested", "d"];
 
@@ -499,7 +498,7 @@ namespace Nfield.Quota.Tests
 
             Assert.That(result.IsValid, Is.False);
             Assert.That(result.Errors.Single().ErrorMessage,
-                Is.EqualTo($"Quota frame is invalid. Maximum targets for nested levels under variable 'nested' with id '{nestedVariable.Id}' restrict completes to less than the minimum target for parent level 'a' with id '{topLevel.Id}'. Expected at most 18, but was 20."));
+                Is.EqualTo($"Quota frame is invalid. Maximum targets for nested levels under level 'a' with id '{topLevel.Id}' sum to less than the minimum target. Expected at most 18, but was 20."));
 
             // make sure that if all is good, we don't return an error
             topLevel.Target = 18;
@@ -537,7 +536,7 @@ namespace Nfield.Quota.Tests
         }
 
         [Test]
-        public void Frame_SumOfMaxTargetsMustExceedAncestorMinTarget()
+        public void Frame_SumOfMaxTargetsOfNestedLevelsCannotExceedTopLevelTarget()
         {
             var quotaFrame = new QuotaFrameBuilder()
                 .VariableDefinition("Top", new[] { "a", "b" })
@@ -550,29 +549,42 @@ namespace Nfield.Quota.Tests
                 .Build();
 
             var topLevel = quotaFrame["Top", "a"];
-            var nestedLevel = topLevel["Nested", "c"];
+            var nestedLevelC = topLevel["Nested", "c"];
+            var nestedLevelD = topLevel["Nested", "d"];
 
-            var doubleNestedVariable = nestedLevel["DoubleNested"];
-            var doubleNestedLevel1 = nestedLevel["DoubleNested", "e"];
-            var doubleNestedLevel2 = nestedLevel["DoubleNested", "f"];
+            var doubleNestedVariableC = nestedLevelC["DoubleNested"];
+            var doubleNestedLevelC1 = nestedLevelC["DoubleNested", "e"];
+            var doubleNestedLevelC2 = nestedLevelC["DoubleNested", "f"];
 
-            // nested level max targets sum to 18
-            doubleNestedLevel1.MaxTarget = 10;
-            doubleNestedLevel2.MaxTarget = 8;
+            var doubleNestedVariableD = nestedLevelD["DoubleNested"];
+            var doubleNestedLevelD1 = nestedLevelD["DoubleNested", "e"];
+            var doubleNestedLevelD2 = nestedLevelD["DoubleNested", "f"];
 
-            // ancestor min target is more than the sum of the nested max targets
-            // note: targets for directly nested levels are all null
-            topLevel.Target = 20;
+            // top level target should not exceed sum of max targets for double nested levels (15)
+            doubleNestedLevelC1.MaxTarget = 5;
+            doubleNestedLevelC2.MaxTarget = 6;
+            doubleNestedLevelD1.MaxTarget = 1;
+            doubleNestedLevelD2.MaxTarget = 3;
+
+            topLevel.Target = 16; 
 
             var validator = new QuotaFrameValidator();
             var result = validator.Validate(quotaFrame);
 
             Assert.That(result.IsValid, Is.False);
-            Assert.That(result.Errors.Single().ErrorMessage,
-                Is.EqualTo($"Quota frame is invalid. Maximum targets for nested levels under variable 'DoubleNested' with id '{doubleNestedVariable.Id}' restrict completes to less than the minimum target for parent level 'a' with id '{topLevel.Id}'. Expected at most 18, but was 20."));
+            Assert.That(result.Errors.Single().ErrorMessage, Is.EqualTo($"Quota frame is invalid. Maximum targets for nested levels under level 'a' with id '{topLevel.Id}' sum to less than the minimum target. Expected at most 15, but was 16."));
 
             // make sure that if all is good, we don't return an error
-            topLevel.Target = 18;
+            topLevel.Target = 15;
+
+            result = validator.Validate(quotaFrame);
+
+            Assert.That(result.IsValid, Is.True);
+
+            // However, if any of the nested levels contain a null max target then any top level target is possible again
+            doubleNestedLevelD2.MaxTarget = null;
+            topLevel.Target = 16;
+
             result = validator.Validate(quotaFrame);
 
             Assert.That(result.IsValid, Is.True);
