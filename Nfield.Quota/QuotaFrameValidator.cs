@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using FluentValidation;
 using FluentValidation.Validators;
+using Nfield.Quota.Helpers;
 
 namespace Nfield.Quota
 {
@@ -72,7 +73,7 @@ namespace Nfield.Quota
                     .WithMessage("Quota frame is invalid. Minimum targets for nested levels under variable '{VariableName}' with id '{VariableId}' require more completes than the maximum target for parent level '{LevelName}' with id '{LevelId}'. Expected at least {Sum}, but was {MaxTarget}.")
                     .WithErrorCode("nested-levels-exceed-parent-max")
                 .Must(HaveNestedMaxLevelsSumToMoreThanMinTargetForEachLevel)
-                    .WithMessage("Quota frame is invalid. Maximum targets for nested levels under variable '{VariableName}' with id '{VariableId}' restrict completes to less than the minimum target for parent level '{LevelName}' with id '{LevelId}'. Expected at most {Sum}, but was {MinTarget}.")
+                    .WithMessage("Quota frame is invalid. Maximum targets for nested levels under level '{LevelName}' with id '{LevelId}' sum to less than the minimum target. Expected at most {Sum}, but was {MinTarget}.")
                     .WithErrorCode("nested-levels-less-than-parent-min");
         }
 
@@ -549,65 +550,28 @@ namespace Nfield.Quota
             IEnumerable<QuotaFrameVariable> variables,
             PropertyValidatorContext context)
         {
-            bool ProcessLevel(QuotaFrameVariable variable, IEnumerable<IQuotaCell> parents)
-            {
-                // we need the sum of the max targets for this variable.
-                // if any values are null, this validation does not apply
-                // (because null means "don't care" i.e. "infinite")
-                var maximumCompletesFromChildren = 0;
-                var anyTargetsNull = false;
-
-                foreach (var level in variable.Levels)
-                {
-                    if (level.MaxTarget == null)
-                    {
-                        anyTargetsNull = true;
-                        break;
-                    }
-                    else
-                    {
-                        maximumCompletesFromChildren += level.MaxTarget.Value;
-                    }
-                }
-
-                var isValid = true;
-
-                if (!anyTargetsNull)
-                {
-                    foreach (var parent in parents)
-                    {
-                        if (parent.Target != null && parent.Target > maximumCompletesFromChildren)
-                        {
-                            context.MessageFormatter.AppendArgument("VariableName", variable.Name);
-                            context.MessageFormatter.AppendArgument("VariableId", variable.Id);
-                            context.MessageFormatter.AppendArgument("LevelId", parent.Id);
-                            context.MessageFormatter.AppendArgument("LevelName", parent.Name);
-                            context.MessageFormatter.AppendArgument("Sum", maximumCompletesFromChildren);
-                            context.MessageFormatter.AppendArgument("MinTarget", parent.Target);
-
-                            isValid = false;
-                        }
-                    }
-                }
-
-                foreach (var level in variable.Levels)
-                {
-                    var newParents = parents.Concat(new[] { level });
-
-                    foreach (var nestedVariable in level.Variables)
-                    {
-                        isValid &= ProcessLevel(nestedVariable, newParents);
-                    }
-                }
-
-                return isValid;
-            }
-
             var isTreeValid = true;
-            foreach (var variable in variables)
+
+            var traverser = new PreOrderQuotaFrameTraverser();
+            traverser.Traverse(frame, (variable, level) =>
             {
-                isTreeValid &= ProcessLevel(variable, new [] { frame });
-            }
+                if (level.Target == null)
+                {
+                    return;
+                }
+
+                var maxFromChildren = level.CalculateMaxAllowed(frame);
+
+                if (level.Target > maxFromChildren)
+                {
+                    isTreeValid = false;
+
+                    context.MessageFormatter.AppendArgument("LevelId", level.Id);
+                    context.MessageFormatter.AppendArgument("LevelName", level.Name);
+                    context.MessageFormatter.AppendArgument("Sum", maxFromChildren);
+                    context.MessageFormatter.AppendArgument("MinTarget", level.Target);
+                }
+            });
 
             return isTreeValid;
         }
