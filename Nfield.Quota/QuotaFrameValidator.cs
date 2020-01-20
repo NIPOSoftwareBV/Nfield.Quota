@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using FluentValidation;
 using FluentValidation.Validators;
+using Nfield.Quota.Helpers;
 
 namespace Nfield.Quota
 {
@@ -16,44 +17,58 @@ namespace Nfield.Quota
 
             RuleFor(qf => qf.VariableDefinitions)
                 .Must(HaveUniqueIds)
-                .WithMessage("Quota frame definitions contain a duplicate id. Duplicate id: '{DuplicateValue}'")
+                    .WithMessage("Quota frame definitions contain a duplicate id. Duplicate id: '{DuplicateValue}'")
+                    .WithErrorCode("duplicate-definition-id")
                 .Must(HaveUniqueVariableNames)
-                .WithMessage("Quota frame definitions contain a duplicate variable name. Duplicate name: '{DuplicateValue}'")
+                    .WithMessage("Quota frame definitions contain a duplicate variable name. Duplicate name: '{DuplicateValue}'")
+                    .WithErrorCode("duplicate-variable-name")
                 .Must(HaveUniqueLevelNamesPerVariable)
-                .WithMessage("Quota frame definitions contain a duplicate level name. Duplicate name: '{DuplicateValue}'")
+                    .WithMessage("Quota frame definitions contain a duplicate level name. Duplicate name: '{DuplicateValue}'")
+                    .WithErrorCode("duplicate-level-name")
                 .Must(HaveVariablesWithAtLeastOneLevel)
-                .WithMessage("Quota frame definitions has variables with no levels. Affected variable definition id: '{VariableDefinitionId}'")
+                    .WithMessage("Quota frame definitions has variables with no levels. Affected variable definition id: '{VariableDefinitionId}'")
+                    .WithErrorCode("no-levels")
                 .Must(HaveValidOdinVariableName)
-                .WithMessage(
-                    "Odin variable name invalid. Odin variable names can only contain numbers, letters and '_' and cannot be empty. They can only ​start with​ a letter. First character cannot be '_' or a number. Variable definition Id '{DefId}' with name '{DefName}' has an invalid Odin Variable Name '{InvalidOdin}'");
+                    .WithMessage("Odin variable name invalid. Odin variable names can only contain numbers, letters and '_' and cannot be empty. They can only ​start with​ a letter. First character cannot be '_' or a number. Variable definition Id '{DefId}' with name '{DefName}' has an invalid Odin Variable Name '{InvalidOdin}'")
+                    .WithErrorCode("invalid-odin-variable-name");
 
             RuleFor(qf => qf.FrameVariables)
                 .Must(HaveUniqueIds)
-                .WithMessage("Quota frame contains a duplicate id. Duplicate id: '{DuplicateValue}'")
+                    .WithMessage("Quota frame contains a duplicate id. Duplicate id: '{DuplicateValue}'")
+                    .WithErrorCode("duplicate-frame-id")
                 .Must(ReferenceDefinitions)
-                .WithMessage(
-                    "Quota frame contains a reference to a non-existing definition. Definition id: '{DefinitionId}'")
+                    .WithMessage("Quota frame contains a reference to a non-existing definition. Definition id: '{DefinitionId}'")
+                    .WithErrorCode("missing-definition")
                 .Must(HaveTheSameLevelsUnderAVariableAsTheLinkedVariableDefinition)
-                .WithMessage(
-                    "Quota frame contains a variable that doesnt have all the defined levels associated. Affected frame variable id: '{AffectedFrameVariableId}', missing level definition id: '{MissingLevelDefinitionId}'")
+                    .WithMessage("Quota frame contains a variable that doesnt have all the defined levels associated. Affected frame variable id: '{AffectedFrameVariableId}', missing level definition id: '{MissingLevelDefinitionId}'")
+                    .WithErrorCode("missing-level")
                 .Must(HaveVariablesWithTheSameVariablesUnderEveryLevel)
-                .WithMessage(
-                    "Quota frame invalid. All levels of a variable should have the same variables underneath. Frame variable id '{AffectedFrameVariableId}' has a mismatch for level '{MismatchLevelId}'")
+                    .WithMessage("Quota frame invalid. All levels of a variable should have the same variables underneath. Frame variable id '{AffectedFrameVariableId}' has a mismatch for level '{MismatchLevelId}'")
+                    .WithErrorCode("inconsistent-nested-variables")
                 .Must(HaveValidTotalTarget)
-                .WithMessage(
-                    "Target invalid. All Targets must be of a positive value. Quota frame total target has a negative value '{InvalidTarget}'")
+                    .WithMessage("Target invalid. All Targets must be of a positive value. Quota frame total target has a negative value '{InvalidTarget}'")
+                    .WithErrorCode("negative-gross-target")
                 .Must(HaveValidLevelTargets)
-                .WithMessage(
-                    "Target invalid. All Targets must be of a positive value. Frame level Id '{LevelId}' with name '{LevelName}' has an invalid negative target '{InvalidTarget}'")
+                    .WithMessage("Target invalid. All Targets must be of a positive value. Frame level Id '{LevelId}' with name '{LevelName}' has an invalid negative target '{InvalidTarget}'")
+                    .WithErrorCode("negative-min-target")
                 .Must(HaveValidLevelMaxTargets)
-                .WithMessage(
-                    "Target invalid. All Targets must be of a positive value. Frame level Id '{LevelId}' with name '{LevelName}' has an invalid negative maximum target '{InvalidTarget}'")
+                    .WithMessage("Target invalid. All Targets must be of a positive value. Frame level Id '{LevelId}' with name '{LevelName}' has an invalid negative maximum target '{InvalidTarget}'")
+                    .WithErrorCode("negative-max-target")
                 .Must(HaveVariablesWithAtLeastOneVisibleLevel)
-                .WithMessage(
-                    "Quota frame invalid. Frame has variables with no visible levels. Affected variable name: '{VariableName}'. If you don't care about any levels under variable '{VariableName}', consider hiding that variable instead.")
+                    .WithMessage("Quota frame invalid. Frame has variables with no visible levels. Affected variable name: '{VariableName}'. If you don't care about any levels under variable '{VariableName}', consider hiding that variable instead.")
+                    .WithErrorCode("no-visible-levels")
                 .Must(MultiVariablesHaveLevelsWithoutVariables)
-                .WithMessage(
-                    "Quota frame invalid. Multi variable '{VariableName}', level Id '{LevelId}' with name '{LevelName}' has variables");
+                    .WithMessage("Quota frame invalid. Multi variable '{VariableName}', level Id '{LevelId}' with name '{LevelName}' has variables")
+                    .WithErrorCode("nested-under-multi")
+                .Must(HaveConsistentMinAndMaxTargetsForEachLevel)
+                    .WithMessage("Quota frame is invalid. Minimum target for level '{LevelName}' under '{VariableName}' (Id '{LevelId}') is greater than the maximum target for that level.")
+                    .WithErrorCode("inconsistent-targets")
+                .Must(HaveNestedMinLevelsSumToLessThanMaxTargetForEachLevel)
+                    .WithMessage("Quota frame is invalid. Minimum targets for nested levels under variable '{VariableName}' with id '{VariableId}' require more completes than the maximum target for parent level '{LevelName}' with id '{LevelId}'. Expected at least {Sum}, but was {MaxTarget}.")
+                    .WithErrorCode("nested-levels-exceed-parent-max")
+                .Must(HaveNestedMaxLevelsSumToMoreThanMinTargetForEachLevel)
+                    .WithMessage("Quota frame is invalid. Maximum targets for nested levels under level '{LevelName}' with id '{LevelId}' sum to less than the minimum target. Expected at most {Sum}, but was {MinTarget}.")
+                    .WithErrorCode("nested-levels-less-than-parent-min");
         }
 
         private static bool HaveUniqueIds(
@@ -374,6 +389,30 @@ namespace Nfield.Quota
             return isValid;
         }
 
+        private static bool HaveConsistentMinAndMaxTargetsForEachLevel(
+            QuotaFrame frame,
+            IEnumerable<QuotaFrameVariable> variables,
+            PropertyValidatorContext context)
+        {
+            var isValid = true;
+
+            var traverser = new PreOrderQuotaFrameTraverser();
+            traverser.Traverse(
+                frame,
+                (variable, level) =>
+                {
+                    if (level.Target > level.MaxTarget)
+                    {
+                        context.MessageFormatter.AppendArgument("VariableName", variable.Name);
+                        context.MessageFormatter.AppendArgument("LevelName", level.Name);
+                        context.MessageFormatter.AppendArgument("LevelId", level.Id);
+                        isValid = false;
+                    }
+                });
+
+            return isValid;
+        }
+
         private static bool MultiVariablesHaveLevelsWithoutVariables(
             QuotaFrame frame,
             IEnumerable<QuotaFrameVariable> variables,
@@ -399,6 +438,100 @@ namespace Nfield.Quota
             return isValid;
         }
 
+        private static bool HaveNestedMinLevelsSumToLessThanMaxTargetForEachLevel(
+            QuotaFrame frame,
+            IEnumerable<QuotaFrameVariable> variables,
+            PropertyValidatorContext context)
+        {
+            bool ProcessLevel(QuotaFrameVariable variable, IEnumerable<IQuotaCell> parents)
+            {
+                var definition = frame.VariableDefinitions.Single(d => d.Id == variable.DefinitionId);
+
+                // sum of targets, ignoring null values
+                var minimumCompletesForChildren = 0;
+
+                if (definition.IsMulti)
+                {
+                    // for multi variables, each level can be selected at the same time, so
+                    // must take the maximum of the targets
+                    minimumCompletesForChildren = variable.Levels.Aggregate(0, (total, level) => Math.Max(total, (level.Target ?? 0)));
+                }
+                else
+                {
+                    // for normal non-multi variables, each level must be achieved, so
+                    // we must take the sum of the targets
+                    minimumCompletesForChildren = variable.Levels.Aggregate(0, (total, level) => total + (level.Target ?? 0));
+                }
+
+                var isValid = true;
+                foreach (var parent in parents)
+                {
+                    if (parent.MaxTarget != null && parent.MaxTarget < minimumCompletesForChildren)
+                    {
+                        context.MessageFormatter.AppendArgument("VariableName", variable.Name);
+                        context.MessageFormatter.AppendArgument("VariableId", variable.Id);
+                        context.MessageFormatter.AppendArgument("LevelId", parent.Id);
+                        context.MessageFormatter.AppendArgument("LevelName", parent.Name);
+                        context.MessageFormatter.AppendArgument("Sum", minimumCompletesForChildren);
+                        context.MessageFormatter.AppendArgument("MaxTarget", parent.MaxTarget);
+
+                        isValid = false;
+                    }
+                }
+
+                foreach (var level in variable.Levels)
+                {
+                    var newParents = parents.Concat(new[] { level });
+
+                    foreach (var nestedVariable in level.Variables)
+                    {
+                        isValid &= ProcessLevel(nestedVariable, newParents);
+                    }
+                }
+
+                return isValid;
+            }
+
+            var isTreeValid = true;
+            foreach (var variable in variables)
+            {
+                isTreeValid &= ProcessLevel(variable, new [] { frame });
+            }
+
+            return isTreeValid;
+        }
+
+        private static bool HaveNestedMaxLevelsSumToMoreThanMinTargetForEachLevel(
+            QuotaFrame frame,
+            IEnumerable<QuotaFrameVariable> variables,
+            PropertyValidatorContext context)
+        {
+            var isTreeValid = true;
+
+            var traverser = new PreOrderQuotaFrameTraverser();
+            traverser.Traverse(frame, (variable, level) =>
+            {
+                if (level.Target == null)
+                {
+                    return;
+                }
+
+                var maxFromChildren = level.CalculateMaxAllowed(frame);
+
+                if (level.Target > maxFromChildren)
+                {
+                    isTreeValid = false;
+
+                    context.MessageFormatter.AppendArgument("LevelId", level.Id);
+                    context.MessageFormatter.AppendArgument("LevelName", level.Name);
+                    context.MessageFormatter.AppendArgument("Sum", maxFromChildren);
+                    context.MessageFormatter.AppendArgument("MinTarget", level.Target);
+                }
+            });
+
+            return isTreeValid;
+        }
+
         // Assumes set.Add returns false if value already in collection
         private static bool IsDuplicateValue<T>(PropertyValidatorContext context, ISet<T> set, T entry)
         {
@@ -406,6 +539,7 @@ namespace Nfield.Quota
             if (!couldAdd)
             {
                 context.MessageFormatter.AppendArgument("DuplicateValue", entry);
+
                 return true;
             }
 

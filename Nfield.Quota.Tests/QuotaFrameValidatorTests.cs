@@ -91,6 +91,22 @@ namespace Nfield.Quota.Tests
         }
 
         [Test]
+        public void Definitions_CanContainDuplicateOdinVariableNamesAcrossVariables()
+        {
+            const string odinVariableName = "my_var";
+
+            var quotaFrame = new QuotaFrameBuilder()
+                .VariableDefinition("varName1", odinVariableName, new[] { "level1Name", "level2Name" })
+                .VariableDefinition("varName2", odinVariableName, new[] { "level1Name", "level2Name" })
+                .Build();
+
+            var validator = new QuotaFrameValidator();
+            var result = validator.Validate(quotaFrame);
+
+            Assert.That(result.IsValid, Is.True);
+        }
+
+        [Test]
         public void Definitions_CannotContainDuplicateNamesAcrossVariables()
         {
             const string nonUniqueName = "non-unique";
@@ -270,6 +286,306 @@ namespace Nfield.Quota.Tests
 
             var validator = new QuotaFrameValidator();
             var result = validator.Validate(quotaFrame);
+
+            Assert.That(result.IsValid, Is.True);
+        }
+
+        [Test]
+        [TestCase(10, 10, true)]
+        [TestCase(9, 10, true)]
+        [TestCase(11, 10, false)]
+        public void Frame_MaxTargetsMustBeGreaterThanOrEqualToMinTargets(int minTarget, int maxTarget, bool isValid)
+        {
+            var quotaFrame = new QuotaFrameBuilder()
+                .VariableDefinition("var1", new[] { "a", "b" })
+                .Structure(f => f.Variable("var1"))
+                .Build();
+
+            var level = quotaFrame["var1", "a"];
+
+            level.Target = minTarget;
+            level.MaxTarget = maxTarget;
+
+            var validator = new QuotaFrameValidator();
+            var result = validator.Validate(quotaFrame);
+
+            Assert.That(result.IsValid, Is.EqualTo(isValid));
+
+            if (!isValid)
+            {
+                var id = level.Id;
+
+                Assert.That(result.Errors.Single().ErrorMessage,
+                    Is.EqualTo($"Quota frame is invalid. Minimum target for level 'a' under 'var1' (Id '{id}') is greater than the maximum target for that level."));
+            }
+        }
+
+        [Test]
+        public void Frame_Multi_MaxOfMinTargetsCannotExceedParentMaxTarget()
+        {
+            var quotaFrame = new QuotaFrameBuilder()
+                .VariableDefinition("top", new[] { "a", "b" })
+                .VariableDefinition("nested", new[] { "c", "d" }, isMulti: true)
+                .Structure(f =>
+                    f.Variable("top", (top) =>
+                        top.Variable("nested")))
+                .Build();
+
+            var topLevel = quotaFrame["top", "a"];
+            var nestedVariable = topLevel["nested"];
+            var nestedLevel1 = topLevel["nested", "c"];
+            var nestedLevel2 = topLevel["nested", "d"];
+
+            // max of nested level min targets is 12
+            nestedLevel1.Target = 10;
+            nestedLevel2.Target = 12;
+
+            topLevel.MaxTarget = 11;
+
+            var validator = new QuotaFrameValidator();
+            var result = validator.Validate(quotaFrame);
+
+            Assert.That(result.IsValid, Is.False);
+            Assert.That(result.Errors.Single().ErrorMessage,
+                Is.EqualTo($"Quota frame is invalid. Minimum targets for nested levels under variable 'nested' with id '{nestedVariable.Id}' require more completes than the maximum target for parent level 'a' with id '{topLevel.Id}'. Expected at least 12, but was 11."));
+
+            // make sure that if all is good, we don't return an error
+            topLevel.MaxTarget = 12;
+            result = validator.Validate(quotaFrame);
+
+            Assert.That(result.IsValid, Is.True);
+        }
+
+        [Test]
+        public void Frame_SumOfMinTargetsCannotExceedOverallTarget()
+        {
+            var quotaFrame = new QuotaFrameBuilder()
+                .VariableDefinition("top", new[] { "a", "b" })
+                .Structure(f => f.Variable("top"))
+                .Build();
+
+            var variable = quotaFrame["top"];
+
+            var level1 = quotaFrame["top", "a"];
+            var level2 = quotaFrame["top", "b"];
+
+            // nested level min targets sum to 22
+            level1.Target = 10;
+            level2.Target = 12;
+
+            // parent max target is less than the sum of the nested targets
+            quotaFrame.Target = 21;
+
+            var validator = new QuotaFrameValidator();
+            var result = validator.Validate(quotaFrame);
+
+            Assert.That(result.IsValid, Is.False);
+            Assert.That(result.Errors.Single().ErrorMessage,
+                Is.EqualTo($"Quota frame is invalid. Minimum targets for nested levels under variable 'top' with id '{variable.Id}' require more completes than the maximum target for parent level 'root level' with id '00000000-0000-0000-0000-000000000000'. Expected at least 22, but was 21."));
+
+            // make sure that if all is good, we don't return an error
+            quotaFrame.Target = 22;
+            result = validator.Validate(quotaFrame);
+
+            Assert.That(result.IsValid, Is.True);
+        }
+
+        [Test]
+        public void Frame_SumOfMinTargetsCannotExceedParentMaxTarget()
+        {
+            var quotaFrame = new QuotaFrameBuilder()
+                .VariableDefinition("top", new[] { "a", "b" })
+                .VariableDefinition("nested", new[] { "c", "d" })
+                .Structure(f =>
+                    f.Variable("top", (top) =>
+                        top.Variable("nested")))
+                .Build();
+
+            var topLevel = quotaFrame["top", "a"];
+            var nestedVariable = topLevel["nested"];
+            var nestedLevel1 = topLevel["nested", "c"];
+            var nestedLevel2 = topLevel["nested", "d"];
+
+            // nested level min targets sum to 22
+            nestedLevel1.Target = 10;
+            nestedLevel2.Target = 12;
+
+            // parent max target is less than the sum of the nested targets
+            topLevel.MaxTarget = 21;
+
+            var validator = new QuotaFrameValidator();
+            var result = validator.Validate(quotaFrame);
+
+            Assert.That(result.IsValid, Is.False);
+            Assert.That(result.Errors.Single().ErrorMessage,
+                Is.EqualTo($"Quota frame is invalid. Minimum targets for nested levels under variable 'nested' with id '{nestedVariable.Id}' require more completes than the maximum target for parent level 'a' with id '{topLevel.Id}'. Expected at least 22, but was 21."));
+
+            // make sure that if all is good, we don't return an error
+            topLevel.MaxTarget = 22;
+            result = validator.Validate(quotaFrame);
+
+            Assert.That(result.IsValid, Is.True);
+        }
+
+        [Test]
+        public void Frame_SumOfMinTargetsCannotExceedAncestorMaxTarget()
+        {
+            var quotaFrame = new QuotaFrameBuilder()
+                .VariableDefinition("Top", new[] { "a", "b" })
+                .VariableDefinition("Nested", new[] { "c", "d" })
+                .VariableDefinition("DoubleNested", new[] { "e", "f" })
+                .Structure(f =>
+                    f.Variable("Top", top =>
+                        top.Variable("Nested", nested =>
+                            nested.Variable("DoubleNested"))))
+                .Build();
+
+            var topLevel = quotaFrame["Top", "a"];
+            var nestedLevel = topLevel["Nested", "c"];
+
+            var doubleNestedVariable = nestedLevel["DoubleNested"];
+            var doubleNestedLevel1 = nestedLevel["DoubleNested", "e"];
+            var doubleNestedLevel2 = nestedLevel["DoubleNested", "f"];
+
+            // nested level min targets sum to 22
+            doubleNestedLevel1.Target = 10;
+            doubleNestedLevel2.Target = 12;
+
+            // ancestor max target is less than the sum of the nested targets
+            // note: targets for directly nested levels are all null
+            topLevel.MaxTarget = 21;
+
+            var validator = new QuotaFrameValidator();
+            var result = validator.Validate(quotaFrame);
+
+            Assert.That(result.IsValid, Is.False);
+            Assert.That(result.Errors.Single().ErrorMessage,
+                Is.EqualTo($"Quota frame is invalid. Minimum targets for nested levels under variable 'DoubleNested' with id '{doubleNestedVariable.Id}' require more completes than the maximum target for parent level 'a' with id '{topLevel.Id}'. Expected at least 22, but was 21."));
+
+            // make sure that if all is good, we don't return an error
+            topLevel.MaxTarget = 22;
+            result = validator.Validate(quotaFrame);
+
+            Assert.That(result.IsValid, Is.True);
+        }
+
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void Frame_SumOfMaxTargetsMustExceedParentMinTarget(bool nestedVariableIsMulti)
+        {
+            var quotaFrame = new QuotaFrameBuilder()
+                .VariableDefinition("top", new[] { "a", "b" })
+                .VariableDefinition("nested", new[] { "c", "d" }, isMulti: nestedVariableIsMulti)
+                .Structure(f =>
+                    f.Variable("top", (top) =>
+                        top.Variable("nested")))
+                .Build();
+
+            var topLevel = quotaFrame["top", "a"];
+            var nestedLevel1 = topLevel["nested", "c"];
+            var nestedLevel2 = topLevel["nested", "d"];
+
+            // nested level max targets sum to 18
+            nestedLevel1.MaxTarget = 10;
+            nestedLevel2.MaxTarget = 8;
+
+            // parent min target is more than the sum of the nested max targets
+            topLevel.Target = 20;
+
+            var validator = new QuotaFrameValidator();
+            var result = validator.Validate(quotaFrame);
+
+            Assert.That(result.IsValid, Is.False);
+            Assert.That(result.Errors.Single().ErrorMessage,
+                Is.EqualTo($"Quota frame is invalid. Maximum targets for nested levels under level 'a' with id '{topLevel.Id}' sum to less than the minimum target. Expected at most 18, but was 20."));
+
+            // make sure that if all is good, we don't return an error
+            topLevel.Target = 18;
+            result = validator.Validate(quotaFrame);
+
+            Assert.That(result.IsValid, Is.True);
+        }
+
+        [Test]
+        public void Frame_SumOfMaxTargetsIsInfiniteIfAnyAreNull()
+        {
+            var quotaFrame = new QuotaFrameBuilder()
+                .VariableDefinition("top", new[] { "a", "b" })
+                .VariableDefinition("nested", new[] { "c", "d" })
+                .Structure(f =>
+                    f.Variable("top", (top) =>
+                        top.Variable("nested")))
+                .Build();
+
+            var topLevel = quotaFrame["top", "a"];
+            var nestedVariable = topLevel["nested"];
+            var nestedLevel1 = topLevel["nested", "c"];
+            var nestedLevel2 = topLevel["nested", "d"];
+
+            // max target for "d" is null, so the sum should be counted as infinite
+            nestedLevel1.MaxTarget = 10;
+            nestedLevel2.MaxTarget = null;
+
+            topLevel.Target = 20;
+
+            var validator = new QuotaFrameValidator();
+            var result = validator.Validate(quotaFrame);
+
+            Assert.That(result.IsValid, Is.True);
+        }
+
+        [Test]
+        public void Frame_SumOfMaxTargetsOfNestedLevelsCannotExceedTopLevelTarget()
+        {
+            var quotaFrame = new QuotaFrameBuilder()
+                .VariableDefinition("Top", new[] { "a", "b" })
+                .VariableDefinition("Nested", new[] { "c", "d" })
+                .VariableDefinition("DoubleNested", new[] { "e", "f" })
+                .Structure(f =>
+                    f.Variable("Top", top =>
+                        top.Variable("Nested", nested =>
+                            nested.Variable("DoubleNested"))))
+                .Build();
+
+            var topLevel = quotaFrame["Top", "a"];
+            var nestedLevelC = topLevel["Nested", "c"];
+            var nestedLevelD = topLevel["Nested", "d"];
+
+            var doubleNestedVariableC = nestedLevelC["DoubleNested"];
+            var doubleNestedLevelC1 = nestedLevelC["DoubleNested", "e"];
+            var doubleNestedLevelC2 = nestedLevelC["DoubleNested", "f"];
+
+            var doubleNestedVariableD = nestedLevelD["DoubleNested"];
+            var doubleNestedLevelD1 = nestedLevelD["DoubleNested", "e"];
+            var doubleNestedLevelD2 = nestedLevelD["DoubleNested", "f"];
+
+            // top level target should not exceed sum of max targets for double nested levels (15)
+            doubleNestedLevelC1.MaxTarget = 5;
+            doubleNestedLevelC2.MaxTarget = 6;
+            doubleNestedLevelD1.MaxTarget = 1;
+            doubleNestedLevelD2.MaxTarget = 3;
+
+            topLevel.Target = 16; 
+
+            var validator = new QuotaFrameValidator();
+            var result = validator.Validate(quotaFrame);
+
+            Assert.That(result.IsValid, Is.False);
+            Assert.That(result.Errors.Single().ErrorMessage, Is.EqualTo($"Quota frame is invalid. Maximum targets for nested levels under level 'a' with id '{topLevel.Id}' sum to less than the minimum target. Expected at most 15, but was 16."));
+
+            // make sure that if all is good, we don't return an error
+            topLevel.Target = 15;
+
+            result = validator.Validate(quotaFrame);
+
+            Assert.That(result.IsValid, Is.True);
+
+            // However, if any of the nested levels contain a null max target then any top level target is possible again
+            doubleNestedLevelD2.MaxTarget = null;
+            topLevel.Target = 16;
+
+            result = validator.Validate(quotaFrame);
 
             Assert.That(result.IsValid, Is.True);
         }
@@ -1204,7 +1520,7 @@ namespace Nfield.Quota.Tests
                 {
                     Id = var1Id,
                     Name = "var 1"
-                    // OdinVariableName = 
+                    // OdinVariableName =
                 }
             };
 
