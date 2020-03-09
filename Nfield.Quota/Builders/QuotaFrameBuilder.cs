@@ -8,12 +8,12 @@ namespace Nfield.Quota.Builders
     {
         private int? _target;
         private readonly IList<QuotaVariableDefinitionBuilder> _variableDefinitionBuilders;
-        private readonly QuotaFrameStructureBuilder _structureBuilder;
+        private readonly IList<QuotaFrameStructureBuilder> _structureBuilders;
 
         public QuotaFrameBuilder()
         {
             _variableDefinitionBuilders = new List<QuotaVariableDefinitionBuilder>();
-            _structureBuilder = new QuotaFrameStructureBuilder();
+            _structureBuilders = new List<QuotaFrameStructureBuilder>();
         }
 
         private void Add(QuotaVariableDefinitionBuilder builder)
@@ -32,7 +32,10 @@ namespace Nfield.Quota.Builders
                 builder.Build(frame);
             }
 
-            _structureBuilder.Build(frame);
+            foreach (var builder in _structureBuilders)
+            {
+                builder.Build(frame);
+            }
 
             return frame;
         }
@@ -85,7 +88,12 @@ namespace Nfield.Quota.Builders
         public QuotaFrameBuilder Structure(
             Action<QuotaFrameStructureBuilder> buildAction)
         {
-            buildAction(_structureBuilder);
+            var builder = new QuotaFrameStructureBuilder();
+
+            _structureBuilders.Add(builder);
+
+            buildAction(builder);
+
             return this;
         }
     }
