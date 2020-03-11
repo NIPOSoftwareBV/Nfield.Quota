@@ -333,8 +333,6 @@ namespace Nfield.Quota.Tests
 
             var topLevel = quotaFrame["top", "a"];
             var nestedVariable = topLevel["nested"];
-            //var nestedLevel1 = topLevel["nested", "c"];
-            //var nestedLevel2 = topLevel["nested", "d"];
 
             var nestedLevels = new[]
             {
