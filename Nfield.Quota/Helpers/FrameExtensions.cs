@@ -44,7 +44,7 @@ namespace Nfield.Quota.Helpers
                 // if any of the child levels had a null target, the max target will
                 // be 'infinite' (actually just the max int value). we don't want to
                 // overflow so we check for that.
-                if (levelMax == int.MaxValue)
+                if (levelMax == int.MaxValue || total == int.MaxValue)
                 {
                     return int.MaxValue;
                 }
