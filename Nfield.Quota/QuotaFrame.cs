@@ -21,6 +21,7 @@ namespace Nfield.Quota
         }
 
         public int? Target { get; set; }
+        public int? MaxOvershoot { get; set; }
 
         // implementation of IQuotaCell is for internal use only
         int? IQuotaCell.Target => null; // the target on the quota frame acts as a max target
