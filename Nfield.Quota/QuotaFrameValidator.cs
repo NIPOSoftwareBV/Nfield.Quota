@@ -15,9 +15,6 @@ namespace Nfield.Quota
             // Note: This only holds for rules defined after the SAME RuleFor() call
             CascadeMode = CascadeMode.StopOnFirstFailure;
 
-            RuleFor(qf => qf.MaxOvershoot)
-                .GreaterThanOrEqualTo(0);
-
             RuleFor(qf => qf.VariableDefinitions)
                 .Must(HaveUniqueIds)
                     .WithMessage("Quota frame definitions contain a duplicate id. Duplicate id: '{DuplicateValue}'")
@@ -69,8 +66,6 @@ namespace Nfield.Quota
                 .Must(HaveNestedMaxLevelsSumToMoreThanMinTargetForEachLevel)
                     .WithMessage("Quota frame is invalid. Maximum targets for nested levels under level '{LevelName}' with id '{LevelId}' sum to less than the minimum target. Expected at most {Sum}, but was {MinTarget}.")
                     .WithErrorCode("nested-levels-less-than-parent-min");
-
-
         }
 
         private static bool HaveUniqueIds(

@@ -291,31 +291,6 @@ namespace Nfield.Quota.Tests
         }
 
         [Test]
-        [TestCase(0, true)]
-        [TestCase(1, true)]
-        [TestCase(-1, false)]
-        public void Frame_MaxOvershootShouldBePositive(int overshoot, bool isValid)
-        {
-            var quotaFrame = new QuotaFrameBuilder()
-                .VariableDefinition("var1", new[] { "a", "b" })
-                .Structure(f => f.Variable("var1"))
-                .Build();
-
-            quotaFrame.MaxOvershoot = overshoot;
-
-            var validator = new QuotaFrameValidator();
-            var result = validator.Validate(quotaFrame);
-
-            Assert.That(result.IsValid, Is.EqualTo(isValid));
-
-            if (!isValid)
-            {
-                Assert.That(result.Errors.Single().ErrorMessage,
-                    Is.EqualTo("'Max Overshoot' must be greater than or equal to '0'."));
-            }
-        }
-
-        [Test]
         [TestCase(10, 10, true)]
         [TestCase(9, 10, true)]
         [TestCase(11, 10, false)]
