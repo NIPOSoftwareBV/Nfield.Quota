@@ -28,6 +28,7 @@ namespace Nfield.Quota
         int? IQuotaCell.MaxTarget => Target;
         string IQuotaCell.Name => "root level";
         Guid IQuotaCell.Id => default;
+        IEnumerable<QuotaFrameVariable> IQuotaCell.Variables => FrameVariables;
 
         public QuotaVariableDefinitionCollection VariableDefinitions { get; }
 
