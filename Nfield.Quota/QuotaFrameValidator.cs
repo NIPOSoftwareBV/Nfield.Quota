@@ -344,10 +344,8 @@ namespace Nfield.Quota
                 return true;
             }
 
-            if (!ValidateQuotaCell(frame))
-            {
-                return false;
-            }
+            // note: the frame itself cannot have max overshoot, because
+            // it is never a leaf node
 
             var traverser = new PreOrderQuotaFrameTraverser();
 
