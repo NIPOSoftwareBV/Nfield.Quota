@@ -68,8 +68,6 @@ namespace Nfield.Quota
                 .Must(HaveNestedMaxLevelsSumToMoreThanMinTargetForEachLevel)
                     .WithMessage("Quota frame is invalid. Maximum targets for nested levels under level '{LevelName}' with id '{LevelId}' sum to less than the minimum target. Expected at most {Sum}, but was {MinTarget}.")
                     .WithErrorCode("nested-levels-less-than-parent-min");
-
-
         }
 
         private static bool HaveUniqueIds(
