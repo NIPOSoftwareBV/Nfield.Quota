@@ -290,7 +290,6 @@ namespace Nfield.Quota.Tests
             Assert.That(result.IsValid, Is.True);
         }
 
-        [Test]
         [TestCase(0, true)]
         [TestCase(1, true)]
         [TestCase(-1, false)]
@@ -348,7 +347,6 @@ namespace Nfield.Quota.Tests
             Assert.That(result.IsValid, Is.True);
         }
 
-        [Test]
         [TestCase(10, 10, true)]
         [TestCase(9, 10, true)]
         [TestCase(11, 10, false)]
