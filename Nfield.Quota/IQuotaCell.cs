@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Nfield.Quota
 {
@@ -16,6 +17,9 @@ namespace Nfield.Quota
         string Name { get; }
         int? Target { get; }
         int? MaxTarget { get; }
+        int? MaxOvershoot { get; }
         Guid Id { get; }
+
+        IEnumerable<QuotaFrameVariable> Variables { get; }
     }
 }

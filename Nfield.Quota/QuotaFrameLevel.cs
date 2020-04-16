@@ -23,10 +23,13 @@ namespace Nfield.Quota
         public string Name { get; set; }
 
         public ICollection<QuotaFrameVariable> Variables { get; }
+        IEnumerable<QuotaFrameVariable> IQuotaCell.Variables => Variables;
 
         public int? Target { get; set; }
 
         public int? MaxTarget { get; set; }
+
+        public int? MaxOvershoot { get; set; }
 
         public bool IsHidden { get; set; } = false;
 
