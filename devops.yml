@@ -16,26 +16,13 @@ jobs:
   variables:
   - group: Nfield-Variables
   steps:
-  # Install and restore Nuget packages
-  - task: NuGetToolInstaller@0
-    displayName: 'Use NuGet 4.4.1'
-    inputs:
-      versionSpec: 4.4.1
-
-  - task: NuGetCommand@2
-    displayName: 'NuGet restore'
-    inputs:
-      restoreSolution: 'Nfield.Quota.sln'
-      vstsFeed: 'e4b9b306-e6e3-47e2-b840-ef9089528984'
-  
+    
   # Build projects
-  - task: VSBuild@1
-    displayName: 'Build solution Nfield.Quota.sln'
+  - task: DotNetCoreCLI@2
+    displayName: 'Dotnet Build Quota'
     inputs:
-      solution: Nfield.Quota.sln
-      vsVersion: 16.0
-      platform: '$(BuildPlatform)'
-      configuration: '$(BuildConfiguration)'
+      projects: 'Nfield.Quota.sln'
+      arguments: '--configuration $(BuildConfiguration)'
   
   # Run tests
   - task: VSTest@2
