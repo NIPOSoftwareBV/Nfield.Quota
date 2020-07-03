@@ -29,7 +29,7 @@ namespace Nfield.Quota
                     .WithMessage("Quota frame definitions has variables with no levels. Affected variable definition id: '{VariableDefinitionId}'")
                     .WithErrorCode("no-levels")
                 .Must(HaveValidOdinVariableName)
-                    .WithMessage("Odin variable name invalid. Odin variable names can only contain numbers, letters and '_' and cannot be empty. They can only ​start with​ a letter. First character cannot be '_' or a number. Variable definition Id '{DefId}' with name '{DefName}' has an invalid Odin Variable Name '{InvalidOdin}'")
+                    .WithMessage("Odin variable name invalid. Odin variable names can only contain numbers, letters and '_' and cannot be empty. They can only start with a letter. First character cannot be '_' or a number. Variable definition Id '{DefId}' with name '{DefName}' has an invalid Odin Variable Name '{InvalidOdin}'")
                     .WithErrorCode("invalid-odin-variable-name");
 
             RuleFor(qf => qf.FrameVariables)
