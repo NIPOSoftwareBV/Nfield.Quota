@@ -17,15 +17,15 @@ namespace Nfield.Quota
             return !(left == right);
         }
 
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode() ^ Name.GetHashCode();
+        }
+
         public override bool Equals(object obj)
         {
             var other = obj as QuotaLevelDefinition;
             return Equals(other);
-        }
-
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode() ^ Name.GetHashCode();
         }
 
         public bool Equals(QuotaLevelDefinition other)
