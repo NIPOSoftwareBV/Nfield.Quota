@@ -41,15 +41,15 @@ namespace Nfield.Quota
             return !(left == right);
         }
 
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode() ^ Name.GetHashCode() ^ OdinVariableName.GetHashCode();
+        }
+
         public override bool Equals(object obj)
         {
             var other = obj as QuotaVariableDefinition;
             return Equals(other);
-        }
-
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode() ^ Name.GetHashCode() ^ OdinVariableName.GetHashCode();
         }
 
         public bool Equals(QuotaVariableDefinition other)

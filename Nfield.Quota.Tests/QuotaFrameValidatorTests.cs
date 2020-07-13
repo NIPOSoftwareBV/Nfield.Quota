@@ -232,7 +232,7 @@ namespace Nfield.Quota.Tests
             var expectedErrorMessage = string.Format(CultureInfo.InvariantCulture,
                 "Odin variable name invalid. Odin variable names can only contain numbers, letters and '_' " +
                 "and cannot be empty." +
-                " They can only ​start with​ a letter. First character cannot be '_' or a number." +
+                " They can only start with a letter. First character cannot be '_' or a number." +
                 " Variable definition Id '{0}' with name '{1}' has an invalid Odin Variable Name '{2}'",
                 varId, variableName, invalidOdinVarName);
 
@@ -1529,11 +1529,11 @@ namespace Nfield.Quota.Tests
 
             Assert.That(
                 result.Errors.Single().ErrorMessage,
-                Is.EqualTo("Odin variable name invalid. Odin variable names can only contain numbers, " +
-                           "letters and '_' and cannot be empty. They can only ​start with​ a letter. " +
+                Is.EqualTo(("Odin variable name invalid. Odin variable names can only contain numbers, " +
+                           "letters and '_' and cannot be empty. They can only start with a letter. " +
                            "First character cannot be '_' or a number. " +
                            $"Variable definition Id '{var1Id}' with name 'var 1' " +
-                           "has an invalid Odin Variable Name ''"));
+                           "has an invalid Odin Variable Name ''")));
         }
 
         [Test]
@@ -1579,11 +1579,11 @@ namespace Nfield.Quota.Tests
 
             Assert.That(
                 result.Errors.Single().ErrorMessage,
-                Is.EqualTo("Odin variable name invalid. Odin variable names can only contain numbers, " +
-                           "letters and '_' and cannot be empty. They can only ​start with​ a letter. " +
+                Is.EqualTo(("Odin variable name invalid. Odin variable names can only contain numbers, " +
+                           "letters and '_' and cannot be empty. They can only start with a letter. " +
                            "First character cannot be '_' or a number. " +
                            $"Variable definition Id '{var1Id}' with name 'var 1' " +
-                           "has an invalid Odin Variable Name ''"));
+                           "has an invalid Odin Variable Name ''")));
         }
 
         [TestCase("")]

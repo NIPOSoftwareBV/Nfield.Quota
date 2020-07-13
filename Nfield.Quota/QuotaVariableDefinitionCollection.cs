@@ -23,12 +23,6 @@ namespace Nfield.Quota
             return !(left == right);
         }
 
-        public override bool Equals(object obj)
-        {
-            var other = obj as QuotaVariableDefinitionCollection;
-            return Equals(other);
-        }
-
         public override int GetHashCode()
         {
             var result = 0;
@@ -37,6 +31,12 @@ namespace Nfield.Quota
                 result ^= variableDefinition.GetHashCode();
             }
             return result;
+        }
+
+        public override bool Equals(object obj)
+        {
+            var other = obj as QuotaVariableDefinitionCollection;
+            return Equals(other);
         }
 
         public bool Equals(ICollection<QuotaVariableDefinition> other)
