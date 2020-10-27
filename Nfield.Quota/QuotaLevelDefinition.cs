@@ -2,7 +2,7 @@
 
 namespace Nfield.Quota
 {
-    public class QuotaLevelDefinition : IEquatable<QuotaLevelDefinition>
+    public sealed class QuotaLevelDefinition : IEquatable<QuotaLevelDefinition>
     {
         public Guid Id { get; set; }
         public string Name { get; set; }

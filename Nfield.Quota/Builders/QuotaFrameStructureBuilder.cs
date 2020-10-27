@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Nfield.Quota.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -25,6 +26,8 @@ namespace Nfield.Quota.Builders
             string variableName,
             Action<QuotaFrameStructureBuilder> buildAction)
         {
+            Ensure.ArgumentNotNull(buildAction, nameof(buildAction));
+
             var childBuilder = new QuotaFrameStructureBuilder();
             buildAction(childBuilder);
             _childBuilders.Add(childBuilder);
@@ -33,6 +36,8 @@ namespace Nfield.Quota.Builders
 
         public void Build(QuotaFrame quotaFrame)
         {
+            Ensure.ArgumentNotNull(quotaFrame, nameof(quotaFrame));
+
             BuildVariable(quotaFrame, quotaFrame.FrameVariables);
         }
 

@@ -18,6 +18,9 @@
     <PackageTags>nfield marketresearch capi cawi online</PackageTags>
     <CodeAnalysisRuleSet>..\CodeAnalysis\Standard Rules for NIPO Software.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="8.1.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.0.0">

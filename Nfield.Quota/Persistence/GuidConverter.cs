@@ -9,16 +9,16 @@ namespace Nfield.Quota.Persistence
     class GuidJsonConverter : JsonConverter
     {
         /// <summary>
-        ///     Gets a value indicating whether this <see cref="T:Newtonsoft.Json.JsonConverter"/> can read JSON.
+        ///     Gets a value indicating whether this <see cref="Newtonsoft.Json.JsonConverter"/> can read JSON.
         /// </summary>
-        /// <value><see langword="true"/> if this <see cref="T:Newtonsoft.Json.JsonConverter"/> can read JSON; otherwise, <see langword="false"/>.
+        /// <value><see langword="true"/> if this <see cref="Newtonsoft.Json.JsonConverter"/> can read JSON; otherwise, <see langword="false"/>.
         /// </value>
         public override bool CanRead { get { return true; } }
 
         /// <summary>
-        ///     Gets a value indicating whether this <see cref="T:Newtonsoft.Json.JsonConverter"/> can write JSON.
+        ///     Gets a value indicating whether this <see cref="Newtonsoft.Json.JsonConverter"/> can write JSON.
         /// </summary>
-        /// <value><see langword="true"/> if this <see cref="T:Newtonsoft.Json.JsonConverter"/> can write JSON; otherwise, <see langword="false"/>.
+        /// <value><see langword="true"/> if this <see cref="Newtonsoft.Json.JsonConverter"/> can write JSON; otherwise, <see langword="false"/>.
         /// </value>
         public override bool CanWrite { get { return true; } }
 
@@ -41,7 +41,7 @@ namespace Nfield.Quota.Persistence
         /// Writes the JSON representation of the object.
         /// </summary>
         /// <param name="writer">
-        /// The <see cref="T:Newtonsoft.Json.JsonWriter"/> to write to.
+        /// The <see cref="Newtonsoft.Json.JsonWriter"/> to write to.
         /// </param>
         /// <param name="value">
         /// The value.
@@ -66,7 +66,7 @@ namespace Nfield.Quota.Persistence
         /// Reads the JSON representation of the object.
         /// </summary>
         /// <param name="reader">
-        /// The <see cref="T:Newtonsoft.Json.JsonReader"/> to read from.
+        /// The <see cref="Newtonsoft.Json.JsonReader"/> to read from.
         /// </param>
         /// <param name="objectType">
         /// Kind of the object.

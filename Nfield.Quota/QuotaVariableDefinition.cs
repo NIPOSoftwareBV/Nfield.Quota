@@ -4,7 +4,7 @@ using Nfield.Quota.Helpers;
 
 namespace Nfield.Quota
 {
-    public class QuotaVariableDefinition : IEquatable<QuotaVariableDefinition>
+    public sealed class QuotaVariableDefinition : IEquatable<QuotaVariableDefinition>
     {
         public QuotaVariableDefinition()
         {

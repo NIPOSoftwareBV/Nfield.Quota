@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Nfield.Quota.Helpers;
 
 namespace Nfield.Quota.Persistence
 {
@@ -12,6 +13,8 @@ namespace Nfield.Quota.Persistence
 
         public static string Encode(QuotaFrame frame, QuotaFrameEncoderOptions options)
         {
+            Ensure.ArgumentNotNull(options, nameof(options));
+
             // We can't configure our QuotaFrameContractResolver as it is just used as a blueprint
             // to generate a (cached) JsonContract which will then be used going forward to serialize a type
             // This caching is at the contract resolver type level. So we need two distinct types, hence the usage

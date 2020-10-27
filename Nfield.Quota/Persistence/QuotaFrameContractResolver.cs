@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace Nfield.Quota.Persistence
@@ -24,6 +25,7 @@ namespace Nfield.Quota.Persistence
         /// </summary>
         /// <param name="type"></param>
         /// <param name="propertyName">one or more properties to ignore.  Leave empty to ignore the type entirely.</param>
+        [SuppressMessage("Globalization", "CA1308:Normalize strings to uppercase", Justification = "We want propertyName in lowercase and we don't care about locale")]
         public void Ignore(Type type, params string[] propertyName)
         {
             // start bucket if DNE
@@ -57,9 +59,11 @@ namespace Nfield.Quota.Persistence
             return _ignores[type].Contains(propertyName);
         }
 
+
         /// <summary>
         /// The decision logic goes here
         /// </summary>
+        [SuppressMessage("Globalization", "CA1308:Normalize strings to uppercase", Justification = "We want propertyName in lowercase and we don't care about locale")]
         protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
         {
             var property = base.CreateProperty(member, memberSerialization);

@@ -13,6 +13,8 @@ namespace Nfield.Quota.Helpers
         /// <param name="items"></param>
         public static void AddRange<T>(this ICollection<T> collection, IEnumerable<T> items)
         {
+            Ensure.ArgumentNotNull(collection, nameof(collection));
+
             if (items == null)
                 return;
 

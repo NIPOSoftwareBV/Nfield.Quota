@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Nfield.Quota.Helpers;
+using System;
 using System.Collections.Generic;
 
 namespace Nfield.Quota.Builders
@@ -30,6 +31,8 @@ namespace Nfield.Quota.Builders
 
         public void Build(QuotaFrame quotaFrame)
         {
+            Ensure.ArgumentNotNull(quotaFrame, nameof(quotaFrame));
+
             var variable = new QuotaVariableDefinition
             {
                 Id = _id,
