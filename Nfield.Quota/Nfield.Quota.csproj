@@ -10,13 +10,13 @@
     <Product>Nfield</Product>
     <Version>1.0.0.0</Version>
     <PackageVersion>$(Version)</PackageVersion>
-    <PackageLicenseUrl>https://github.com/NIPOSoftware/Nfield.Quota/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/NIPOSoftware/Nfield.Quota</PackageProjectUrl>
-    <PackageIconUrl>https://raw.githubusercontent.com/NIPOSoftware/Nfield.Quota/master/src/Nfield.Quota/icon-nfield.png</PackageIconUrl>
+    <PackageIcon>https://raw.githubusercontent.com/NIPOSoftware/Nfield.Quota/master/src/Nfield.Quota/icon-nfield.png</PackageIcon>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageReleaseNotes>-</PackageReleaseNotes>
     <PackageTags>nfield marketresearch capi cawi online</PackageTags>
     <CodeAnalysisRuleSet>..\CodeAnalysis\Standard Rules for NIPO Software.ruleset</CodeAnalysisRuleSet>
+    <PackageLicenseExpression>https://github.com/NIPOSoftware/Nfield.Quota/blob/master/LICENSE</PackageLicenseExpression>
   </PropertyGroup>
 
   <Import Project="..\CodeAnalysis\NipoSoftware.DefaultProjectRules.targets" />
