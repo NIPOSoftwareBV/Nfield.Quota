@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Nfield.Quota.Helpers;
+using System;
 using System.Collections.Generic;
 
 namespace Nfield.Quota
 {
-    //todo immutable
     public class PreOrderQuotaFrameTraverser
     {
         public QuotaFrame Traverse(
@@ -37,6 +37,8 @@ namespace Nfield.Quota
                 VariableOperation = variableOperation,
                 LevelOperation = levelOperation
             };
+
+            Ensure.ArgumentNotNull(frame, nameof(frame));
 
             Visit(context, frame.FrameVariables);
 
