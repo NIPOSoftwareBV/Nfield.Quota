@@ -96,6 +96,35 @@ namespace Nfield.Quota
             return true;
         }
 
+        private static bool HaveUniqueIds(
+            QuotaFrame frame,
+            IEnumerable<QuotaFrameVariable> variables,
+            PropertyValidatorContext context)
+        {
+            var usedIds = new HashSet<Guid>();
+
+            var hasDuplicate = false;
+            var traverser = new PreOrderQuotaFrameTraverser();
+            traverser.Traverse( // always walks whole tree, might want to change this
+                frame,
+                variable =>
+                {
+                    if (IsDuplicateValue(context, usedIds, variable.Id))
+                    {
+                        hasDuplicate = true;
+                    }
+                },
+                (variable, level) =>
+                {
+                    if (IsDuplicateValue(context, usedIds, level.Id))
+                    {
+                        hasDuplicate = true;
+                    }
+                });
+
+            return !hasDuplicate;
+        }
+
         private static bool HaveUniqueVariableNames(
             QuotaFrame frame,
             IEnumerable<QuotaVariableDefinition> varDefinitions,
@@ -181,35 +210,6 @@ namespace Nfield.Quota
             return true;
         }
 
-        private static bool HaveUniqueIds(
-            QuotaFrame frame,
-            IEnumerable<QuotaFrameVariable> variables,
-            PropertyValidatorContext context)
-        {
-            var usedIds = new HashSet<Guid>();
-
-            var hasDuplicate = false;
-            var traverser = new PreOrderQuotaFrameTraverser();
-            traverser.Traverse( // always walks whole tree, might want to change this
-                frame,
-                variable =>
-                {
-                    if (IsDuplicateValue(context, usedIds, variable.Id))
-                    {
-                        hasDuplicate = true;
-                    }
-                },
-                (variable, level) =>
-                {
-                    if (IsDuplicateValue(context, usedIds, level.Id))
-                    {
-                        hasDuplicate = true;
-                    }
-                });
-
-            return !hasDuplicate;
-        }
-
         private static bool ReferenceDefinitions(
             QuotaFrame frame,
             IEnumerable<QuotaFrameVariable> variables,
@@ -275,7 +275,6 @@ namespace Nfield.Quota
 
         private static bool HaveVariablesWithTheSameVariablesUnderEveryLevel(
             QuotaFrame frame,
-            IEnumerable<QuotaFrameVariable> variables,
             PropertyValidatorContext context)
         {
             var hasInvalidChilds = false;
@@ -325,22 +324,6 @@ namespace Nfield.Quota
             ICollection<QuotaFrameVariable> frameVariables,
             PropertyValidatorContext context)
         {
-            bool ValidateQuotaCell(IQuotaCell cell)
-            {
-                var isPositive = !cell.MaxOvershoot.HasValue || cell.MaxOvershoot.Value >= 0;
-                var isLeafOrEmpty = !cell.Variables.Any() || cell.MaxOvershoot == null;
-
-                if (!isPositive || !isLeafOrEmpty)
-                {
-                    context.MessageFormatter.AppendArgument("LevelId", cell.Id);
-                    context.MessageFormatter.AppendArgument("LevelName", cell.Name);
-                    context.MessageFormatter.AppendArgument("MaxOvershoot", cell.MaxOvershoot);
-
-                    return false;
-                }
-
-                return true;
-            }
 
             // note: the frame itself cannot have max overshoot, because
             // it is never a leaf node
@@ -350,10 +333,27 @@ namespace Nfield.Quota
             bool allOk = true;
             traverser.Traverse(frame, (variable, level) =>
             {
-                allOk &= ValidateQuotaCell(level);
+                allOk &= ValidateQuotaCell(level, context);
             });
 
             return allOk;
+        }
+
+        private static bool ValidateQuotaCell(IQuotaCell cell, PropertyValidatorContext context)
+        {
+            var isPositive = !cell.MaxOvershoot.HasValue || cell.MaxOvershoot.Value >= 0;
+            var isLeafOrEmpty = !cell.Variables.Any() || cell.MaxOvershoot == null;
+
+            if (!isPositive || !isLeafOrEmpty)
+            {
+                context.MessageFormatter.AppendArgument("LevelId", cell.Id);
+                context.MessageFormatter.AppendArgument("LevelName", cell.Name);
+                context.MessageFormatter.AppendArgument("MaxOvershoot", cell.MaxOvershoot);
+
+                return false;
+            }
+
+            return true;
         }
 
         private static bool HaveValidLevelTargets(
@@ -414,7 +414,7 @@ namespace Nfield.Quota
                 {
                     // if the variable is hidden, we don't care about the children
                     // but if it isn't, at least one child should be visible also
-                    if (variable.IsHidden == false && variable.Levels.Count(l => !l.IsHidden) < 1)
+                    if (!variable.IsHidden && !variable.Levels.Any(l => !l.IsHidden))
                     {
                         context.MessageFormatter.AppendArgument("VariableName", variable.Name);
                         isValid = false;

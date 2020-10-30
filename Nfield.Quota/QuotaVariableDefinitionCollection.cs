@@ -1,9 +1,10 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Nfield.Quota.Helpers;
 
 namespace Nfield.Quota
 {
-    public class QuotaVariableDefinitionCollection : List<QuotaVariableDefinition>
+    public sealed class QuotaVariableDefinitionCollection : List<QuotaVariableDefinition>
     {
         public QuotaVariableDefinitionCollection(IEnumerable<QuotaVariableDefinition> collection) : base(collection)
         {
@@ -13,6 +14,7 @@ namespace Nfield.Quota
         {
         }
 
+        [SuppressMessage("Blocker Code Smell", "S3875:\"operator==\" should not be overloaded on reference types", Justification = "The operator compares references with null")]
         public static bool operator ==(QuotaVariableDefinitionCollection left, QuotaVariableDefinitionCollection right)
         {
             return left?.Equals(right) ?? ReferenceEquals(right, null);

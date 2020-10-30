@@ -8,7 +8,7 @@
         /// <summary>
         /// The default options to use when not supply any options to the encoder
         /// </summary>
-        public static QuotaFrameEncoderOptions Default = new QuotaFrameEncoderOptions
+        public static readonly QuotaFrameEncoderOptions Default = new QuotaFrameEncoderOptions
         {
             IncludeTargets = false
         };

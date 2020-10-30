@@ -1,6 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Nfield.Quota.Helpers;
 using Nfield.Quota.Models;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Nfield.Quota.Builders
 {
@@ -73,18 +75,23 @@ namespace Nfield.Quota.Builders
             return this;
         }
 
+        [SuppressMessage("Globalization", "CA1308:Normalize strings to uppercase", Justification = "We want variableName in lowercase and we don't care about locale")]
         public QuotaFrameBuilder VariableDefinition(
             string variableName,
             IEnumerable<string> levelNames,
             VariableSelection selection = VariableSelection.NotApplicable,
             bool isMulti = false)
         {
+            Ensure.ArgumentNotNull(variableName, nameof(variableName));
+
             return VariableDefinition(variableName, variableName.ToLowerInvariant(), levelNames, selection, isMulti);
         }
 
         public QuotaFrameBuilder Structure(
             Action<QuotaFrameStructureBuilder> buildAction)
         {
+            Ensure.ArgumentNotNull(buildAction, nameof(buildAction));
+
             buildAction(_structureBuilder);
             return this;
         }

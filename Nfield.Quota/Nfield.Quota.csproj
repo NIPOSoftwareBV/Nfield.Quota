@@ -10,14 +10,16 @@
     <Product>Nfield</Product>
     <Version>1.0.0.0</Version>
     <PackageVersion>$(Version)</PackageVersion>
-    <PackageLicenseUrl>https://github.com/NIPOSoftware/Nfield.Quota/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/NIPOSoftware/Nfield.Quota</PackageProjectUrl>
-    <PackageIconUrl>https://raw.githubusercontent.com/NIPOSoftware/Nfield.Quota/master/src/Nfield.Quota/icon-nfield.png</PackageIconUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageReleaseNotes>-</PackageReleaseNotes>
     <PackageTags>nfield marketresearch capi cawi online</PackageTags>
     <CodeAnalysisRuleSet>..\CodeAnalysis\Standard Rules for NIPO Software.ruleset</CodeAnalysisRuleSet>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
+
+  <Import Project="..\CodeAnalysis\NipoSoftware.DefaultProjectRules.targets" />
+  
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="8.1.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.0.0">
@@ -36,5 +38,15 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include="icon-nfield.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 </Project>
