@@ -516,10 +516,9 @@ namespace Nfield.Quota
 
                 foreach (var level in variable.Levels)
                 {
-                    var newParents = parents.Concat(new[] { level });
-
                     foreach (var nestedVariable in level.Variables)
                     {
+                        var newParents = parents.Concat(new[] { level });
                         isValid &= ProcessLevel(nestedVariable, newParents);
                     }
                 }
