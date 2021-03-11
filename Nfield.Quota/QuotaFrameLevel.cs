@@ -31,7 +31,7 @@ namespace Nfield.Quota
 
         public int? MaxOvershoot { get; set; }
 
-        public bool IsHidden { get; set; } = false;
+        public bool IsHidden { get; set; }
 
         public QuotaFrameVariable this[string variableName]
         {

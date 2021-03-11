@@ -516,7 +516,9 @@ namespace Nfield.Quota
 
                 foreach (var level in variable.Levels)
                 {
+#pragma warning disable S1854 // Unused assignments should be removed
                     var newParents = parents.Concat(new[] { level });
+#pragma warning restore S1854 // Unused assignments should be removed
 
                     foreach (var nestedVariable in level.Variables)
                     {
