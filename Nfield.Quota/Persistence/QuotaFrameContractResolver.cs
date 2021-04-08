@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Nfield.Quota.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -28,6 +29,11 @@ namespace Nfield.Quota.Persistence
         [SuppressMessage("Globalization", "CA1308:Normalize strings to uppercase", Justification = "We want propertyName in lowercase and we don't care about locale")]
         public void Ignore(Type type, params string[] propertyName)
         {
+            if(propertyName is null)
+            {
+                return;
+            }
+
             // start bucket if DNE
             if (!_ignores.ContainsKey(type))
             {
