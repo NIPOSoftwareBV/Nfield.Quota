@@ -12,9 +12,8 @@ namespace Nfield.Quota
     {
         public QuotaFrameValidator()
         {
-            CascadeMode = CascadeMode.Stop;
-
             RuleFor(qf => qf.VariableDefinitions)
+                .Cascade(CascadeMode.Stop)
                 .Must(HaveUniqueIds)
                     .WithMessage("Quota frame definitions contain a duplicate id. Duplicate id: '{DuplicateValue}'")
                     .WithErrorCode("duplicate-definition-id")
@@ -32,6 +31,7 @@ namespace Nfield.Quota
                     .WithErrorCode("invalid-odin-variable-name");
 
             RuleFor(qf => qf.FrameVariables)
+                .Cascade(CascadeMode.Stop)
                 .Must(HaveUniqueIds)
                     .WithMessage("Quota frame contains a duplicate id. Duplicate id: '{DuplicateValue}'")
                     .WithErrorCode("duplicate-frame-id")
