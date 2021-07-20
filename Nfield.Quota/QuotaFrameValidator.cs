@@ -12,10 +12,8 @@ namespace Nfield.Quota
     {
         public QuotaFrameValidator()
         {
-            // Note: This only holds for rules defined after the SAME RuleFor() call
-            CascadeMode = CascadeMode.StopOnFirstFailure;
-
             RuleFor(qf => qf.VariableDefinitions)
+                .Cascade(CascadeMode.Stop)
                 .Must(HaveUniqueIds)
                     .WithMessage("Quota frame definitions contain a duplicate id. Duplicate id: '{DuplicateValue}'")
                     .WithErrorCode("duplicate-definition-id")
@@ -33,6 +31,7 @@ namespace Nfield.Quota
                     .WithErrorCode("invalid-odin-variable-name");
 
             RuleFor(qf => qf.FrameVariables)
+                .Cascade(CascadeMode.Stop)
                 .Must(HaveUniqueIds)
                     .WithMessage("Quota frame contains a duplicate id. Duplicate id: '{DuplicateValue}'")
                     .WithErrorCode("duplicate-frame-id")
@@ -73,7 +72,7 @@ namespace Nfield.Quota
         private static bool HaveUniqueIds(
             QuotaFrame frame,
             IEnumerable<QuotaVariableDefinition> varDefinitions,
-            PropertyValidatorContext context)
+            ValidationContext<QuotaFrame> context)
         {
             var usedIds = new HashSet<Guid>();
 
@@ -99,7 +98,7 @@ namespace Nfield.Quota
         private static bool HaveUniqueIds(
             QuotaFrame frame,
             IEnumerable<QuotaFrameVariable> variables,
-            PropertyValidatorContext context)
+            ValidationContext<QuotaFrame> context)
         {
             var usedIds = new HashSet<Guid>();
 
@@ -128,7 +127,7 @@ namespace Nfield.Quota
         private static bool HaveUniqueVariableNames(
             QuotaFrame frame,
             IEnumerable<QuotaVariableDefinition> varDefinitions,
-            PropertyValidatorContext context)
+            ValidationContext<QuotaFrame> context)
         {
             var usedNames = new HashSet<string>();
 
@@ -146,7 +145,7 @@ namespace Nfield.Quota
         private static bool HaveUniqueLevelNamesPerVariable(
             QuotaFrame frame,
             IEnumerable<QuotaVariableDefinition> varDefinitions,
-            PropertyValidatorContext context)
+            ValidationContext<QuotaFrame> context)
         {
             foreach (var variableDefinition in varDefinitions)
             {
@@ -167,7 +166,7 @@ namespace Nfield.Quota
         private static bool HaveVariablesWithAtLeastOneLevel(
             QuotaFrame frame,
             IEnumerable<QuotaVariableDefinition> varDefinitions,
-            PropertyValidatorContext context)
+            ValidationContext<QuotaFrame> context)
         {
             foreach (var varDefinition in varDefinitions)
             {
@@ -184,7 +183,7 @@ namespace Nfield.Quota
         private static bool HaveValidOdinVariableName(
             QuotaFrame frame,
             ICollection<QuotaVariableDefinition> varDefinitions,
-            PropertyValidatorContext context)
+            ValidationContext<QuotaFrame> context)
         {
             // don't allow unicode whitespace or special characters
             // For more explanation why we do this see this link https://stackoverflow.com/questions/16416610/replace-unicode-space-characters
@@ -213,7 +212,7 @@ namespace Nfield.Quota
         private static bool ReferenceDefinitions(
             QuotaFrame frame,
             IEnumerable<QuotaFrameVariable> variables,
-            PropertyValidatorContext context)
+            ValidationContext<QuotaFrame> context)
         {
             var variableIds = new HashSet<Guid>(
                 frame.VariableDefinitions.Select(vd => vd.Id));
@@ -247,7 +246,7 @@ namespace Nfield.Quota
         private static bool HaveTheSameLevelsUnderAVariableAsTheLinkedVariableDefinition(
             QuotaFrame frame,
             IEnumerable<QuotaFrameVariable> variables,
-            PropertyValidatorContext context)
+            ValidationContext<QuotaFrame> context)
         {
             var hasMissingLevel = false;
             var traverser = new PreOrderQuotaFrameTraverser();
@@ -273,41 +272,10 @@ namespace Nfield.Quota
             return !hasMissingLevel;
         }
 
-        private static bool HaveVariablesWithTheSameVariablesUnderEveryLevel(
-            QuotaFrame frame,
-            PropertyValidatorContext context)
-        {
-            var hasInvalidChilds = false;
-            var traverser = new PreOrderQuotaFrameTraverser();
-            traverser.Traverse( // always walks whole tree, might want to change this
-                frame,
-                variable =>
-                {
-                    var requiredDirectVarDefIds = variable.Levels
-                        .First().Variables.Select(v => v.DefinitionId) // assume first is leading
-                        .ToList();
-
-                    foreach (var level in variable.Levels.Skip(1)) // Skip first
-                    {
-                        var levelDirectVarDefIds = level.Variables.Select(v => v.DefinitionId);
-
-                        if (!requiredDirectVarDefIds.SequenceEqual(levelDirectVarDefIds))
-                        {
-                            context.MessageFormatter.AppendArgument("AffectedFrameVariableId", variable.Id);
-                            context.MessageFormatter.AppendArgument("MismatchLevelId", level.Id);
-                            hasInvalidChilds = true;
-                        }
-                    }
-                });
-
-
-            return !hasInvalidChilds;
-        }
-
         private static bool HaveValidTotalTarget(
             QuotaFrame frame,
             ICollection<QuotaFrameVariable> frameVariables,
-            PropertyValidatorContext context)
+            ValidationContext<QuotaFrame> context)
         {
             var inValidTarget = false;
             if (frame.Target < 0)
@@ -322,7 +290,7 @@ namespace Nfield.Quota
         private static bool HaveValidMaxOvershoot(
             QuotaFrame frame,
             ICollection<QuotaFrameVariable> frameVariables,
-            PropertyValidatorContext context)
+            ValidationContext<QuotaFrame> context)
         {
 
             // note: the frame itself cannot have max overshoot, because
@@ -339,7 +307,7 @@ namespace Nfield.Quota
             return allOk;
         }
 
-        private static bool ValidateQuotaCell(IQuotaCell cell, PropertyValidatorContext context)
+        private static bool ValidateQuotaCell(IQuotaCell cell, ValidationContext<QuotaFrame> context)
         {
             var isPositive = !cell.MaxOvershoot.HasValue || cell.MaxOvershoot.Value >= 0;
             var isLeafOrEmpty = !cell.Variables.Any() || cell.MaxOvershoot == null;
@@ -359,7 +327,7 @@ namespace Nfield.Quota
         private static bool HaveValidLevelTargets(
             QuotaFrame frame,
             ICollection<QuotaFrameVariable> frameVariables,
-            PropertyValidatorContext context)
+            ValidationContext<QuotaFrame> context)
         {
             var inValidTarget = false;
 
@@ -381,7 +349,7 @@ namespace Nfield.Quota
         private static bool HaveValidLevelMaxTargets(
             QuotaFrame frame,
             ICollection<QuotaFrameVariable> frameVariables,
-            PropertyValidatorContext context)
+            ValidationContext<QuotaFrame> context)
         {
             var inValidTarget = false;
 
@@ -403,7 +371,7 @@ namespace Nfield.Quota
         private static bool HaveVariablesWithAtLeastOneVisibleLevel(
             QuotaFrame frame,
             IEnumerable<QuotaFrameVariable> variables,
-            PropertyValidatorContext context)
+            ValidationContext<QuotaFrame> context)
         {
             var isValid = true;
 
@@ -427,7 +395,7 @@ namespace Nfield.Quota
         private static bool HaveConsistentMinAndMaxTargetsForEachLevel(
             QuotaFrame frame,
             IEnumerable<QuotaFrameVariable> variables,
-            PropertyValidatorContext context)
+            ValidationContext<QuotaFrame> context)
         {
             var isValid = true;
 
@@ -451,7 +419,7 @@ namespace Nfield.Quota
         private static bool MultiVariablesHaveLevelsWithoutVariables(
             QuotaFrame frame,
             IEnumerable<QuotaFrameVariable> variables,
-            PropertyValidatorContext context)
+            ValidationContext<QuotaFrame> context)
         {
             var isValid = true;
 
@@ -476,7 +444,7 @@ namespace Nfield.Quota
         private static bool HaveNestedMinLevelsSumToLessThanMaxTargetForEachLevel(
             QuotaFrame frame,
             IEnumerable<QuotaFrameVariable> variables,
-            PropertyValidatorContext context)
+            ValidationContext<QuotaFrame> context)
         {
             bool ProcessLevel(QuotaFrameVariable variable, IEnumerable<IQuotaCell> parents)
             {
@@ -541,7 +509,7 @@ namespace Nfield.Quota
         private static bool HaveNestedMaxLevelsSumToMoreThanMinTargetForEachLevel(
             QuotaFrame frame,
             IEnumerable<QuotaFrameVariable> variables,
-            PropertyValidatorContext context)
+            ValidationContext<QuotaFrame> context)
         {
             var isTreeValid = true;
 
@@ -570,7 +538,7 @@ namespace Nfield.Quota
         }
 
         // Assumes set.Add returns false if value already in collection
-        private static bool IsDuplicateValue<T>(PropertyValidatorContext context, ISet<T> set, T entry)
+        private static bool IsDuplicateValue<TFrame, T>(ValidationContext<TFrame> context, ISet<T> set, T entry)
         {
             var couldAdd = set.Add(entry);
             if (!couldAdd)
