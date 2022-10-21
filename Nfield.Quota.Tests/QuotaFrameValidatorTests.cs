@@ -290,63 +290,6 @@ namespace Nfield.Quota.Tests
             Assert.That(result.IsValid, Is.True);
         }
 
-        [TestCase(0, true)]
-        [TestCase(1, true)]
-        [TestCase(-1, false)]
-        public void Frame_MaxOvershootShouldBePositiveOnLevels(int overshoot, bool isValid)
-        {
-            var quotaFrame = new QuotaFrameBuilder()
-                .VariableDefinition("var1", new[] { "a", "b" })
-                .Structure(f => f.Variable("var1"))
-                .Build();
-
-            var level = quotaFrame["var1", "a"];
-            level.MaxOvershoot = overshoot;
-
-            var validator = new QuotaFrameValidator();
-            var result = validator.Validate(quotaFrame);
-
-            Assert.That(result.IsValid, Is.EqualTo(isValid));
-
-            if (!isValid)
-            {
-                Assert.That(result.Errors.Single().ErrorMessage,
-                    Is.EqualTo($"Max overshoot '{overshoot}' is invalid for frame level id '{level.Id}' with name '{level.Name}'. Max overshoot values can only be set on leaf nodes, and must be positive."));
-            }
-        }
-
-        [Test]
-        public void Frame_MaxOvershootCanOnlyBeSetOnLeafNodes()
-        {
-            var quotaFrame = new QuotaFrameBuilder()
-                .VariableDefinition("var1", new[] { "a", "b" })
-                .VariableDefinition("var2", new[] { "c", "d" })
-                .Structure(f =>
-                    f.Variable("var1", v1 =>
-                        v1.Variable("var2")))
-                .Build();
-
-            var topLevel = quotaFrame["var1", "a"];
-            var nestedLevel = quotaFrame["var1", "a"]["var2", "c"];
-
-            var validator = new QuotaFrameValidator();
-
-            // top level cannot have max overshoot because it has children
-            topLevel.MaxOvershoot = 5;
-
-            var result = validator.Validate(quotaFrame);
-            Assert.That(result.IsValid, Is.False);
-            Assert.That(result.Errors.Single().ErrorMessage,
-                Is.EqualTo($"Max overshoot '5' is invalid for frame level id '{topLevel.Id}' with name '{topLevel.Name}'. Max overshoot values can only be set on leaf nodes, and must be positive."));
-
-            // nested level can have max overshoot because it is a leaf node
-            topLevel.MaxOvershoot = null;
-            nestedLevel.MaxOvershoot = 5;
-
-            result = validator.Validate(quotaFrame);
-            Assert.That(result.IsValid, Is.True);
-        }
-
         [TestCase(10, 10, true)]
         [TestCase(9, 10, true)]
         [TestCase(11, 10, false)]

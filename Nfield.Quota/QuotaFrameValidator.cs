@@ -47,8 +47,6 @@ namespace Nfield.Quota
                 .Must(HaveValidLevelTargets)
                     .WithMessage("Target invalid. All Targets must be of a positive value. Frame level Id '{LevelId}' with name '{LevelName}' has an invalid negative target '{InvalidTarget}'")
                     .WithErrorCode("negative-min-target")
-                .Must(HaveValidMaxOvershoot)
-                    .WithMessage("Max overshoot '{MaxOvershoot}' is invalid for frame level id '{LevelId}' with name '{LevelName}'. Max overshoot values can only be set on leaf nodes, and must be positive.")
                 .Must(HaveValidLevelMaxTargets)
                     .WithMessage("Target invalid. All Targets must be of a positive value. Frame level Id '{LevelId}' with name '{LevelName}' has an invalid negative maximum target '{InvalidTarget}'")
                     .WithErrorCode("negative-max-target")
@@ -287,43 +285,6 @@ namespace Nfield.Quota
             return !inValidTarget;
         }
 
-        private static bool HaveValidMaxOvershoot(
-            QuotaFrame frame,
-            ICollection<QuotaFrameVariable> frameVariables,
-            ValidationContext<QuotaFrame> context)
-        {
-
-            // note: the frame itself cannot have max overshoot, because
-            // it is never a leaf node
-
-            var traverser = new PreOrderQuotaFrameTraverser();
-
-            bool allOk = true;
-            traverser.Traverse(frame, (variable, level) =>
-            {
-                allOk &= ValidateQuotaCell(level, context);
-            });
-
-            return allOk;
-        }
-
-        private static bool ValidateQuotaCell(IQuotaCell cell, ValidationContext<QuotaFrame> context)
-        {
-            var isPositive = !cell.MaxOvershoot.HasValue || cell.MaxOvershoot.Value >= 0;
-            var isLeafOrEmpty = !cell.Variables.Any() || cell.MaxOvershoot == null;
-
-            if (!isPositive || !isLeafOrEmpty)
-            {
-                context.MessageFormatter.AppendArgument("LevelId", cell.Id);
-                context.MessageFormatter.AppendArgument("LevelName", cell.Name);
-                context.MessageFormatter.AppendArgument("MaxOvershoot", cell.MaxOvershoot);
-
-                return false;
-            }
-
-            return true;
-        }
-
         private static bool HaveValidLevelTargets(
             QuotaFrame frame,
             ICollection<QuotaFrameVariable> frameVariables,
@@ -500,7 +461,7 @@ namespace Nfield.Quota
             var isTreeValid = true;
             foreach (var variable in variables)
             {
-                isTreeValid &= ProcessLevel(variable, new [] { frame });
+                isTreeValid &= ProcessLevel(variable, new[] { frame });
             }
 
             return isTreeValid;
