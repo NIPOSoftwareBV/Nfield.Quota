@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28729.10
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33627.172
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nfield.Quota", "Nfield.Quota\Nfield.Quota.csproj", "{E13203D0-10C1-468E-87CD-637FC730D66A}"
 EndProject
@@ -9,8 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nfield.Quota.Tests", "Nfiel
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CI", "CI", "{1050C460-9431-42AF-A022-176D847ACA25}"
 	ProjectSection(SolutionItems) = preProject
-		devops.yml = devops.yml
-		prerelease.ps1 = prerelease.ps1
+		pipelines\build.yml = pipelines\build.yml
+		pipelines\deploy-nuget.yml = pipelines\deploy-nuget.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CA0ED88A-A281-48B5-BC9C-85399B0E3D1B}"
@@ -18,6 +18,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		CodeAnalysis\NipoSoftware.DefaultProjectRules.targets = CodeAnalysis\NipoSoftware.DefaultProjectRules.targets
 		CodeAnalysis\Standard rules for NIPO Software.ruleset = CodeAnalysis\Standard rules for NIPO Software.ruleset
 		version.txt = version.txt
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "templates", "templates", "{377F20B4-B3F6-492E-9624-2782402A55C3}"
+	ProjectSection(SolutionItems) = preProject
+		pipelines\YmlTemplates\deploy.yml = pipelines\YmlTemplates\deploy.yml
+		pipelines\Scripts\GetNugetVersion.ps1 = pipelines\Scripts\GetNugetVersion.ps1
+		pipelines\YmlTemplates\postBuildSteps.yml = pipelines\YmlTemplates\postBuildSteps.yml
+		pipelines\YmlTemplates\runUnitTests.yml = pipelines\YmlTemplates\runUnitTests.yml
 	EndProjectSection
 EndProject
 Global
@@ -37,6 +45,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{377F20B4-B3F6-492E-9624-2782402A55C3} = {1050C460-9431-42AF-A022-176D847ACA25}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {38706C3C-FBD6-4110-8A19-1BC55F4B0E02}

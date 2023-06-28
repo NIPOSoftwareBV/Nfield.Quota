@@ -1,89 +1,72 @@
+# Build template for the Quota pipeline
+name: $(SourceBranchName)-$(date:yyyyMMdd)$(rev:.r)
+
 trigger:
+  # We need to set this to false, otherwise the system waits until the previous run is completed, and if you don't deploy or you don't cancel the build, the previous run will stay in progress forever
+  # setting the batch to false will always trigger a build when there is a new commit (https://docs.microsoft.com/en-us/azure/devops/pipelines/repos/github?view=azure-devops&tabs=yaml#batching-ci-runs)
   batch: false
   branches:
-    include: ['master', '*/ci-*']
+    include:
+      - "master"
+      - "*/ci-*"
+      - "release/*"
+  paths:
+    include:
+      - Library/*
+      - packages/*
+      - Tests/*
+      - Nfield.Quota.sln
+      - Pipelines/*
 
 pr: none
 
-jobs:
-- job: BuildProject
-  displayName: Build project
-  pool:
-    vmImage: windows-2019      # Name: 'Hosted Windows 2019 with VS 2019'
-  variables:
-  - group: Nfield-Variables
-  steps:
-    
-  # Build projects
-  - task: DotNetCoreCLI@2
-    displayName: 'Dotnet Build Quota'
-    inputs:
-      projects: 'Nfield.Quota.sln'
-      arguments: '--configuration $(BuildConfiguration)'
-  
-  # Run tests
-  - task: VSTest@2
-    displayName: 'VsTest - testAssemblies'
-    inputs:
-      testAssemblyVer2: |
-        **\$(BuildConfiguration)\net*\*.Tests.dll
-        !**\obj\**
-      platform: '$(BuildPlatform)'
-      configuration: '$(BuildConfiguration)'
+pool:
+  vmImage: windows-2022
 
-  # Publish build artifacts
-  - task: PublishSymbols@2
-    displayName: 'Publish symbols path'
-    inputs:
-      SearchPattern: '**\bin\**\*.pdb'
-      PublishSymbols: false
-    continueOnError: true
+stages:
+  - stage: Build
+    displayName: Build
+    jobs:
+      # Call the pre build template located in the YmlTemplates folder
+      - job: BuildQuota
+        displayName: "Build Quota"
+        steps:
 
-  # Copy filds to artifacts directory
-  - task: CopyFiles@2
-    displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
-    inputs:
-      SourceFolder: '$(system.defaultworkingdirectory)'
-      Contents: '**\bin\$(BuildConfiguration)\**'
-      TargetFolder: '$(build.artifactstagingdirectory)'
+          - task: DotNetCoreCLI@2
+            displayName: 'Dotnet Build Quota'
+            inputs:
+              projects: 'Nfield.Quota.sln'
+              arguments: '--configuration $(BuildConfiguration)'
+        
+          # Run All Unit Test Assemblies
+          - template: ./YmlTemplates/runUnitTests.yml
 
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish Artifact: drop'
-    inputs:
-      PathtoPublish: '$(build.artifactstagingdirectory)'
-  
-  # Create NuGet Version    
-  - task: PowerShell@1
-    displayName: 'Create NuGet Version'
-    inputs:
-      scriptName: createnugetversion.ps1
- 
-  # Create NuGet Package  
-  - task: DotNetCoreCLI@2
-    displayName: '(when not pull): dotnet pack'
-    inputs:
-      command: pack
-      packagesToPack: Nfield.Quota.sln
-      nobuild: true
-      versioningScheme: byEnvVar
-      versionEnvVar: Version
-    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+        ####################### GET NUGET VERSION ####################
+          - task: PowerShell@1
+            displayName: 'Get NuGet Version'
+            inputs:
+              scriptName: ./Pipelines/Scripts/GetNugetVersion.ps1
 
-  # Publish NuGet package
-  - task: NuGetCommand@2
-    displayName: '(when not pull): NuGet push'
-    inputs:
-      command: push
-      nuGetFeedType: external
-      publishFeedCredentials: 'NuGet (Publish)'
-    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+        ####################### NUGET PACKAGING ####################
+          - task: NuGetCommand@2
+            displayName: 'Pack NuGet'
+            inputs:
+              command: 'pack'
+              packagesToPack: 'Library/Nfield.Quota.csproj'
+              versioningScheme: byEnvVar
+              versionEnvVar: Version  #Created with GetNugetVersion.ps1
+              packDestination: $(Build.ArtifactStagingDirectory)/
 
-  # Publish release
-  - task: PowerShell@2
-    displayName: 'Publish Github release (if needed)'
-    inputs:
-      targetType: filePath
-      filePath: './publish-release.ps1'
-      arguments: '-AccessToken $(GitAccessToken)'
-      errorActionPreference: continue
-    continueOnError: true
+          - task: CopyFiles@2
+            displayName: 'Copy Library Files to: $(build.artifactstagingdirectory)'
+            inputs:
+              SourceFolder: '$(system.defaultworkingdirectory)'
+              Contents: '**\Library\bin\$(BuildConfiguration)\**'
+              TargetFolder: '$(build.artifactstagingdirectory)'
+      
+          # Call the post build template located in the YmlTemplates folder
+          - template: YmlTemplates/postBuildSteps.yml
+            parameters:
+              ContentsToCopy: |
+                $(Build.artifactstagingdirectory)\**
+                NugetReleaseInfo.txt
