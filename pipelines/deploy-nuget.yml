@@ -7,8 +7,8 @@ trigger: none
 # This pipeline is triggered when the Build stage in the DomainApiBuild pipeline finishes
 resources:
   pipelines:
-  - pipeline: 'SDKBuild'
-    source: 'Nfield SDK Build'
+  - pipeline: 'QuotaBuild'
+    source: 'Nfield Quota Build'
     trigger:
       branches:
         include: 
@@ -16,7 +16,7 @@ resources:
         - '*/ci-*'
         - 'release/*'
       stages:
-      - Build # Run deploy-release pipeline when the build of SDK completes. If it only has one stage we could use "trigger: true" too.
+      - Build # Run deploy-release pipeline when the build of Quota completes. If it only has one stage we could use "trigger: true" too.
 
 pool:
   vmImage: windows-2022
@@ -39,7 +39,7 @@ stages:
 - template: ./YmlTemplates/deploy.yml
   parameters:
     stageDependency: GetResources
-    pipelineDependency: SDKBuild
+    pipelineDependency: QuotaBuild
     nuGetFeedType: internal
 
 ####################### EXTERNAL DEPLOY NUGET.ORG ####################
@@ -47,5 +47,5 @@ stages:
   - template: ./YmlTemplates/deploy.yml
     parameters:
       stageDependency: GetResources
-      pipelineDependency: SDKBuild
+      pipelineDependency: QuotaBuild
       nuGetFeedType: external
