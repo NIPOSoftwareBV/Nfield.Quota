@@ -8,7 +8,7 @@ trigger: none
 resources:
   pipelines:
   - pipeline: 'QuotaBuild'
-    source: 'Nfield Quota Build'
+    source: 'Nfield.Quota Build'
     trigger:
       branches:
         include: 
