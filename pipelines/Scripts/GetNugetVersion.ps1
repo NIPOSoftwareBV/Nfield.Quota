@@ -1,21 +1,21 @@
-#    This file is part of Nfield.SDK.
+#    This file is part of Nfield.Quota.
 #
-#    Nfield.SDK is free software: you can redistribute it and/or modify
+#    Nfield.Quota is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Lesser General Public License as published by
 #    the Free Software Foundation, either version 3 of the License, or
 #    (at your option) any later version.
 #
-#    Nfield.SDK is distributed in the hope that it will be useful,
+#    Nfield.Quota is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #    GNU Lesser General Public License for more details.
 #
 #    You should have received a copy of the GNU Lesser General Public License
-#    along with Nfield.SDK.  If not, see <http://www.gnu.org/licenses/>.
+#    along with Nfield.Quota.  If not, see <http://www.gnu.org/licenses/>.
 
 # Create NuGet Version
 # The following version format will be used: Major.Minor.Patch
-# The segment Major and Minor should be configured in version.txt (see root of Nfield-SDK repo)
+# The segment Major and Minor should be configured in version.txt (see root of Nfield-Quota repo)
 # The 3rd segment (Patch) will be determined by {buildId}{suffix}
 
 if( -Not (Test-Path version.txt))
@@ -69,7 +69,7 @@ Write-Host "Version Name:" $Version
 Write-Host "Build Commit Hash:" $env:BUILD_SOURCEVERSION
 Write-Host "Release Name:" $releaseName
 
-# Create the nuget Release info will be consumed in the Nfield SDK Release pipeline
+# Create the nuget Release info will be consumed in the Nfield Quota Release pipeline
 $versionFilename = "NugetReleaseInfo.txt"
 Write-Host $versionFilename
 "$($branchName):$($releaseName):$($env:BUILD_SOURCEVERSION):$($Version)" | Out-File $versionFilename

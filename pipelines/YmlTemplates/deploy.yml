@@ -15,10 +15,10 @@ parameters:
     type: string
 
 stages:
-  - stage: SDKNugetPublishing${{ parameters.nuGetFeedType }}
-    displayName: "SDK nuget ${{ parameters.nuGetFeedType }} Publishing"
+  - stage: QuotaNugetPublishing${{ parameters.nuGetFeedType }}
+    displayName: "Quota nuget ${{ parameters.nuGetFeedType }} Publishing"
     dependsOn: ["${{ parameters.stageDependency }}"]
-    # SDK publishing stage will be skipped if the build is BatchedCI to validate a PR. So you'll need to run it manually if you want to deploy it.
+    # Quota publishing stage will be skipped if the build is BatchedCI to validate a PR. So you'll need to run it manually if you want to deploy it.
     condition: succeeded()
     variables:
       - name: baseRoute
@@ -27,9 +27,9 @@ stages:
         ${{ if not( eq(parameters.pipelineDependency, 'current')) }}:
           value: ${{ parameters.pipelineDependency }}
     jobs:
-      - deployment: SDKNugetPublish
+      - deployment: QuotaNugetPublish
         displayName: Publishing on ${{ parameters.nuGetFeedType }} Feed
-        environment: ${{ format('NfieldSDK{0}Feed', parameters.nuGetFeedType) }}
+        environment: ${{ format('NfieldQuota{0}Feed', parameters.nuGetFeedType) }}
         continueOnError: false
         strategy:
           runOnce:
@@ -79,7 +79,7 @@ stages:
                   condition: ${{ eq(parameters.nuGetFeedType, 'external') }}
                   inputs:
                     gitHubConnection: 'github.com_AlbertoBelver' # OAuth Service Conection https://dev.azure.com/niposoftware/Nfield/_settings/adminservices
-                    repositoryName: 'NIPOSoftwareBV/Nfield-SDK'
+                    repositoryName: 'NIPOSoftwareBV/Nfield-Quota'
                     action: 'create'
                     target: '$(CommitHash)'
                     tagSource: 'userSpecifiedTag'

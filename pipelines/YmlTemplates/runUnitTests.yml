@@ -11,7 +11,7 @@ steps:
     inputs:
       testSelector: 'testAssemblies'
       testAssemblyVer2: |
-        **\Nfield.SDK.Tests.dll
+        **\Nfield.Quota.Tests.dll
         !**\obj\**
       searchFolder: '$(System.DefaultWorkingDirectory)'
       Logger: 'trx'
