@@ -53,7 +53,7 @@ stages:
                       }
                       else
                       {
-                         exit 1
+                         exit -1
                       }
                 - task: NuGetCommand@2
                   displayName: 'NuGet push'
