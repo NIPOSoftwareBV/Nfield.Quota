@@ -48,13 +48,7 @@ namespace Nfield.Quota.Tests
             Assert.That(quotaFrame.FrameVariables.First().Levels.First().MaxTarget, Is.EqualTo(7));
             Assert.That(quotaFrame.FrameVariables.First().Levels.ElementAt(1).Target, Is.EqualTo(4));
             Assert.That(quotaFrame.FrameVariables.First().Levels.ElementAt(1).MaxTarget, Is.EqualTo(5));
-        }
-
-        [Test]
-        public void FakeAndFailTest()
-        {
-            Assert.Fail("Fake and Fail");
-        }
+        }       
 
         [Test]
         public void BuildingNestedTreeCreatesCorrectQuotaFrame()

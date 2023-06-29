@@ -29,7 +29,7 @@ stages:
     jobs:
       - deployment: QuotaNugetPublish
         displayName: Publishing on ${{ parameters.nuGetFeedType }} Feed
-        environment: ${{ format('NfieldQuota{0}Feed', parameters.nuGetFeedType) }}
+        environment: ${{ format('NfieldSDK{0}Feed', parameters.nuGetFeedType) }}
         continueOnError: false
         strategy:
           runOnce:
