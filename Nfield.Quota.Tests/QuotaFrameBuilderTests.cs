@@ -51,6 +51,12 @@ namespace Nfield.Quota.Tests
         }
 
         [Test]
+        public void FakeAndFailTest()
+        {
+            Assert.Fail("Fake and Fail");
+        }
+
+        [Test]
         public void BuildingNestedTreeCreatesCorrectQuotaFrame()
         {
             var quotaFrame = new QuotaFrameBuilder()
