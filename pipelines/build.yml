@@ -56,7 +56,13 @@ stages:
               versioningScheme: byEnvVar
               versionEnvVar: Version  #Created with GetNugetVersion.ps1
               packDestination: $(Build.ArtifactStagingDirectory)/
-         
+
+          - task: CopyFiles@2
+            displayName: 'Copy Library Files to: $(build.artifactstagingdirectory)'
+            inputs:
+              SourceFolder: '$(system.defaultworkingdirectory)'
+              Contents: '**\bin\$(BuildConfiguration)\**'
+              TargetFolder: '$(build.artifactstagingdirectory)'
       
           # Call the post build template located in the YmlTemplates folder
           - template: YmlTemplates/postBuildSteps.yml
