@@ -52,7 +52,7 @@ stages:
             displayName: 'Pack NuGet'
             inputs:
               command: 'pack'
-              packagesToPack: 'Nfield.Quota.csproj'
+              packagesToPack: './Nfield.Quota.csproj'
               versioningScheme: byEnvVar
               versionEnvVar: Version  #Created with GetNugetVersion.ps1
               packDestination: $(Build.ArtifactStagingDirectory)/
