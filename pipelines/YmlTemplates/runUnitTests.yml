@@ -30,7 +30,7 @@ steps:
       Write-Host $XMLresultfiles
       $OutputFolder = "$(Build.ArtifactStagingDirectory)\for-debug\"
       # Creating an empty file to don't fail when copying to for-debug
-      Out-File -FilePath "$(Build.ArtifactStagingDirectory)\for-debug\EmptyFile.txt" 
+      New-Item -Path "$(Build.ArtifactStagingDirectory)\for-debug\EmptyFile.txt" -ItemType "file" -Force
       Write-Host "Creating output folder: " $OutputFolder
       New-Item -ItemType directory -Path $OutputFolder
       foreach ($XMLresultfile in $XMLresultfiles) {
