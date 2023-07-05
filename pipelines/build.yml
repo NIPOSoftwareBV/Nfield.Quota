@@ -48,14 +48,14 @@ stages:
               scriptName: ./Pipelines/Scripts/GetNugetVersion.ps1
 
         ####################### NUGET PACKAGING ####################
-          - task: NuGetCommand@2
+          - task: DotNetCoreCLI@2
             displayName: 'Pack NuGet'
             inputs:
               command: 'pack'
               packagesToPack: 'Nfield.Quota/Nfield.Quota.csproj'
               versioningScheme: byEnvVar
               versionEnvVar: Version  #Created with GetNugetVersion.ps1
-              packDestination: $(Build.ArtifactStagingDirectory)/
+              packDirectory: $(Build.ArtifactStagingDirectory)/
 
           - task: CopyFiles@2
             displayName: 'Copy Library Files to: $(build.artifactstagingdirectory)'
