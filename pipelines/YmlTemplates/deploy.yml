@@ -91,7 +91,7 @@ stages:
                   displayName: 'Create GitHub Release'
                   condition: ${{ eq(parameters.nuGetFeedType, 'external') }}
                   inputs:
-                    gitHubConnection: 'github.com_AlbertoBelver' # OAuth Service Conection https://dev.azure.com/niposoftware/Nfield/_settings/adminservices
+                    gitHubConnection: 'github.com_AlbertoBelver'
                     repositoryName: 'NIPOSoftwareBV/Nfield-Quota'
                     action: 'create'
                     target: '$(CommitHash)'
