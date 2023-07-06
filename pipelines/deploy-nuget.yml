@@ -4,7 +4,7 @@ pr: none
 
 trigger: none
 
-# This pipeline is triggered when the Build stage in the DomainApiBuild pipeline finishes
+# This pipeline is triggered when the Build stage in the QuotaBuild pipeline finishes
 resources:
   pipelines:
   - pipeline: 'QuotaBuild'
