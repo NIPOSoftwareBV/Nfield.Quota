@@ -12,6 +12,7 @@ namespace Nfield.Quota.Builders
         private readonly IEnumerable<string> _levelNames;
         private readonly bool? _isSelectionOptional;
         private readonly bool _isMulti;
+        private readonly bool _isTargetable;
 
         public QuotaVariableDefinitionBuilder(
             Guid id,
@@ -19,7 +20,8 @@ namespace Nfield.Quota.Builders
             string odinVariableName,
             IEnumerable<string> levelNames,
             bool? isSelectionOptional = null,
-            bool isMulti = false)
+            bool isMulti = false,
+            bool isTargetable = false)
         {
             _id = id;
             _name = name;
@@ -27,6 +29,7 @@ namespace Nfield.Quota.Builders
             _levelNames = levelNames;
             _isSelectionOptional = isSelectionOptional;
             _isMulti = isMulti;
+            _isTargetable = isTargetable;
         }
 
         public void Build(QuotaFrame quotaFrame)
@@ -39,7 +42,8 @@ namespace Nfield.Quota.Builders
                 Name = _name,
                 OdinVariableName = _odinVariableName,
                 IsSelectionOptional = _isSelectionOptional,
-                IsMulti = _isMulti
+                IsMulti = _isMulti,
+                IsTargetable = _isTargetable
             };
 
             foreach (var levelName in _levelNames)

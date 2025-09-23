@@ -50,7 +50,8 @@ namespace Nfield.Quota.Builders
             string odinVariableName,
             IEnumerable<string> levelNames,
             VariableSelection selection = VariableSelection.NotApplicable,
-            bool isMulti = false)
+            bool isMulti = false,
+            bool isTargetable = false)
         {
             bool? isSelectionOptional = null;
             switch (selection)
@@ -69,7 +70,8 @@ namespace Nfield.Quota.Builders
                 odinVariableName,
                 levelNames,
                 isSelectionOptional,
-                isMulti
+                isMulti,
+                isTargetable
                 );
             Add(variableDefinitionBuilder);
             return this;
@@ -80,11 +82,12 @@ namespace Nfield.Quota.Builders
             string variableName,
             IEnumerable<string> levelNames,
             VariableSelection selection = VariableSelection.NotApplicable,
-            bool isMulti = false)
+            bool isMulti = false,
+            bool isTargetable = false)
         {
             Ensure.ArgumentNotNull(variableName, nameof(variableName));
 
-            return VariableDefinition(variableName, variableName.ToLowerInvariant(), levelNames, selection, isMulti);
+            return VariableDefinition(variableName, variableName.ToLowerInvariant(), levelNames, selection, isMulti, isTargetable);
         }
 
         public QuotaFrameBuilder Structure(
