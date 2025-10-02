@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Nfield.Quota.Tests.Helpers;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Nfield.Quota.Tests.Helpers;
 
 namespace Nfield.Quota.Tests.Assets
 {

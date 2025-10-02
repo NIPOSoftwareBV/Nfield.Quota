@@ -37,6 +37,7 @@ namespace Nfield.Quota.Tests
             Assert.That(variable.OdinVariableName, Is.EqualTo("odinVarName"));
             Assert.That(variable.IsSelectionOptional, Is.EqualTo(true));
             Assert.That(variable.IsMulti, Is.False);
+            Assert.That(variable.IsTargetable, Is.False);
             Assert.That(variable.Levels.Count, Is.EqualTo(2));
             Assert.That(variable.Levels.First().Name, Is.EqualTo("level1Name"));
             Assert.That(variable.Levels.ElementAt(1).Name, Is.EqualTo("level2Name"));
@@ -62,7 +63,7 @@ namespace Nfield.Quota.Tests
                 .VariableDefinition("region", new[]
                 {
                      "North", "South"
-                }, isMulti: true)
+                }, isMulti: true, isTargetable: true)
                 .Structure(root =>
                     root.Variable("gender",
                         gender => gender.Variable("region")))
@@ -89,6 +90,8 @@ namespace Nfield.Quota.Tests
             Assert.That(genderVariable.Name, Is.EqualTo("gender"));
             Assert.That(genderVariable.OdinVariableName, Is.EqualTo("gender"));
             Assert.That(genderVariable.IsSelectionOptional, Is.EqualTo(true));
+            Assert.That(genderVariable.IsMulti, Is.False);
+            Assert.That(genderVariable.IsTargetable, Is.False);
             Assert.That(genderVariable.Levels.Count, Is.EqualTo(2));
             Assert.That(genderVariable.Levels.First().Name, Is.EqualTo("Male"));
             Assert.That(genderVariable.Levels.ElementAt(1).Name, Is.EqualTo("Female"));
@@ -99,6 +102,7 @@ namespace Nfield.Quota.Tests
             Assert.That(regionVariable.OdinVariableName, Is.EqualTo("region"));
             Assert.That(regionVariable.IsSelectionOptional, Is.EqualTo(null));
             Assert.That(regionVariable.IsMulti);
+            Assert.That(regionVariable.IsTargetable);
             Assert.That(regionVariable.Levels.Count, Is.EqualTo(2));
             Assert.That(regionVariable.Levels.First().Name, Is.EqualTo("North"));
             Assert.That(regionVariable.Levels.ElementAt(1).Name, Is.EqualTo("South"));
