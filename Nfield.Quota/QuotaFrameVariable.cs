@@ -23,6 +23,8 @@ namespace Nfield.Quota
 
         public bool IsHidden { get; set; }
 
+        public bool IsForAllocationOnly { get; set; }
+
         public ICollection<QuotaFrameLevel> Levels { get; }
     }
 }
