@@ -1,8 +1,8 @@
-﻿using Nfield.Quota.Helpers;
-using Nfield.Quota.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using Nfield.Quota.Helpers;
+using Nfield.Quota.Models;
 
 namespace Nfield.Quota.Builders
 {
@@ -51,7 +51,8 @@ namespace Nfield.Quota.Builders
             IEnumerable<string> levelNames,
             VariableSelection selection = VariableSelection.NotApplicable,
             bool isMulti = false,
-            bool isTargetable = false)
+            bool isTargetable = false,
+            bool isForAllocationOnly = false)
         {
             bool? isSelectionOptional = null;
             switch (selection)
@@ -71,7 +72,8 @@ namespace Nfield.Quota.Builders
                 levelNames,
                 isSelectionOptional,
                 isMulti,
-                isTargetable
+                isTargetable,
+                isForAllocationOnly
                 );
             Add(variableDefinitionBuilder);
             return this;
@@ -83,11 +85,12 @@ namespace Nfield.Quota.Builders
             IEnumerable<string> levelNames,
             VariableSelection selection = VariableSelection.NotApplicable,
             bool isMulti = false,
-            bool isTargetable = false)
+            bool isTargetable = false,
+            bool isForAllocationOnly = false)
         {
             Ensure.ArgumentNotNull(variableName, nameof(variableName));
 
-            return VariableDefinition(variableName, variableName.ToLowerInvariant(), levelNames, selection, isMulti, isTargetable);
+            return VariableDefinition(variableName, variableName.ToLowerInvariant(), levelNames, selection, isMulti, isTargetable, isForAllocationOnly);
         }
 
         public QuotaFrameBuilder Structure(
