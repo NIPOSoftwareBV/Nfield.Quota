@@ -1,9 +1,9 @@
-﻿using Nfield.Quota.Builders;
+﻿using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using Nfield.Quota.Builders;
 using Nfield.Quota.Models;
 using Nfield.Quota.Persistence;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
 
 namespace Nfield.Quota.Tests
 {
@@ -141,6 +141,32 @@ namespace Nfield.Quota.Tests
             var json = QuotaFrameEncoder.Encode(frame);
 
             Assert.That(Regex.Matches(json, @"""isTargetable"": true").Count, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void IsForAllocationOnlyIsSerializedInDefinition()
+        {
+            var frame = new QuotaFrameBuilder()
+                .VariableDefinition("var", new List<string> { "level" }, isForAllocationOnly: true)
+                .Structure(sb => sb.Variable("var"))
+                .Build();
+
+            var json = QuotaFrameEncoder.Encode(frame);
+
+            // if the definition is True, the corresponding structure variable is also True
+            Assert.That(Regex.Matches(json, @"""isForAllocationOnly"": true").Count, Is.EqualTo(2));
+        }
+        [Test]
+        public void IsForAllocationOnlyIsSerializedInStructure()
+        {
+            var frame = new QuotaFrameBuilder()
+                .VariableDefinition("var", new List<string> { "level" }, isForAllocationOnly: false)
+                .Structure(sb => sb.Variable("var", isForAllocationOnly: true))
+                .Build();
+
+            var json = QuotaFrameEncoder.Encode(frame);
+
+            Assert.That(Regex.Matches(json, @"""isForAllocationOnly"": true").Count, Is.EqualTo(1));
         }
     }
 }
