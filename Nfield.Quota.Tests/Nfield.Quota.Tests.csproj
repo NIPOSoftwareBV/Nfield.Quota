@@ -30,6 +30,9 @@
     <None Update="Assets\glu-quota-format-v6-common-AddedIsTargetable.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Assets\glu-quota-format-v7-common-AddedIsForAllocationOnly.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

@@ -1,0 +1,60 @@
+﻿{
+  "id": "frameId",
+  "variableDefinitions": [
+    {
+      "id": "234F6E29-A43B-41C7-A99C-6C8FFD177998",
+      "name": "Region",
+      "odinVariableName": "regionOdin",
+      "isSelectionOptional": true,
+      "isMulti": true,
+      "isTargetable": true,
+      "isForAllocationOnly": true,
+      "levels": [
+        {
+          "id": "BAD227D2-4DBD-47BA-B8B7-B03B89B42B47",
+          "name": "Haarlem"
+        }
+      ]
+    },
+    {
+      "id": "8D81EF06-477C-40EA-BE9E-2F54D0266C5D",
+      "name": "Gender",
+      "odinVariableName": "genderOdin",
+      "isSelectionOptional": false,
+      "isMulti": false,
+      "isTargetable": false,
+      "isForAllocationOnly": false,
+      "levels": [
+        {
+          "id": "A5AA65EA-EE5F-488E-9851-270DBF2C842D",
+          "name": "Male"
+        }
+      ]
+    }
+  ],
+  "frameVariables": [
+    {
+      "id": "5B7BCBB5-CF2B-4FE1-B5C3-42D440438268",
+      "definitionId": "234F6E29-A43B-41C7-A99C-6C8FFD177998",
+      "levels": [
+        {
+          "id": "002CA83D-7768-4C12-8B74-4C20C165AA32",
+          "definitionId": "BAD227D2-4DBD-47BA-B8B7-B03B89B42B47",
+          "variables": []
+        }
+      ]
+    },
+    {
+      "id": "A56C06CC-C12B-4543-8FC9-0434A891F309",
+      "definitionId": "8D81EF06-477C-40EA-BE9E-2F54D0266C5D",
+      "isForAllocationOnly": true,
+      "levels": [
+        {
+          "id": "512F791A-58DB-4EBC-95B7-21D1C87E789E",
+          "definitionId": "A5AA65EA-EE5F-488E-9851-270DBF2C842D",
+          "variables": []
+        }
+      ]
+    }
+  ]
+}

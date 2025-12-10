@@ -31,6 +31,8 @@ namespace Nfield.Quota
 
         public bool IsTargetable { get; set; }
 
+        public bool IsForAllocationOnly { get; set; }
+
         public ICollection<QuotaLevelDefinition> Levels { get; }
 
         public static bool operator ==(QuotaVariableDefinition left, QuotaVariableDefinition right)
@@ -67,6 +69,7 @@ namespace Nfield.Quota
                    && IsSelectionOptional == other.IsSelectionOptional
                    && IsMulti == other.IsMulti
                    && IsTargetable == other.IsTargetable
+                   && IsForAllocationOnly == other.IsForAllocationOnly
                    && Levels.ScrambledDefinitionsEquals(other.Levels);
         }
     }

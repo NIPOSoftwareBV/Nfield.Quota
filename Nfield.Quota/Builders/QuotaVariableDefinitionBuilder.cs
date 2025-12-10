@@ -1,6 +1,6 @@
-﻿using Nfield.Quota.Helpers;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Nfield.Quota.Helpers;
 
 namespace Nfield.Quota.Builders
 {
@@ -13,6 +13,7 @@ namespace Nfield.Quota.Builders
         private readonly bool? _isSelectionOptional;
         private readonly bool _isMulti;
         private readonly bool _isTargetable;
+        private readonly bool _isForAllocationOnly;
 
         public QuotaVariableDefinitionBuilder(
             Guid id,
@@ -21,7 +22,8 @@ namespace Nfield.Quota.Builders
             IEnumerable<string> levelNames,
             bool? isSelectionOptional = null,
             bool isMulti = false,
-            bool isTargetable = false)
+            bool isTargetable = false,
+            bool isForAllocationOnly = false)
         {
             _id = id;
             _name = name;
@@ -30,6 +32,7 @@ namespace Nfield.Quota.Builders
             _isSelectionOptional = isSelectionOptional;
             _isMulti = isMulti;
             _isTargetable = isTargetable;
+            _isForAllocationOnly = isForAllocationOnly;
         }
 
         public void Build(QuotaFrame quotaFrame)
@@ -43,7 +46,8 @@ namespace Nfield.Quota.Builders
                 OdinVariableName = _odinVariableName,
                 IsSelectionOptional = _isSelectionOptional,
                 IsMulti = _isMulti,
-                IsTargetable = _isTargetable
+                IsTargetable = _isTargetable,
+                IsForAllocationOnly = _isForAllocationOnly
             };
 
             foreach (var levelName in _levelNames)
