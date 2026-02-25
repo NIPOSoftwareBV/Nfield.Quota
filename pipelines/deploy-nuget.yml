@@ -31,4 +31,18 @@ pool:
   
 
 stages:
- - template: AzureDevOps/SDK-and-Quota-pipelines/deploy-quota-nuget.yml@NfieldTools
+ - template: AzureDevOps/SDK-and-Quota-pipelines/YmlTemplates/deploy.yml@NfieldTools
+   parameters:
+     stageDependency: GetResources
+     pipelineDependency: QuotaBuild
+     nuGetFeedType: internal
+     featureName: Quota
+
+  ####################### EXTERNAL DEPLOY NUGET.ORG ####################
+ - ${{ if startsWith(variables['Build.SourceBranch'], 'refs/heads/release') }}:
+   - template: AzureDevOps/SDK-and-Quota-pipelines/YmlTemplates/deploy.yml@NfieldTools
+     parameters:
+       stageDependency: GetResources
+       pipelineDependency: QuotaBuild
+       nuGetFeedType: external
+       featureName: Quota
