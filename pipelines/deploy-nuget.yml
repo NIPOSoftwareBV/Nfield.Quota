@@ -33,7 +33,6 @@ pool:
 stages:
  - template: AzureDevOps/SDK-and-Quota-pipelines/YmlTemplates/deploy.yml@NfieldTools
    parameters:
-     stageDependency: GetResources
      pipelineDependency: QuotaBuild
      nuGetFeedType: internal
      featureName: Quota
@@ -42,7 +41,6 @@ stages:
  - ${{ if startsWith(variables['Build.SourceBranch'], 'refs/heads/release') }}:
    - template: AzureDevOps/SDK-and-Quota-pipelines/YmlTemplates/deploy.yml@NfieldTools
      parameters:
-       stageDependency: GetResources
        pipelineDependency: QuotaBuild
        nuGetFeedType: external
        featureName: Quota
