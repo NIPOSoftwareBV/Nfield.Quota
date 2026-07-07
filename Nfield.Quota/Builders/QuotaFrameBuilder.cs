@@ -9,6 +9,7 @@ namespace Nfield.Quota.Builders
     public class QuotaFrameBuilder
     {
         private int? _target;
+        private bool? _considerActiveAsSuccessful;
         private readonly IList<QuotaVariableDefinitionBuilder> _variableDefinitionBuilders;
         private readonly QuotaFrameStructureBuilder _structureBuilder;
 
@@ -27,6 +28,7 @@ namespace Nfield.Quota.Builders
             var frame = new QuotaFrame
             {
                 Target = _target,
+                ConsiderActiveAsSuccessful = _considerActiveAsSuccessful
             };
 
             foreach (var builder in _variableDefinitionBuilders)
@@ -42,6 +44,12 @@ namespace Nfield.Quota.Builders
         public QuotaFrameBuilder Target(int? target)
         {
             _target = target;
+            return this;
+        }
+
+        public QuotaFrameBuilder ConsiderActiveAsSuccessful(bool? considerActiveAsSuccessful)
+        {
+            _considerActiveAsSuccessful = considerActiveAsSuccessful;
             return this;
         }
 
