@@ -68,9 +68,9 @@ namespace Nfield.Quota
                     .WithErrorCode("nested-levels-less-than-parent-min");
 
             RuleFor(qf => qf.ConsiderActiveAsSuccessful)
-            .Must(HaveSameMaxOvershootValueForAllLeaves)
-            .WithMessage("Quota frame invalid. When 'ConsiderActiveAsSuccessful' is true, all configured values for MaxOvershoot should be the same")
-            .WithErrorCode("active-as-successful-invalid");
+                .Must(HaveSameMaxOvershootValueForAllLeaves)
+                .WithMessage("Quota frame invalid. When 'ConsiderActiveAsSuccessful' is true, all configured values for MaxOvershoot should be the same")
+                .WithErrorCode("active-as-successful-invalid");
         }
 
         private static bool CheckLevels(IEnumerable<QuotaFrameLevel> levels, ref int? maxOvershoot)
