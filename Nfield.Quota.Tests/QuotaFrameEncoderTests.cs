@@ -168,5 +168,32 @@ namespace Nfield.Quota.Tests
 
             Assert.That(Regex.Matches(json, @"""isForAllocationOnly"": true").Count, Is.EqualTo(1));
         }
+
+        [Test]
+        public void ConsiderActiveAsSuccessfulIsSerializedInStructure()
+        {
+            var frame = new QuotaFrameBuilder()
+                .VariableDefinition("var", new List<string> { "level" })
+                .Structure(sb => sb.Variable("var"))
+                .Build();
+
+            var json = QuotaFrameEncoder.Encode(frame);
+
+            Assert.That(Regex.Matches(json, @"""considerActiveAsSuccessful"": null").Count, Is.EqualTo(1));
+
+            frame.ConsiderActiveAsSuccessful = false;
+
+            json = QuotaFrameEncoder.Encode(frame);
+
+            Assert.That(Regex.Matches(json, @"""considerActiveAsSuccessful"": false").Count, Is.EqualTo(1));
+
+            frame.ConsiderActiveAsSuccessful = true;
+
+            json = QuotaFrameEncoder.Encode(frame);
+
+            Assert.That(Regex.Matches(json, @"""considerActiveAsSuccessful"": true").Count, Is.EqualTo(1));
+
+        }
+
     }
 }
