@@ -179,7 +179,7 @@ namespace Nfield.Quota.Tests
 
             var json = QuotaFrameEncoder.Encode(frame);
 
-            Assert.That(Regex.Matches(json, @"""considerActiveAsSuccessful"": null").Count, Is.EqualTo(1));
+            Assert.That(Regex.Matches(json, @"""considerActiveAsSuccessful"": false").Count, Is.EqualTo(1));
 
             frame.ConsiderActiveAsSuccessful = false;
 

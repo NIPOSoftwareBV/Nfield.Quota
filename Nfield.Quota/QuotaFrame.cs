@@ -22,7 +22,7 @@ namespace Nfield.Quota
 
         public int? Target { get; set; }
 
-        public bool? ConsiderActiveAsSuccessful { get; set; }
+        public bool ConsiderActiveAsSuccessful { get; set; }
 
         // implementation of IQuotaCell is for internal use only
         int? IQuotaCell.Target => null; // the target on the quota frame acts as a max target

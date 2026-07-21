@@ -9,7 +9,7 @@ namespace Nfield.Quota.Builders
     public class QuotaFrameBuilder
     {
         private int? _target;
-        private bool? _considerActiveAsSuccessful;
+        private bool _considerActiveAsSuccessful;
         private readonly IList<QuotaVariableDefinitionBuilder> _variableDefinitionBuilders;
         private readonly QuotaFrameStructureBuilder _structureBuilder;
 
@@ -47,7 +47,7 @@ namespace Nfield.Quota.Builders
             return this;
         }
 
-        public QuotaFrameBuilder ConsiderActiveAsSuccessful(bool? considerActiveAsSuccessful)
+        public QuotaFrameBuilder ConsiderActiveAsSuccessful(bool considerActiveAsSuccessful)
         {
             _considerActiveAsSuccessful = considerActiveAsSuccessful;
             return this;

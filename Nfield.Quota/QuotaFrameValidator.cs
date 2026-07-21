@@ -115,9 +115,9 @@ namespace Nfield.Quota
             return consistent;
         }
 
-        private static bool HaveSameMaxOvershootValueForAllLeaves(QuotaFrame frame, bool? considerActiveAsSuccessful, ValidationContext<QuotaFrame> context)
+        private static bool HaveSameMaxOvershootValueForAllLeaves(QuotaFrame frame, bool considerActiveAsSuccessful, ValidationContext<QuotaFrame> context)
         {
-            if (!considerActiveAsSuccessful.HasValue || !considerActiveAsSuccessful.Value)
+            if (!considerActiveAsSuccessful)
             {
                 return true;
             }
