@@ -110,16 +110,6 @@ namespace Nfield.Quota
             return consistent;
         }
 
-        private static bool HaveSameMaxOvershootValueForAllLeaves(QuotaFrame frame, bool considerActiveAsSuccessful, ValidationContext<QuotaFrame> context)
-        {
-            if (!considerActiveAsSuccessful)
-            {
-                return true;
-            }
-            int? maxOvershoot = null;
-
-            return CheckVariables(frame.FrameVariables, ref maxOvershoot);
-        }
         private static bool HaveUniqueIds(
             QuotaFrame frame,
             IEnumerable<QuotaVariableDefinition> varDefinitions,
