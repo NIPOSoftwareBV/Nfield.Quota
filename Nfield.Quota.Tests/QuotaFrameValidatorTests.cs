@@ -311,7 +311,30 @@ namespace Nfield.Quota.Tests
             if (!isValid)
             {
                 Assert.That(result.Errors.Single().ErrorMessage,
-                    Is.EqualTo($"Max overshoot '{overshoot}' is invalid for frame level id '{level.Id}' with name '{level.Name}'. Max overshoot values can only be set on leaf nodes, and must be positive."));
+                    Is.EqualTo($"Max overshoot '{overshoot}' is invalid for frame level id '{level.Id}' with name '{level.Name}'. Max overshoot values can only be set on leaf nodes and root, and must be positive."));
+            }
+        }
+
+        [TestCase(0, true)]
+        [TestCase(1, true)]
+        [TestCase(-1, false)]
+        public void Frame_MaxOvershootShouldBePositiveOnRoot(int overshoot, bool isValid)
+        {
+            var quotaFrame = new QuotaFrameBuilder()
+                .VariableDefinition("var1", new[] { "a", "b" })
+                .RootLevelMaxOvershoot(overshoot)
+                .Structure(f => f.Variable("var1"))
+                .Build();
+
+            var validator = new QuotaFrameValidator();
+            var result = validator.Validate(quotaFrame);
+
+            Assert.That(result.IsValid, Is.EqualTo(isValid));
+
+            if (!isValid)
+            {
+                Assert.That(result.Errors.Single().ErrorMessage,
+                    Is.EqualTo($"Max overshoot '{overshoot}' is invalid for root. Max overshoot values must be positive."));
             }
         }
 
@@ -337,7 +360,7 @@ namespace Nfield.Quota.Tests
             var result = validator.Validate(quotaFrame);
             Assert.That(result.IsValid, Is.False);
             Assert.That(result.Errors.Single().ErrorMessage,
-                Is.EqualTo($"Max overshoot '5' is invalid for frame level id '{topLevel.Id}' with name '{topLevel.Name}'. Max overshoot values can only be set on leaf nodes, and must be positive."));
+                Is.EqualTo($"Max overshoot '5' is invalid for frame level id '{topLevel.Id}' with name '{topLevel.Name}'. Max overshoot values can only be set on leaf nodes and root, and must be positive."));
 
             // nested level can have max overshoot because it is a leaf node
             topLevel.MaxOvershoot = null;
@@ -1638,47 +1661,6 @@ namespace Nfield.Quota.Tests
         {
             var result = CreateQuotaFrameResult(odinVariable);
             Assert.That(result, Is.True);
-        }
-
-        [Test]
-        public void ConsiderActiveAsSuccessful_False_LeafNodesCanHaveDifferentMaxOvershoot()
-        {
-            var quotaFrame = new QuotaFrameBuilder()
-                .VariableDefinition("varName1", ["level1Name", "level2Name"])
-                .VariableDefinition("varName2", ["level1Name", "level2Name"])
-                .Structure(sb => sb.Variable("varName1", s => s.Variable("varName2")))
-                .Build();
-
-            quotaFrame["varName1", "level1Name"]["varName2", "level1Name"].MaxOvershoot = 1;
-            quotaFrame["varName1", "level1Name"]["varName2", "level2Name"].MaxOvershoot = 2;
-            quotaFrame["varName1", "level2Name"]["varName2", "level1Name"].MaxOvershoot = 3;
-            quotaFrame["varName1", "level2Name"]["varName2", "level2Name"].MaxOvershoot = 4;
-
-            var validator = new QuotaFrameValidator();
-            var result = validator.Validate(quotaFrame);
-
-            Assert.That(result.IsValid, Is.True);
-        }
-
-        [Test]
-        public void ConsiderActiveAsSuccessful_True_AllLeafNodesShouldHaveSameMaxOvershoot()
-        {
-            var quotaFrame = new QuotaFrameBuilder()
-                .RootLevelMaxOvershoot(1)
-                .VariableDefinition("varName1", ["level1Name", "level2Name"])
-                .VariableDefinition("varName2", ["level1Name", "level2Name"])
-                .Structure(sb => sb.Variable("varName1", s => s.Variable("varName2")))
-                .Build();
-
-            quotaFrame["varName1", "level1Name"]["varName2", "level1Name"].MaxOvershoot = 1;
-            quotaFrame["varName1", "level1Name"]["varName2", "level2Name"].MaxOvershoot = 1;
-            quotaFrame["varName1", "level2Name"]["varName2", "level1Name"].MaxOvershoot = 1;
-            quotaFrame["varName1", "level2Name"]["varName2", "level2Name"].MaxOvershoot = 1;
-
-            var validator = new QuotaFrameValidator();
-            var result = validator.Validate(quotaFrame);
-
-            Assert.That(result.IsValid, Is.True);
         }
 
         private static bool CreateQuotaFrameResult(string odinVariable)
