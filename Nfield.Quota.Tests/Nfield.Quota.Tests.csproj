@@ -33,7 +33,7 @@
     <None Update="Assets\glu-quota-format-v7-common-AddedIsForAllocationOnly.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Assets\glu-quota-format-v71-common-AddedConsiderActiveAsSuccessful.json">
+    <None Update="Assets\glu-quota-format-v71-common-AddedRootLevelMaxOvershoot.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

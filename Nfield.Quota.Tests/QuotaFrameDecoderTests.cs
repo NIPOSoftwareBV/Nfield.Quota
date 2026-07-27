@@ -290,9 +290,9 @@ namespace Nfield.Quota.Tests
         }
 
         [Test]
-        public void CanDeserializeACommonV71StructureWithConsiderActiveAsSuccessful()
+        public void CanDeserializeACommonV71StructureWithRootLevelMaxOvershoot()
         {
-            var filePath = Asset.GetAbsolutePath("glu-quota-format-v71-common-AddedConsiderActiveAsSuccessful.json");
+            var filePath = Asset.GetAbsolutePath("glu-quota-format-v71-common-AddedRootLevelMaxOvershoot.json");
             var jsonFrame = File.ReadAllText(filePath);
 
             var frame = QuotaFrameDecoder.Decode(jsonFrame);
