@@ -1644,7 +1644,6 @@ namespace Nfield.Quota.Tests
         public void ConsiderActiveAsSuccessful_False_LeafNodesCanHaveDifferentMaxOvershoot()
         {
             var quotaFrame = new QuotaFrameBuilder()
-                .ConsiderActiveAsSuccessful(false)
                 .VariableDefinition("varName1", ["level1Name", "level2Name"])
                 .VariableDefinition("varName2", ["level1Name", "level2Name"])
                 .Structure(sb => sb.Variable("varName1", s => s.Variable("varName2")))
@@ -1665,7 +1664,7 @@ namespace Nfield.Quota.Tests
         public void ConsiderActiveAsSuccessful_True_AllLeafNodesShouldHaveSameMaxOvershoot()
         {
             var quotaFrame = new QuotaFrameBuilder()
-                .ConsiderActiveAsSuccessful(true)
+                .RootLevelMaxOvershoot(1)
                 .VariableDefinition("varName1", ["level1Name", "level2Name"])
                 .VariableDefinition("varName2", ["level1Name", "level2Name"])
                 .Structure(sb => sb.Variable("varName1", s => s.Variable("varName2")))
@@ -1680,12 +1679,6 @@ namespace Nfield.Quota.Tests
             var result = validator.Validate(quotaFrame);
 
             Assert.That(result.IsValid, Is.True);
-
-            quotaFrame["varName1", "level2Name"]["varName2", "level1Name"].MaxOvershoot = 2;
-            result = validator.Validate(quotaFrame);
-
-            Assert.That(result.IsValid, Is.False);
-            Assert.That(result.Errors.Single().ErrorCode, Is.EqualTo("active-as-successful-invalid"));
         }
 
         private static bool CreateQuotaFrameResult(string odinVariable)
