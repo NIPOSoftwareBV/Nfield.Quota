@@ -1,5 +1,5 @@
 ﻿{
-  "considerActiveAsSuccessful":  true,
+  "maxOvershoot":  5,
   "id": "frameId",
   "variableDefinitions": [
     {

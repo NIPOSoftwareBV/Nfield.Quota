@@ -9,7 +9,7 @@ namespace Nfield.Quota.Builders
     public class QuotaFrameBuilder
     {
         private int? _target;
-        private bool _considerActiveAsSuccessful;
+        private int? _rootLevelMaxOvershoot;
         private readonly IList<QuotaVariableDefinitionBuilder> _variableDefinitionBuilders;
         private readonly QuotaFrameStructureBuilder _structureBuilder;
 
@@ -28,7 +28,7 @@ namespace Nfield.Quota.Builders
             var frame = new QuotaFrame
             {
                 Target = _target,
-                ConsiderActiveAsSuccessful = _considerActiveAsSuccessful
+                MaxOvershoot = _rootLevelMaxOvershoot
             };
 
             foreach (var builder in _variableDefinitionBuilders)
@@ -47,9 +47,9 @@ namespace Nfield.Quota.Builders
             return this;
         }
 
-        public QuotaFrameBuilder ConsiderActiveAsSuccessful(bool considerActiveAsSuccessful)
+        public QuotaFrameBuilder RootLevelMaxOvershoot(int? maxOvershoot)
         {
-            _considerActiveAsSuccessful = considerActiveAsSuccessful;
+            _rootLevelMaxOvershoot = maxOvershoot;
             return this;
         }
 

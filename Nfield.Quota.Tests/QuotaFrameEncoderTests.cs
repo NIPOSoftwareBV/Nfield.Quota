@@ -170,7 +170,7 @@ namespace Nfield.Quota.Tests
         }
 
         [Test]
-        public void ConsiderActiveAsSuccessfulIsSerializedInStructure()
+        public void RootLevelMaxOvershootIsSerializedInStructure()
         {
             var frame = new QuotaFrameBuilder()
                 .VariableDefinition("var", new List<string> { "level" })
@@ -179,20 +179,18 @@ namespace Nfield.Quota.Tests
 
             var json = QuotaFrameEncoder.Encode(frame);
 
-            Assert.That(Regex.Matches(json, @"""considerActiveAsSuccessful"": false").Count, Is.EqualTo(1));
+            Assert.That(Regex.Matches(json, @"""maxOvershoot"": null").Count, Is.EqualTo(2));
 
-            frame.ConsiderActiveAsSuccessful = false;
-
-            json = QuotaFrameEncoder.Encode(frame);
-
-            Assert.That(Regex.Matches(json, @"""considerActiveAsSuccessful"": false").Count, Is.EqualTo(1));
-
-            frame.ConsiderActiveAsSuccessful = true;
+            frame = new QuotaFrameBuilder()
+                .VariableDefinition("var", new List<string> { "level" })
+                .RootLevelMaxOvershoot(5)
+                .Structure(sb => sb.Variable("var"))
+                .Build();
 
             json = QuotaFrameEncoder.Encode(frame);
 
-            Assert.That(Regex.Matches(json, @"""considerActiveAsSuccessful"": true").Count, Is.EqualTo(1));
-
+            Assert.That(Regex.Matches(json, @"""maxOvershoot"": null").Count, Is.EqualTo(1));
+            Assert.That(Regex.Matches(json, @"""maxOvershoot"": 5").Count, Is.EqualTo(1));
         }
 
     }
