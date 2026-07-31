@@ -40,13 +40,15 @@ namespace Nfield.Quota.Persistence
             var resolver = new QuotaFrameContractResolver();
             resolver.Ignore(
                 typeof(QuotaFrame),
-                nameof(QuotaFrame.Target)
+                nameof(QuotaFrame.Target),
+                nameof(QuotaFrameLevel.MaxOvershoot)
                 );
 
             resolver.Ignore(
                 typeof(QuotaFrameLevel),
                 nameof(QuotaFrameLevel.Target),
-                nameof(QuotaFrameLevel.MaxTarget)
+                nameof(QuotaFrameLevel.MaxTarget),
+                nameof(QuotaFrameLevel.MaxOvershoot)
                 );
 
             return resolver;

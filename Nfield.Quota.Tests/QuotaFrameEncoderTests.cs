@@ -49,18 +49,22 @@ namespace Nfield.Quota.Tests
         {
             var frame = new QuotaFrameBuilder()
                 .Target(100)
+                .RootLevelMaxOvershoot(8)
                 .VariableDefinition("varName", new List<string>() { "level1", "level2" })
                 .Structure(sb => sb.Variable("varName"))
                 .Build();
 
             frame["varName", "level1"].Target = 60;
             frame["varName", "level1"].MaxTarget = 65;
+            frame["varName", "level1"].MaxOvershoot = 5;
 
             var json = QuotaFrameEncoder.Encode(frame, new QuotaFrameEncoderOptions() { IncludeTargets = true });
 
             Assert.That(json, Does.Contain("\"target\": 100"));
             Assert.That(json, Does.Contain("\"target\": 60"));
             Assert.That(json, Does.Contain("\"maxTarget\": 65"));
+            Assert.That(json, Does.Contain("\"maxOvershoot\": 5"));
+            Assert.That(json, Does.Contain("\"maxOvershoot\": 8"));
         }
 
         [Test]
@@ -168,30 +172,5 @@ namespace Nfield.Quota.Tests
 
             Assert.That(Regex.Matches(json, @"""isForAllocationOnly"": true").Count, Is.EqualTo(1));
         }
-
-        [Test]
-        public void RootLevelMaxOvershootIsSerializedInStructure()
-        {
-            var frame = new QuotaFrameBuilder()
-                .VariableDefinition("var", new List<string> { "level" })
-                .Structure(sb => sb.Variable("var"))
-                .Build();
-
-            var json = QuotaFrameEncoder.Encode(frame);
-
-            Assert.That(Regex.Matches(json, @"""maxOvershoot"": null").Count, Is.EqualTo(2));
-
-            frame = new QuotaFrameBuilder()
-                .VariableDefinition("var", new List<string> { "level" })
-                .RootLevelMaxOvershoot(5)
-                .Structure(sb => sb.Variable("var"))
-                .Build();
-
-            json = QuotaFrameEncoder.Encode(frame);
-
-            Assert.That(Regex.Matches(json, @"""maxOvershoot"": null").Count, Is.EqualTo(1));
-            Assert.That(Regex.Matches(json, @"""maxOvershoot"": 5").Count, Is.EqualTo(1));
-        }
-
     }
 }
