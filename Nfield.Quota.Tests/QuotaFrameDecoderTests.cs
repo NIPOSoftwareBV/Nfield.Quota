@@ -25,7 +25,7 @@ namespace Nfield.Quota.Tests
 
             Assert.That(frame, Is.Not.Null);
             Assert.That(frame.Target, Is.Null);
-            Assert.That(frame.ConsiderActiveAsSuccessful, Is.False); // not defined in this version, so should default to false
+            Assert.That(frame.MaxOvershoot, Is.Null);
             Assert.That(frame.VariableDefinitions, Has.Count.EqualTo(1));
             Assert.That(frame.FrameVariables, Has.Count.EqualTo(1));
 
@@ -67,7 +67,7 @@ namespace Nfield.Quota.Tests
 
             Assert.That(frame, Is.Not.Null);
             Assert.That(frame.Target, Is.Null);
-            Assert.That(frame.ConsiderActiveAsSuccessful, Is.False); // not defined in this version, so should default to false
+            Assert.That(frame.MaxOvershoot, Is.Null);
             Assert.That(frame.VariableDefinitions, Has.Count.EqualTo(1));
             Assert.That(frame.FrameVariables, Has.Count.EqualTo(1));
 
@@ -109,7 +109,7 @@ namespace Nfield.Quota.Tests
 
             Assert.That(frame, Is.Not.Null);
             Assert.That(frame.Target, Is.Null);
-            Assert.That(frame.ConsiderActiveAsSuccessful, Is.False); // not defined in this version, so should default to false
+            Assert.That(frame.MaxOvershoot, Is.Null);
             Assert.That(frame.VariableDefinitions, Has.Count.EqualTo(1));
             Assert.That(frame.FrameVariables, Has.Count.EqualTo(1));
 
@@ -150,7 +150,7 @@ namespace Nfield.Quota.Tests
 
             Assert.That(frame, Is.Not.Null);
             Assert.That(frame.Target, Is.Null);
-            Assert.That(frame.ConsiderActiveAsSuccessful, Is.False); // not defined in this version, so should default to false
+            Assert.That(frame.MaxOvershoot, Is.Null);
             Assert.That(frame.VariableDefinitions, Has.Count.EqualTo(1));
             Assert.That(frame.FrameVariables, Has.Count.EqualTo(1));
 
@@ -192,7 +192,7 @@ namespace Nfield.Quota.Tests
 
             Assert.That(frame, Is.Not.Null);
             Assert.That(frame.Target, Is.Null);
-            Assert.That(frame.ConsiderActiveAsSuccessful, Is.False); // not defined in this version, so should default to false
+            Assert.That(frame.MaxOvershoot, Is.Null);
             Assert.That(frame.VariableDefinitions, Has.Count.EqualTo(1));
             Assert.That(frame.FrameVariables, Has.Count.EqualTo(1));
 
@@ -234,7 +234,7 @@ namespace Nfield.Quota.Tests
 
             Assert.That(frame, Is.Not.Null);
             Assert.That(frame.Target, Is.Null);
-            Assert.That(frame.ConsiderActiveAsSuccessful, Is.False); // not defined in this version, so should default to false
+            Assert.That(frame.MaxOvershoot, Is.Null);
             Assert.That(frame.VariableDefinitions, Has.Count.EqualTo(2));
             Assert.That(frame.FrameVariables, Has.Count.EqualTo(2));
 
@@ -290,16 +290,16 @@ namespace Nfield.Quota.Tests
         }
 
         [Test]
-        public void CanDeserializeACommonV71StructureWithConsiderActiveAsSuccessful()
+        public void CanDeserializeACommonV80StructureWithRootLevelMaxOvershoot()
         {
-            var filePath = Asset.GetAbsolutePath("glu-quota-format-v71-common-AddedConsiderActiveAsSuccessful.json");
+            var filePath = Asset.GetAbsolutePath("glu-quota-format-v80-common-AddedRootLevelMaxOvershoot.json");
             var jsonFrame = File.ReadAllText(filePath);
 
             var frame = QuotaFrameDecoder.Decode(jsonFrame);
 
             Assert.That(frame, Is.Not.Null);
             Assert.That(frame.Target, Is.Null);
-            Assert.That(frame.ConsiderActiveAsSuccessful, Is.True);
+            Assert.That(frame.MaxOvershoot, Is.EqualTo(5));
             Assert.That(frame.VariableDefinitions, Has.Count.EqualTo(1));
             Assert.That(frame.FrameVariables, Has.Count.EqualTo(1));
         }

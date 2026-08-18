@@ -29,6 +29,11 @@ namespace Nfield.Quota
                     .WithMessage("Odin variable name invalid. Odin variable names can only contain numbers, letters and '_' and cannot be empty. They can only start with a letter. First character cannot be '_' or a number. Variable definition Id '{DefId}' with name '{DefName}' has an invalid Odin Variable Name '{InvalidOdin}'")
                     .WithErrorCode("invalid-odin-variable-name");
 
+            RuleFor(qf => qf.MaxOvershoot)
+                .Must(mo => mo == null || mo >= 0)
+                    .WithMessage(qf => $"Max overshoot '{qf.MaxOvershoot}' is invalid for root. Max overshoot values must be positive.")
+                    .WithErrorCode("invalid-max-overshoot");
+
             RuleFor(qf => qf.FrameVariables)
                 .Cascade(CascadeMode.Stop)
                 .Must(HaveUniqueIds)
@@ -47,7 +52,7 @@ namespace Nfield.Quota
                     .WithMessage("Target invalid. All Targets must be of a positive value. Frame level Id '{LevelId}' with name '{LevelName}' has an invalid negative target '{InvalidTarget}'")
                     .WithErrorCode("negative-min-target")
                 .Must(HaveValidMaxOvershoot)
-                    .WithMessage("Max overshoot '{MaxOvershoot}' is invalid for frame level id '{LevelId}' with name '{LevelName}'. Max overshoot values can only be set on leaf nodes, and must be positive.")
+                    .WithMessage("Max overshoot '{MaxOvershoot}' is invalid for frame level id '{LevelId}' with name '{LevelName}'. Max overshoot values can only be set on leaf nodes and root, and must be positive.")
                 .Must(HaveValidLevelMaxTargets)
                     .WithMessage("Target invalid. All Targets must be of a positive value. Frame level Id '{LevelId}' with name '{LevelName}' has an invalid negative maximum target '{InvalidTarget}'")
                     .WithErrorCode("negative-max-target")
@@ -66,11 +71,6 @@ namespace Nfield.Quota
                 .Must(HaveNestedMaxLevelsSumToMoreThanMinTargetForEachLevel)
                     .WithMessage("Quota frame is invalid. Maximum targets for nested levels under level '{LevelName}' with id '{LevelId}' sum to less than the minimum target. Expected at most {Sum}, but was {MinTarget}.")
                     .WithErrorCode("nested-levels-less-than-parent-min");
-
-            RuleFor(qf => qf.ConsiderActiveAsSuccessful)
-                .Must(HaveSameMaxOvershootValueForAllLeaves)
-                .WithMessage("Quota frame invalid. When 'ConsiderActiveAsSuccessful' is true, all configured values for MaxOvershoot should be the same")
-                .WithErrorCode("active-as-successful-invalid");
         }
 
         private static bool CheckLevels(IEnumerable<QuotaFrameLevel> levels, ref int? maxOvershoot)
@@ -115,16 +115,6 @@ namespace Nfield.Quota
             return consistent;
         }
 
-        private static bool HaveSameMaxOvershootValueForAllLeaves(QuotaFrame frame, bool considerActiveAsSuccessful, ValidationContext<QuotaFrame> context)
-        {
-            if (!considerActiveAsSuccessful)
-            {
-                return true;
-            }
-            int? maxOvershoot = null;
-
-            return CheckVariables(frame.FrameVariables, ref maxOvershoot);
-        }
         private static bool HaveUniqueIds(
             QuotaFrame frame,
             IEnumerable<QuotaVariableDefinition> varDefinitions,
